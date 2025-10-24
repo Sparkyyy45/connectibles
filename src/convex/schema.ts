@@ -19,25 +19,64 @@ export type Role = Infer<typeof roleValidator>;
 const schema = defineSchema(
   {
     // default auth tables using convex auth.
-    ...authTables, // do not remove or modify
+    ...authTables,
 
     // the users table is the default users table that is brought in by the authTables
     users: defineTable({
-      name: v.optional(v.string()), // name of the user. do not remove
-      image: v.optional(v.string()), // image of the user. do not remove
-      email: v.optional(v.string()), // email of the user. do not remove
-      emailVerificationTime: v.optional(v.number()), // email verification time. do not remove
-      isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
+      name: v.optional(v.string()),
+      image: v.optional(v.string()),
+      email: v.optional(v.string()),
+      emailVerificationTime: v.optional(v.number()),
+      isAnonymous: v.optional(v.boolean()),
+      role: v.optional(roleValidator),
+      
+      // Connectibles specific fields
+      bio: v.optional(v.string()),
+      interests: v.optional(v.array(v.string())),
+      skills: v.optional(v.array(v.string())),
+      location: v.optional(v.string()),
+      connections: v.optional(v.array(v.id("users"))),
+    }).index("email", ["email"]),
 
-      role: v.optional(roleValidator), // role of the user. do not remove
-    }).index("email", ["email"]), // index for the email. do not remove or modify
+    // Collaboration posts
+    collaboration_posts: defineTable({
+      authorId: v.id("users"),
+      title: v.string(),
+      description: v.string(),
+      tags: v.array(v.string()),
+    }).index("by_author", ["authorId"]),
 
-    // add other tables here
+    // Messages between users
+    messages: defineTable({
+      senderId: v.id("users"),
+      receiverId: v.id("users"),
+      message: v.string(),
+      read: v.boolean(),
+    })
+      .index("by_receiver", ["receiverId"])
+      .index("by_sender", ["senderId"])
+      .index("by_conversation", ["senderId", "receiverId"]),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    // Events/Meetups
+    events: defineTable({
+      creatorId: v.id("users"),
+      title: v.string(),
+      description: v.string(),
+      tags: v.optional(v.array(v.string())),
+      location: v.optional(v.string()),
+      eventDate: v.optional(v.number()),
+      interestedUsers: v.optional(v.array(v.id("users"))),
+    }).index("by_creator", ["creatorId"]),
+
+    // Connection requests
+    connection_requests: defineTable({
+      senderId: v.id("users"),
+      receiverId: v.id("users"),
+      status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("rejected")),
+    })
+      .index("by_receiver", ["receiverId"])
+      .index("by_sender", ["senderId"])
+      .index("by_sender_and_receiver", ["senderId", "receiverId"]),
   },
   {
     schemaValidation: false,
