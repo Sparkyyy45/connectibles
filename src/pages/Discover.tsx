@@ -18,6 +18,8 @@ export default function Discover() {
   const navigate = useNavigate();
   const matches = useQuery(api.matching.getMatches);
   const sendRequest = useMutation(api.connections.sendConnectionRequest);
+  const sendWave = useMutation(api.connections.sendWave);
+  const profileCompletion = useQuery(api.profiles.getProfileCompletion);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -31,6 +33,15 @@ export default function Discover() {
       toast.success("Connection request sent!");
     } catch (error) {
       toast.error("Failed to send request");
+    }
+  };
+
+  const handleWave = async (userId: Id<"users">) => {
+    try {
+      await sendWave({ receiverId: userId });
+      toast.success("Wave sent! 👋");
+    } catch (error) {
+      toast.error("Failed to send wave");
     }
   };
 
@@ -51,7 +62,14 @@ export default function Discover() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Discover Matches</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold tracking-tight">Discover Matches</h1>
+            {profileCompletion !== undefined && (
+              <Badge variant={profileCompletion === 100 ? "default" : "secondary"} className="text-sm">
+                Profile {profileCompletion}% Complete
+              </Badge>
+            )}
+          </div>
           <p className="text-muted-foreground">
             Connect with people who share your interests
           </p>
@@ -91,7 +109,10 @@ export default function Discover() {
                       <div className="flex-1">
                         <CardTitle className="text-lg">{match.user.name || "Anonymous"}</CardTitle>
                         <CardDescription>
-                          {match.score} shared interest{match.score !== 1 ? "s" : ""}
+                          {match.score} match score
+                          {match.mutualConnectionsCount > 0 && (
+                            <span className="ml-2">• {match.mutualConnectionsCount} mutual</span>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
@@ -113,13 +134,34 @@ export default function Discover() {
                         ))}
                       </div>
                     </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => handleConnect(match.user._id)}
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Connect
-                    </Button>
+                    {match.sharedSkills.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Shared Skills:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {match.sharedSkills.map((skill) => (
+                            <Badge key={skill} variant="outline">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handleWave(match.user._id)}
+                      >
+                        👋 Wave
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        onClick={() => handleConnect(match.user._id)}
+                      >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Connect
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>

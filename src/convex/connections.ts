@@ -2,6 +2,55 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+export const sendWave = mutation({
+  args: { receiverId: v.id("users") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Check if request already exists
+    const existing = await ctx.db
+      .query("connection_requests")
+      .withIndex("by_sender_and_receiver", (q) =>
+        q.eq("senderId", userId).eq("receiverId", args.receiverId)
+      )
+      .first();
+
+    if (existing) {
+      throw new Error("Already sent a wave or connection request");
+    }
+
+    const requestId = await ctx.db.insert("connection_requests", {
+      senderId: userId,
+      receiverId: args.receiverId,
+      status: "waved",
+    });
+
+    return requestId;
+  },
+});
+
+export const upgradeWaveToConnection = mutation({
+  args: { requestId: v.id("connection_requests") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const request = await ctx.db.get(args.requestId);
+    if (!request || request.senderId !== userId) {
+      throw new Error("Invalid request");
+    }
+
+    if (request.status !== "waved") {
+      throw new Error("Can only upgrade waves");
+    }
+
+    await ctx.db.patch(args.requestId, { status: "pending" });
+
+    return args.requestId;
+  },
+});
+
 export const sendConnectionRequest = mutation({
   args: { receiverId: v.id("users") },
   handler: async (ctx, args) => {

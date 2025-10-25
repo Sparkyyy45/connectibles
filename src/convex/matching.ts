@@ -54,6 +54,12 @@ export const getMatches = query({
           currentUser.location.toLowerCase() === user.location.toLowerCase() 
           ? 2 : 0;
         
+        // Calculate mutual connections
+        const userConnections = user.connections || [];
+        const mutualConnections = existingConnections.filter(connId => 
+          userConnections.includes(connId)
+        );
+        
         // Total score: interests (1 point each) + skills (0.5 points each) + location bonus
         const score = sharedInterests.length + (sharedSkills.length * 0.5) + locationBonus;
         
@@ -63,11 +69,12 @@ export const getMatches = query({
           sharedInterests,
           sharedSkills,
           sameLocation: locationBonus > 0,
+          mutualConnectionsCount: mutualConnections.length,
         };
       })
       .filter(match => match.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
+      .slice(0, 20);
 
     return matches;
   },

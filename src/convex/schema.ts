@@ -100,7 +100,7 @@ const schema = defineSchema(
     connection_requests: defineTable({
       senderId: v.id("users"),
       receiverId: v.id("users"),
-      status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("rejected")),
+      status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("rejected"), v.literal("waved")),
     })
       .index("by_receiver", ["receiverId"])
       .index("by_sender", ["senderId"])
