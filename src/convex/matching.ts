@@ -72,10 +72,126 @@ export const getMatches = query({
           mutualConnectionsCount: mutualConnections.length,
         };
       })
-      .filter(match => match.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 20);
 
     return matches;
+  },
+});
+
+export const getExploreMatches = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const currentUser = await ctx.db.get(userId);
+    if (!currentUser) return [];
+
+    // Get all users
+    const allUsers = await ctx.db.query("users").collect();
+    
+    // Get existing connections to exclude them
+    const existingConnections = currentUser.connections || [];
+    
+    // Get pending connection requests to exclude them
+    const sentRequests = await ctx.db
+      .query("connection_requests")
+      .withIndex("by_sender", (q) => q.eq("senderId", userId))
+      .collect();
+    
+    const pendingUserIds = sentRequests.map(req => req.receiverId);
+    
+    // Filter and randomize
+    const eligibleUsers = allUsers
+      .filter(user => {
+        if (user._id === userId) return false;
+        if (existingConnections.includes(user._id)) return false;
+        if (pendingUserIds.includes(user._id)) return false;
+        return true;
+      })
+      .sort(() => Math.random() - 0.5) // Randomize
+      .slice(0, 10);
+
+    return eligibleUsers.map(user => {
+      const userConnections = user.connections || [];
+      const mutualConnections = existingConnections.filter(connId => 
+        userConnections.includes(connId)
+      );
+
+      return {
+        user,
+        mutualConnectionsCount: mutualConnections.length,
+      };
+    });
+  },
+});
+
+export const getReverseMatches = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const currentUser = await ctx.db.get(userId);
+    if (!currentUser || !currentUser.interests) return [];
+
+    // Get all users
+    const allUsers = await ctx.db.query("users").collect();
+    
+    // Get existing connections to exclude them
+    const existingConnections = currentUser.connections || [];
+    
+    // Get pending connection requests to exclude them
+    const sentRequests = await ctx.db
+      .query("connection_requests")
+      .withIndex("by_sender", (q) => q.eq("senderId", userId))
+      .collect();
+    
+    const pendingUserIds = sentRequests.map(req => req.receiverId);
+    
+    // Find users who would match with current user based on THEIR interests
+    const reverseMatches = allUsers
+      .filter(user => {
+        if (user._id === userId) return false;
+        if (!user.interests || user.interests.length === 0) return false;
+        if (existingConnections.includes(user._id)) return false;
+        if (pendingUserIds.includes(user._id)) return false;
+        return true;
+      })
+      .map(user => {
+        // Calculate how much the OTHER user would be interested in YOU
+        const theirInterestsInYou = user.interests!.filter(interest =>
+          currentUser.interests!.includes(interest)
+        );
+        
+        const theirSkillsInYou = user.skills && currentUser.skills
+          ? user.skills.filter(skill => currentUser.skills!.includes(skill))
+          : [];
+        
+        const locationMatch = currentUser.location && user.location && 
+          currentUser.location.toLowerCase() === user.location.toLowerCase();
+        
+        const userConnections = user.connections || [];
+        const mutualConnections = existingConnections.filter(connId => 
+          userConnections.includes(connId)
+        );
+        
+        const score = theirInterestsInYou.length + (theirSkillsInYou.length * 0.5) + (locationMatch ? 2 : 0);
+        
+        return {
+          user,
+          score,
+          sharedInterests: theirInterestsInYou,
+          sharedSkills: theirSkillsInYou,
+          sameLocation: locationMatch,
+          mutualConnectionsCount: mutualConnections.length,
+        };
+      })
+      .filter(match => match.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 15);
+
+    return reverseMatches;
   },
 });
