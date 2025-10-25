@@ -130,7 +130,7 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-32" aria-labelledby="cta-heading">
+      <section id="cta" className="max-w-7xl mx-auto px-6 py-32 scroll-mt-20" aria-labelledby="cta-heading">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
