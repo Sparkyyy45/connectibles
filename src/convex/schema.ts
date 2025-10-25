@@ -71,6 +71,7 @@ const schema = defineSchema(
       title: v.string(),
       description: v.string(),
       tags: v.array(v.string()),
+      volunteers: v.optional(v.array(v.id("users"))),
     }).index("by_author", ["authorId"]),
 
     // Messages between users
