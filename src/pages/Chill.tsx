@@ -115,7 +115,7 @@ export default function Chill() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-2xl">Share to Chill Zone</DialogTitle>
+                <DialogTitle className="text-2xl">Share to Canvas</DialogTitle>
                 <DialogDescription className="text-base">
                   Post anything creative - images, music, doodles, or just vibes
                 </DialogDescription>
