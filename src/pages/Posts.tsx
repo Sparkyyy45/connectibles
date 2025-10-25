@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -188,6 +188,7 @@ export default function Posts() {
                   <CardHeader>
                     <div className="flex items-start gap-4">
                       <Avatar className="h-10 w-10">
+                        <AvatarImage src={post.author?.image} alt={post.author?.name || "User"} />
                         <AvatarFallback>
                           {post.author?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
@@ -242,11 +243,12 @@ export default function Posts() {
                             <div className="space-y-3 py-4">
                               {selectedPostVolunteers?.map((volunteer) => (
                                 <div key={volunteer?._id} className="flex items-center gap-3">
-                                  <Avatar>
-                                    <AvatarFallback>
-                                      {volunteer?.name?.charAt(0).toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                  </Avatar>
+                                <Avatar>
+                                  <AvatarImage src={volunteer?.image} alt={volunteer?.name || "User"} />
+                                  <AvatarFallback>
+                                    {volunteer?.name?.charAt(0).toUpperCase() || "U"}
+                                  </AvatarFallback>
+                                </Avatar>
                                   <div>
                                     <p className="font-medium">{volunteer?.name || "Anonymous"}</p>
                                     <p className="text-sm text-muted-foreground">

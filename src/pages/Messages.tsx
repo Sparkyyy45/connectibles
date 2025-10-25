@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Send, UserCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -103,6 +103,7 @@ export default function Messages() {
                   <div key={request._id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar>
+                        <AvatarImage src={request.sender?.image} alt={request.sender?.name || "User"} />
                         <AvatarFallback>
                           {request.sender?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
@@ -147,6 +148,7 @@ export default function Messages() {
                     >
                       <div className="flex items-center gap-3">
                         <Avatar>
+                          <AvatarImage src={connection?.image} alt={connection?.name || "User"} />
                           <AvatarFallback>
                             {connection?.name?.charAt(0).toUpperCase() || "U"}
                           </AvatarFallback>
@@ -171,6 +173,7 @@ export default function Messages() {
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <Avatar>
+                        <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
                         <AvatarFallback>
                           {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
