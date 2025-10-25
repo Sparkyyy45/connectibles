@@ -32,6 +32,8 @@ export default function Chill() {
 
   const [draggedPost, setDraggedPost] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [resizingPost, setResizingPost] = useState<string | null>(null);
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -162,6 +164,35 @@ export default function Chill() {
 
   const handleMouseUp = () => {
     setDraggedPost(null);
+    setResizingPost(null);
+  };
+
+  const handleResizeStart = (e: React.MouseEvent, postId: string, currentWidth: number, currentHeight: number) => {
+    e.stopPropagation();
+    setResizingPost(postId);
+    setResizeStart({ x: e.clientX, y: e.clientY, width: currentWidth, height: currentHeight });
+  };
+
+  const handleResize = (e: React.MouseEvent) => {
+    if (!resizingPost || !canvasRef.current) return;
+    
+    const deltaX = e.clientX - resizeStart.x;
+    const deltaY = e.clientY - resizeStart.y;
+    
+    const newWidth = Math.max(100, resizeStart.width + deltaX);
+    const newHeight = Math.max(100, resizeStart.height + deltaY);
+    
+    const post = posts?.find(p => p._id === resizingPost);
+    if (post) {
+      updatePosition({
+        postId: resizingPost as Id<"chill_posts">,
+        positionX: post.positionX || 20,
+        positionY: post.positionY || 20,
+        width: newWidth,
+        height: newHeight,
+        zIndex: post.zIndex,
+      });
+    }
   };
 
   if (isLoading || !user) {
@@ -253,7 +284,10 @@ export default function Chill() {
         <div 
           ref={canvasRef}
           className="relative w-full h-[calc(100vh-180px)]"
-          onMouseMove={handleMouseMove}
+          onMouseMove={(e) => {
+            handleMouseMove(e);
+            handleResize(e);
+          }}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
@@ -296,14 +330,22 @@ export default function Chill() {
                       </div>
                     )}
                     {post.authorId === user._id && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(post._id)}
-                        className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(post._id)}
+                          className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <div
+                          className="absolute bottom-0 right-0 w-6 h-6 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity"
+                          onMouseDown={(e) => handleResizeStart(e, post._id, post.width || 200, post.height || 200)}
+                        >
+                          <div className="absolute bottom-1 right-1 w-3 h-3 border-r-2 border-b-2 border-white" />
+                        </div>
+                      </>
                     )}
                     <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
                       {post.author?.name || "Anonymous"}
