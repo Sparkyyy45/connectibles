@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Send, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -131,6 +131,7 @@ export default function Gossip() {
                         >
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10 border-2 border-primary/10">
+                              <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
                               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                                 {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                               </AvatarFallback>
