@@ -264,7 +264,7 @@ export default function Notifications() {
               transition={{ delay: 0.2 }}
             >
               <Card className="border-dashed border-2 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
                 <CardHeader className="text-center py-16 relative">
                   <motion.div 
                     className="flex justify-center mb-6"
