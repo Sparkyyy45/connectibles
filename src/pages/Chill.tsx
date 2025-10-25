@@ -21,12 +21,16 @@ export default function Chill() {
   const posts = useQuery(api.chill.getAllChillPosts);
   const createPost = useMutation(api.chill.createChillPost);
   const deletePost = useMutation(api.chill.deleteChillPost);
+  const generateUploadUrl = useMutation(api.chill.generateUploadUrl);
 
   const [showCreationMenu, setShowCreationMenu] = useState(false);
   const [creationType, setCreationType] = useState<CreationType>(null);
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Doodle canvas state
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -39,6 +43,43 @@ export default function Chill() {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setMediaUrl(previewUrl);
+    }
+  };
+
+  // Upload file to Convex storage
+  const uploadFile = async (file: File): Promise<string | null> => {
+    try {
+      setUploading(true);
+      const uploadUrl = await generateUploadUrl();
+      
+      const result = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!result.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const { storageId } = await result.json();
+      return storageId;
+    } catch (error) {
+      toast.error("Failed to upload file");
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // Canvas drawing functions
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -100,23 +141,39 @@ export default function Chill() {
   };
 
   const handleCreate = async () => {
-    if (!content.trim() && !mediaUrl.trim()) {
+    if (!content.trim() && !mediaUrl.trim() && !selectedFile) {
       toast.error("Please add some content or media");
       return;
     }
 
     setCreating(true);
     try {
+      let storageId: string | null = null;
+      let finalMediaUrl = mediaUrl;
+
+      // Upload file if selected
+      if (selectedFile && creationType !== "doodle") {
+        storageId = await uploadFile(selectedFile);
+        if (!storageId) {
+          setCreating(false);
+          return;
+        }
+        finalMediaUrl = ""; // Will be generated from storageId
+      }
+
       await createPost({
         content: content.trim() || undefined,
-        mediaUrl: mediaUrl.trim() || undefined,
+        mediaUrl: finalMediaUrl.trim() || undefined,
+        storageId: storageId as Id<"_storage"> | undefined,
         mediaType: creationType || undefined,
       });
+      
       toast.success("Posted to Canvas! 🎨");
       setShowCreationMenu(false);
       setCreationType(null);
       setContent("");
       setMediaUrl("");
+      setSelectedFile(null);
       clearCanvas();
     } catch (error) {
       toast.error("Failed to create post");
@@ -223,22 +280,33 @@ export default function Chill() {
             setCreationType(null);
             setContent("");
             setMediaUrl("");
+            setSelectedFile(null);
           }
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl">Add Image</DialogTitle>
-              <DialogDescription>Upload or paste an image URL</DialogDescription>
+              <DialogDescription>Select an image from your device</DialogDescription>
             </DialogHeader>
             <div className="space-y-5 py-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Image URL</label>
-                <Input
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder="Paste image URL (jpg, png, gif, etc.)"
-                  className="h-11"
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
                 />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  className="w-full h-32 border-2 border-dashed"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8" />
+                    <span>Click to select image</span>
+                  </div>
+                </Button>
               </div>
               {mediaUrl && (
                 <div className="rounded-lg overflow-hidden border">
@@ -256,9 +324,9 @@ export default function Chill() {
                 />
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleCreate} disabled={creating || !mediaUrl} className="flex-1 h-11">
-                  {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                  {creating ? "Posting..." : "Post to Canvas"}
+                <Button onClick={handleCreate} disabled={creating || uploading || !selectedFile} className="flex-1 h-11">
+                  {creating || uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  {uploading ? "Uploading..." : creating ? "Posting..." : "Post to Canvas"}
                 </Button>
                 <Button variant="outline" onClick={() => setCreationType(null)} className="h-11">
                   Cancel
@@ -351,22 +419,34 @@ export default function Chill() {
             setCreationType(null);
             setContent("");
             setMediaUrl("");
+            setSelectedFile(null);
           }
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl">Add Music</DialogTitle>
-              <DialogDescription>Share a music link (MP3, Spotify, YouTube, etc.)</DialogDescription>
+              <DialogDescription>Select a music file from your device</DialogDescription>
             </DialogHeader>
             <div className="space-y-5 py-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Music URL</label>
-                <Input
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder="Paste music URL (MP3, Spotify, YouTube, etc.)"
-                  className="h-11"
+                <input
+                  type="file"
+                  accept="audio/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="music-upload"
                 />
+                <Button
+                  onClick={() => document.getElementById("music-upload")?.click()}
+                  variant="outline"
+                  className="w-full h-32 border-2 border-dashed"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Music className="h-8 w-8" />
+                    <span>Click to select music file</span>
+                    {selectedFile && <span className="text-sm text-muted-foreground">{selectedFile.name}</span>}
+                  </div>
+                </Button>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Description (Optional)</label>
@@ -379,9 +459,9 @@ export default function Chill() {
                 />
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleCreate} disabled={creating || !mediaUrl} className="flex-1 h-11">
-                  {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Music className="mr-2 h-4 w-4" />}
-                  {creating ? "Posting..." : "Post Music"}
+                <Button onClick={handleCreate} disabled={creating || uploading || !selectedFile} className="flex-1 h-11">
+                  {creating || uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Music className="mr-2 h-4 w-4" />}
+                  {uploading ? "Uploading..." : creating ? "Posting..." : "Post Music"}
                 </Button>
                 <Button variant="outline" onClick={() => setCreationType(null)} className="h-11">
                   Cancel

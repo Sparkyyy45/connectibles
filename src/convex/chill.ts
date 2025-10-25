@@ -2,10 +2,20 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
 export const createChillPost = mutation({
   args: {
     content: v.optional(v.string()),
     mediaUrl: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
     mediaType: v.optional(v.union(
       v.literal("image"),
       v.literal("doodle"),
@@ -18,10 +28,17 @@ export const createChillPost = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // If storageId is provided, get the URL
+    let finalMediaUrl: string | undefined = args.mediaUrl;
+    if (args.storageId) {
+      const url = await ctx.storage.getUrl(args.storageId);
+      finalMediaUrl = url ?? undefined;
+    }
+
     const postId = await ctx.db.insert("chill_posts", {
       authorId: userId,
       content: args.content,
-      mediaUrl: args.mediaUrl,
+      mediaUrl: finalMediaUrl || undefined,
       mediaType: args.mediaType,
       reactions: [],
     });
@@ -62,12 +79,10 @@ export const addReaction = mutation({
     const existingReaction = reactions.find(r => r.userId === userId && r.emoji === args.emoji);
 
     if (existingReaction) {
-      // Remove reaction if it already exists
       await ctx.db.patch(args.postId, {
         reactions: reactions.filter(r => !(r.userId === userId && r.emoji === args.emoji)),
       });
     } else {
-      // Add new reaction
       await ctx.db.patch(args.postId, {
         reactions: [...reactions, { userId, emoji: args.emoji }],
       });
