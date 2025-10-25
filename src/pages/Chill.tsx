@@ -34,6 +34,10 @@ export default function Chill() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizingPost, setResizingPost] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  
+  // Local position state for smooth dragging
+  const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -65,7 +69,6 @@ export default function Chill() {
             return;
           }
 
-          // Calculate new dimensions (max 1200px on longest side)
           const maxSize = 1200;
           let width = img.width;
           let height = img.height;
@@ -80,8 +83,6 @@ export default function Chill() {
 
           canvas.width = width;
           canvas.height = height;
-
-          // Draw and compress
           ctx.drawImage(img, 0, 0, width, height);
           
           canvas.toBlob(
@@ -97,7 +98,7 @@ export default function Chill() {
               resolve(compressedFile);
             },
             'image/jpeg',
-            0.85 // 85% quality
+            0.85
           );
         };
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -109,10 +110,7 @@ export default function Chill() {
   const uploadFile = async (file: File): Promise<string | null> => {
     try {
       setUploading(true);
-      
-      // Compress image before upload
       const compressedFile = await compressImage(file);
-      
       const uploadUrl = await generateUploadUrl();
       
       const result = await fetch(uploadUrl, {
@@ -150,10 +148,9 @@ export default function Chill() {
         return;
       }
 
-      // Random initial position
-      const randomX = Math.random() * 60 + 10; // 10-70%
-      const randomY = Math.random() * 60 + 10; // 10-70%
-      const randomSize = Math.random() * 150 + 150; // 150-300px
+      const randomX = Math.random() * 60 + 10;
+      const randomY = Math.random() * 60 + 10;
+      const randomSize = Math.random() * 150 + 150;
 
       await createPost({
         content: content.trim() || undefined,
@@ -188,8 +185,27 @@ export default function Chill() {
     }
   };
 
+  const syncPositionToDatabase = (postId: string, x: number, y: number, width: number, height: number, zIndex: number) => {
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    
+    updateTimeoutRef.current = setTimeout(() => {
+      updatePosition({
+        postId: postId as Id<"chill_posts">,
+        positionX: x,
+        positionY: y,
+        width,
+        height,
+        zIndex,
+      }).catch((error) => {
+        console.error("Failed to update position:", error);
+      });
+    }, 100);
+  };
+
   const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || resizingPost) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     const offsetX = e.clientX - (rect.left + (currentX / 100) * rect.width);
@@ -200,34 +216,46 @@ export default function Chill() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggedPost || !canvasRef.current) return;
+    if (!draggedPost || !canvasRef.current || resizingPost) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     const newX = ((e.clientX - rect.left - dragOffset.x) / rect.width) * 100;
     const newY = ((e.clientY - rect.top - dragOffset.y) / rect.height) * 100;
     
-    // Clamp values
     const clampedX = Math.max(0, Math.min(90, newX));
     const clampedY = Math.max(0, Math.min(90, newY));
     
     const post = posts?.find(p => p._id === draggedPost);
     if (post) {
-      updatePosition({
-        postId: draggedPost as Id<"chill_posts">,
-        positionX: clampedX,
-        positionY: clampedY,
-        width: post.width,
-        height: post.height,
-        zIndex: Date.now(), // Bring to front
-      }).catch((error) => {
-        console.error("Failed to update position:", error);
-      });
+      setLocalPositions(prev => ({
+        ...prev,
+        [draggedPost]: {
+          x: clampedX,
+          y: clampedY,
+          width: post.width || 200,
+          height: post.height || 200,
+        }
+      }));
+      
+      syncPositionToDatabase(draggedPost, clampedX, clampedY, post.width || 200, post.height || 200, Date.now());
     }
   };
 
   const handleMouseUp = () => {
-    setDraggedPost(null);
-    setResizingPost(null);
+    if (draggedPost) {
+      setDraggedPost(null);
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+        updateTimeoutRef.current = null;
+      }
+    }
+    if (resizingPost) {
+      setResizingPost(null);
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+        updateTimeoutRef.current = null;
+      }
+    }
   };
 
   const handleResizeStart = (e: React.MouseEvent, postId: string, currentWidth: number, currentHeight: number) => {
@@ -237,7 +265,7 @@ export default function Chill() {
   };
 
   const handleResize = (e: React.MouseEvent) => {
-    if (!resizingPost || !canvasRef.current) return;
+    if (!resizingPost || !canvasRef.current || draggedPost) return;
     
     const deltaX = e.clientX - resizeStart.x;
     const deltaY = e.clientY - resizeStart.y;
@@ -247,16 +275,17 @@ export default function Chill() {
     
     const post = posts?.find(p => p._id === resizingPost);
     if (post) {
-      updatePosition({
-        postId: resizingPost as Id<"chill_posts">,
-        positionX: post.positionX || 20,
-        positionY: post.positionY || 20,
-        width: newWidth,
-        height: newHeight,
-        zIndex: post.zIndex,
-      }).catch((error) => {
-        console.error("Failed to resize:", error);
-      });
+      setLocalPositions(prev => ({
+        ...prev,
+        [resizingPost]: {
+          x: post.positionX || 20,
+          y: post.positionY || 20,
+          width: newWidth,
+          height: newHeight,
+        }
+      }));
+      
+      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, post.zIndex || 1);
     }
   };
 
@@ -393,66 +422,75 @@ export default function Chill() {
         >
           <AnimatePresence>
             {posts && posts.length > 0 ? (
-              posts.map((post) => (
-                <motion.div
-                  key={post._id}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  style={{
-                    position: "absolute",
-                    left: `${post.positionX || 20}%`,
-                    top: `${post.positionY || 20}%`,
-                    width: `${post.width || 200}px`,
-                    height: `${post.height || 200}px`,
-                    zIndex: post.zIndex || 1,
-                    cursor: post.authorId === user._id ? "move" : "default",
-                  }}
-                  className="group"
-                  onMouseDown={(e) => {
-                    if (post.authorId === user._id && !resizingPost) {
-                      handleMouseDown(e, post._id, post.positionX || 20, post.positionY || 20);
-                    }
-                  }}
-                >
-                  <div className="relative w-full h-full bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-4 border-white overflow-hidden">
-                    {post.mediaUrl && (
-                      <img
-                        src={post.mediaUrl}
-                        alt="Meme"
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    )}
-                    {post.content && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs">
-                        {post.content}
-                      </div>
-                    )}
-                    {post.authorId === user._id && (
-                      <>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(post._id)}
-                          className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        <div
-                          className="absolute bottom-0 right-0 w-6 h-6 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity"
-                          onMouseDown={(e) => handleResizeStart(e, post._id, post.width || 200, post.height || 200)}
-                        >
-                          <div className="absolute bottom-1 right-1 w-3 h-3 border-r-2 border-b-2 border-white" />
+              posts.map((post) => {
+                const localPos = localPositions[post._id];
+                const posX = localPos?.x ?? post.positionX ?? 20;
+                const posY = localPos?.y ?? post.positionY ?? 20;
+                const width = localPos?.width ?? post.width ?? 200;
+                const height = localPos?.height ?? post.height ?? 200;
+                
+                return (
+                  <motion.div
+                    key={post._id}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    style={{
+                      position: "absolute",
+                      left: `${posX}%`,
+                      top: `${posY}%`,
+                      width: `${width}px`,
+                      height: `${height}px`,
+                      zIndex: post.zIndex || 1,
+                      cursor: post.authorId === user._id ? "move" : "default",
+                      userSelect: "none",
+                    }}
+                    className="group"
+                    onMouseDown={(e) => {
+                      if (post.authorId === user._id && !resizingPost) {
+                        handleMouseDown(e, post._id, posX, posY);
+                      }
+                    }}
+                  >
+                    <div className="relative w-full h-full bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-4 border-white overflow-hidden">
+                      {post.mediaUrl && (
+                        <img
+                          src={post.mediaUrl}
+                          alt="Meme"
+                          className="w-full h-full object-cover"
+                          draggable={false}
+                        />
+                      )}
+                      {post.content && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs">
+                          {post.content}
                         </div>
-                      </>
-                    )}
-                    <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                      {post.author?.name || "Anonymous"}
+                      )}
+                      {post.authorId === user._id && (
+                        <>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(post._id)}
+                            className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                          <div
+                            className="absolute bottom-0 right-0 w-6 h-6 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity"
+                            onMouseDown={(e) => handleResizeStart(e, post._id, width, height)}
+                          >
+                            <div className="absolute bottom-1 right-1 w-3 h-3 border-r-2 border-b-2 border-white" />
+                          </div>
+                        </>
+                      )}
+                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                        {post.author?.name || "Anonymous"}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))
+                  </motion.div>
+                );
+              })
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
