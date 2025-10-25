@@ -2,9 +2,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Home, Users, FileText, Calendar, MessageCircle, User, LogOut, Bell } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -13,6 +16,24 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const unreadCount = useQuery(api.notifications.getUnreadCount);
+  const prevUnreadCount = useRef<number | undefined>(undefined);
+
+  // Show toast when new notifications arrive
+  useEffect(() => {
+    if (prevUnreadCount.current !== undefined && unreadCount !== undefined) {
+      if (unreadCount > prevUnreadCount.current) {
+        const newCount = unreadCount - prevUnreadCount.current;
+        toast.success(`You have ${newCount} new notification${newCount > 1 ? 's' : ''}!`, {
+          action: {
+            label: "View",
+            onClick: () => navigate("/notifications"),
+          },
+        });
+      }
+    }
+    prevUnreadCount.current = unreadCount;
+  }, [unreadCount, navigate]);
 
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
@@ -36,10 +57,38 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Sparkles className="h-6 w-6" />
             <span className="text-xl font-bold tracking-tight">Connectibles</span>
           </div>
-          <Button variant="ghost" onClick={() => signOut()}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={() => navigate("/notifications")}
+              aria-label="View notifications"
+            >
+              <Bell className="h-5 w-5" />
+              <AnimatePresence>
+                {unreadCount !== undefined && unreadCount > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1"
+                  >
+                    <Badge
+                      variant="destructive"
+                      className="h-5 min-w-5 flex items-center justify-center p-0 px-1 text-xs"
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+            <Button variant="ghost" onClick={() => signOut()}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </nav>
 
