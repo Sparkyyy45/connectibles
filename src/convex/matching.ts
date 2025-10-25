@@ -54,14 +54,32 @@ export const getMatches = query({
           currentUser.location.toLowerCase() === user.location.toLowerCase() 
           ? 2 : 0;
         
+        // Calculate year of study match
+        const yearMatch = currentUser.yearOfStudy && user.yearOfStudy &&
+          currentUser.yearOfStudy === user.yearOfStudy ? 1 : 0;
+        
+        // Calculate department match
+        const departmentMatch = currentUser.department && user.department &&
+          currentUser.department.toLowerCase() === user.department.toLowerCase() ? 1.5 : 0;
+        
+        // Calculate major match
+        const majorMatch = currentUser.major && user.major &&
+          currentUser.major.toLowerCase() === user.major.toLowerCase() ? 2 : 0;
+        
+        // Calculate lookingFor match
+        const sharedLookingFor = currentUser.lookingFor && user.lookingFor
+          ? currentUser.lookingFor.filter(item => user.lookingFor!.includes(item))
+          : [];
+        
         // Calculate mutual connections
         const userConnections = user.connections || [];
         const mutualConnections = existingConnections.filter(connId => 
           userConnections.includes(connId)
         );
         
-        // Total score: interests (1 point each) + skills (0.5 points each) + location bonus
-        const score = sharedInterests.length + (sharedSkills.length * 0.5) + locationBonus;
+        // Total score: interests (1 point each) + skills (0.5 points each) + location bonus + academic matches + lookingFor matches
+        const score = sharedInterests.length + (sharedSkills.length * 0.5) + locationBonus + 
+                     yearMatch + departmentMatch + majorMatch + (sharedLookingFor.length * 0.5);
         
         return {
           user,

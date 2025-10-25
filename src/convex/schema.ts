@@ -36,6 +36,13 @@ const schema = defineSchema(
       skills: v.optional(v.array(v.string())),
       location: v.optional(v.string()),
       connections: v.optional(v.array(v.id("users"))),
+      
+      // Enhanced profile fields for better matching
+      yearOfStudy: v.optional(v.string()),
+      department: v.optional(v.string()),
+      major: v.optional(v.string()),
+      lookingFor: v.optional(v.array(v.string())), // e.g., "Study Partner", "Project Collaborator", "Friend"
+      availability: v.optional(v.string()), // e.g., "Weekends", "Evenings", "Flexible"
     }).index("email", ["email"]),
 
     // Notifications

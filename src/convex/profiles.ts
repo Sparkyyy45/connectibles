@@ -11,6 +11,11 @@ export const updateProfile = mutation({
     skills: v.optional(v.array(v.string())),
     location: v.optional(v.string()),
     image: v.optional(v.string()),
+    yearOfStudy: v.optional(v.string()),
+    department: v.optional(v.string()),
+    major: v.optional(v.string()),
+    lookingFor: v.optional(v.array(v.string())),
+    availability: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -23,6 +28,11 @@ export const updateProfile = mutation({
       skills: args.skills,
       location: args.location,
       image: args.image,
+      yearOfStudy: args.yearOfStudy,
+      department: args.department,
+      major: args.major,
+      lookingFor: args.lookingFor,
+      availability: args.availability,
     });
 
     return userId;
@@ -55,7 +65,7 @@ export const getProfileCompletion = query({
     if (!user) return 0;
 
     let completed = 0;
-    const total = 6;
+    const total = 11;
 
     if (user.name) completed++;
     if (user.image) completed++;
@@ -63,6 +73,11 @@ export const getProfileCompletion = query({
     if (user.interests && user.interests.length > 0) completed++;
     if (user.skills && user.skills.length > 0) completed++;
     if (user.location) completed++;
+    if (user.yearOfStudy) completed++;
+    if (user.department) completed++;
+    if (user.major) completed++;
+    if (user.lookingFor && user.lookingFor.length > 0) completed++;
+    if (user.availability) completed++;
 
     return Math.round((completed / total) * 100);
   },

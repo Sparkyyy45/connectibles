@@ -50,6 +50,12 @@ export default function Profile() {
   const [newSkill, setNewSkill] = useState("");
   const [saving, setSaving] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
+  const [department, setDepartment] = useState("");
+  const [major, setMajor] = useState("");
+  const [lookingFor, setLookingFor] = useState<string[]>([]);
+  const [newLookingFor, setNewLookingFor] = useState("");
+  const [availability, setAvailability] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -65,6 +71,11 @@ export default function Profile() {
       setInterests(user.interests || []);
       setSkills(user.skills || []);
       setSelectedAvatar(user.image || AVATAR_OPTIONS[0]);
+      setYearOfStudy(user.yearOfStudy || "");
+      setDepartment(user.department || "");
+      setMajor(user.major || "");
+      setLookingFor(user.lookingFor || []);
+      setAvailability(user.availability || "");
     }
   }, [user]);
 
@@ -82,6 +93,13 @@ export default function Profile() {
     }
   };
 
+  const handleAddLookingFor = () => {
+    if (newLookingFor.trim() && !lookingFor.includes(newLookingFor.trim())) {
+      setLookingFor([...lookingFor, newLookingFor.trim()]);
+      setNewLookingFor("");
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -92,6 +110,11 @@ export default function Profile() {
         interests,
         skills,
         image: selectedAvatar,
+        yearOfStudy,
+        department,
+        major,
+        lookingFor,
+        availability,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -285,6 +308,91 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Academic Information</CardTitle>
+              <CardDescription>Help others find you based on your academic profile</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Year of Study</label>
+                <Input
+                  value={yearOfStudy}
+                  onChange={(e) => setYearOfStudy(e.target.value)}
+                  placeholder="e.g., Freshman, Sophomore, Junior, Senior"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Department</label>
+                <Input
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  placeholder="e.g., Engineering, Arts, Sciences"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Major</label>
+                <Input
+                  value={major}
+                  onChange={(e) => setMajor(e.target.value)}
+                  placeholder="e.g., Computer Science, Psychology"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Connection Preferences</CardTitle>
+              <CardDescription>What are you looking for in connections?</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Looking For</label>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    value={newLookingFor}
+                    onChange={(e) => setNewLookingFor(e.target.value)}
+                    placeholder="e.g., Study Partner, Project Collaborator, Friend"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddLookingFor()}
+                  />
+                  <Button onClick={handleAddLookingFor}>Add</Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {lookingFor.map((item) => (
+                    <Badge key={item} variant="secondary" className="gap-1">
+                      {item}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() => setLookingFor(lookingFor.filter((i) => i !== item))}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Availability</label>
+                <Input
+                  value={availability}
+                  onChange={(e) => setAvailability(e.target.value)}
+                  placeholder="e.g., Weekends, Evenings, Flexible"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
         >
           <Button onClick={handleSave} disabled={saving} size="lg" className="w-full">
             {saving ? (
