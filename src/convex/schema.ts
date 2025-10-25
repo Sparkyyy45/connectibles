@@ -38,6 +38,24 @@ const schema = defineSchema(
       connections: v.optional(v.array(v.id("users"))),
     }).index("email", ["email"]),
 
+    // Chill posts - creative content sharing
+    chill_posts: defineTable({
+      authorId: v.id("users"),
+      content: v.optional(v.string()),
+      mediaUrl: v.optional(v.string()),
+      mediaType: v.optional(v.union(
+        v.literal("image"),
+        v.literal("doodle"),
+        v.literal("sticker"),
+        v.literal("music"),
+        v.literal("other")
+      )),
+      reactions: v.optional(v.array(v.object({
+        userId: v.id("users"),
+        emoji: v.string(),
+      }))),
+    }).index("by_author", ["authorId"]),
+
     // Collaboration posts
     collaboration_posts: defineTable({
       authorId: v.id("users"),

@@ -16,6 +16,7 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
 import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Chill from "@/pages/Chill.tsx";
 import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
@@ -59,6 +60,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/chill" element={<Chill />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/events" element={<Events />} />
             <Route path="/messages" element={<Messages />} />

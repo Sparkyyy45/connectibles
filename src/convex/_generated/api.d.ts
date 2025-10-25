@@ -10,6 +10,7 @@
 
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
+import type * as chill from "../chill.js";
 import type * as connections from "../connections.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
@@ -36,6 +37,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   "auth/emailOtp": typeof auth_emailOtp;
   auth: typeof auth;
+  chill: typeof chill;
   connections: typeof connections;
   events: typeof events;
   http: typeof http;
