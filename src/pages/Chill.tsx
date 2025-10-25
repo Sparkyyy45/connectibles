@@ -163,7 +163,7 @@ export default function Chill() {
 
       await createPost({
         content: content.trim() || undefined,
-        mediaUrl: finalMediaUrl.trim() || undefined,
+        mediaUrl: finalMediaUrl ? finalMediaUrl : undefined,
         storageId: storageId as Id<"_storage"> | undefined,
         mediaType: creationType || undefined,
       });
@@ -176,6 +176,7 @@ export default function Chill() {
       setSelectedFile(null);
       clearCanvas();
     } catch (error) {
+      console.error("Failed to create post:", error);
       toast.error("Failed to create post");
     } finally {
       setCreating(false);
