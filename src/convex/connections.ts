@@ -8,7 +8,11 @@ export const sendWave = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if request already exists
+    if (userId === args.receiverId) {
+      throw new Error("Cannot wave to yourself");
+    }
+
+    // Check if request already exists in either direction
     const existing = await ctx.db
       .query("connection_requests")
       .withIndex("by_sender_and_receiver", (q) =>
@@ -57,16 +61,59 @@ export const sendConnectionRequest = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if request already exists
-    const existing = await ctx.db
+    if (userId === args.receiverId) {
+      throw new Error("Cannot connect with yourself");
+    }
+
+    // Check if already connected
+    const currentUser = await ctx.db.get(userId);
+    if (currentUser?.connections?.includes(args.receiverId)) {
+      throw new Error("Already connected");
+    }
+
+    // Check if request already exists from current user to receiver
+    const existingSent = await ctx.db
       .query("connection_requests")
       .withIndex("by_sender_and_receiver", (q) =>
         q.eq("senderId", userId).eq("receiverId", args.receiverId)
       )
       .first();
 
-    if (existing) {
+    if (existingSent) {
+      // If it's a wave, upgrade it to pending
+      if (existingSent.status === "waved") {
+        await ctx.db.patch(existingSent._id, { status: "pending" });
+        return existingSent._id;
+      }
       throw new Error("Connection request already sent");
+    }
+
+    // Check if there's a pending request from the other user
+    const existingReceived = await ctx.db
+      .query("connection_requests")
+      .withIndex("by_sender_and_receiver", (q) =>
+        q.eq("senderId", args.receiverId).eq("receiverId", userId)
+      )
+      .first();
+
+    if (existingReceived && existingReceived.status === "pending") {
+      // Auto-accept if they both want to connect
+      await ctx.db.patch(existingReceived._id, { status: "accepted" });
+
+      // Add to connections
+      const sender = await ctx.db.get(args.receiverId);
+      const receiver = await ctx.db.get(userId);
+
+      if (sender && receiver) {
+        await ctx.db.patch(args.receiverId, {
+          connections: [...(sender.connections || []), userId],
+        });
+        await ctx.db.patch(userId, {
+          connections: [...(receiver.connections || []), args.receiverId],
+        });
+      }
+
+      return existingReceived._id;
     }
 
     const requestId = await ctx.db.insert("connection_requests", {
@@ -88,6 +135,10 @@ export const acceptConnectionRequest = mutation({
     const request = await ctx.db.get(args.requestId);
     if (!request || request.receiverId !== userId) {
       throw new Error("Invalid request");
+    }
+
+    if (request.status !== "pending") {
+      throw new Error("Request is not pending");
     }
 
     await ctx.db.patch(args.requestId, { status: "accepted" });
@@ -169,8 +220,9 @@ export const getConnectionStatus = query({
       )
       .first();
 
-    if (sentRequest && sentRequest.status === "pending") {
-      return "pending";
+    if (sentRequest) {
+      if (sentRequest.status === "pending") return "pending";
+      if (sentRequest.status === "waved") return "waved";
     }
 
     return "none";
