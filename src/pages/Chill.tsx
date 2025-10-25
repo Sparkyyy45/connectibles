@@ -38,12 +38,21 @@ export default function Chill() {
   // Local position state for smooth dragging
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [maxZIndex, setMaxZIndex] = useState(1000);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Calculate max z-index from posts
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      const max = Math.max(...posts.map(p => p.zIndex || 0), 1000);
+      setMaxZIndex(max);
+    }
+  }, [posts]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -203,8 +212,38 @@ export default function Chill() {
     }, 100);
   };
 
+  const bringToFront = (postId: string) => {
+    const post = posts?.find(p => p._id === postId);
+    if (!post) return;
+
+    const newZIndex = maxZIndex + 1;
+    setMaxZIndex(newZIndex);
+    
+    setLocalPositions(prev => ({
+      ...prev,
+      [postId]: {
+        x: post.positionX || 20,
+        y: post.positionY || 20,
+        width: post.width || 200,
+        height: post.height || 200,
+      }
+    }));
+
+    syncPositionToDatabase(
+      postId,
+      post.positionX || 20,
+      post.positionY || 20,
+      post.width || 200,
+      post.height || 200,
+      newZIndex
+    );
+  };
+
   const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
     if (!canvasRef.current || resizingPost) return;
+    
+    e.stopPropagation();
+    bringToFront(postId);
     
     const rect = canvasRef.current.getBoundingClientRect();
     const offsetX = e.clientX - (rect.left + (currentX / 100) * rect.width);
@@ -221,23 +260,26 @@ export default function Chill() {
     const newX = ((e.clientX - rect.left - dragOffset.x) / rect.width) * 100;
     const newY = ((e.clientY - rect.top - dragOffset.y) / rect.height) * 100;
     
-    const clampedX = Math.max(0, Math.min(90, newX));
-    const clampedY = Math.max(0, Math.min(90, newY));
-    
     const post = posts?.find(p => p._id === draggedPost);
-    if (post) {
-      setLocalPositions(prev => ({
-        ...prev,
-        [draggedPost]: {
-          x: clampedX,
-          y: clampedY,
-          width: post.width || 200,
-          height: post.height || 200,
-        }
-      }));
-      
-      syncPositionToDatabase(draggedPost, clampedX, clampedY, post.width || 200, post.height || 200, Date.now());
-    }
+    if (!post) return;
+
+    const postWidth = (localPositions[draggedPost]?.width || post.width || 200) / rect.width * 100;
+    const postHeight = (localPositions[draggedPost]?.height || post.height || 200) / rect.height * 100;
+    
+    const clampedX = Math.max(0, Math.min(100 - postWidth, newX));
+    const clampedY = Math.max(0, Math.min(100 - postHeight, newY));
+    
+    setLocalPositions(prev => ({
+      ...prev,
+      [draggedPost]: {
+        x: clampedX,
+        y: clampedY,
+        width: post.width || 200,
+        height: post.height || 200,
+      }
+    }));
+    
+    syncPositionToDatabase(draggedPost, clampedX, clampedY, post.width || 200, post.height || 200, maxZIndex);
   };
 
   const handleMouseUp = () => {
@@ -259,6 +301,7 @@ export default function Chill() {
 
   const handleResizeStart = (e: React.MouseEvent, postId: string, currentWidth: number, currentHeight: number) => {
     e.stopPropagation();
+    bringToFront(postId);
     setResizingPost(postId);
     setResizeStart({ x: e.clientX, y: e.clientY, width: currentWidth, height: currentHeight });
   };
@@ -284,7 +327,7 @@ export default function Chill() {
         }
       }));
       
-      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, post.zIndex || 1);
+      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, maxZIndex);
     }
   };
 
@@ -427,36 +470,45 @@ export default function Chill() {
                 const posY = localPos?.y ?? post.positionY ?? 20;
                 const width = localPos?.width ?? post.width ?? 200;
                 const height = localPos?.height ?? post.height ?? 200;
+                const isOwner = post.authorId === user._id;
+                const isDragging = draggedPost === post._id;
+                const isResizing = resizingPost === post._id;
                 
                 return (
                   <motion.div
                     key={post._id}
                     initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: isDragging || isResizing ? 1.02 : 1,
+                    }}
                     exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.2 }}
                     style={{
                       position: "absolute",
                       left: `${posX}%`,
                       top: `${posY}%`,
                       width: `${width}px`,
                       height: `${height}px`,
-                      zIndex: post.zIndex || 1,
-                      cursor: post.authorId === user._id ? "move" : "default",
+                      zIndex: localPos ? maxZIndex : (post.zIndex || 1),
+                      cursor: isOwner ? (isDragging ? "grabbing" : "grab") : "default",
                       userSelect: "none",
                     }}
                     className="group"
                     onMouseDown={(e) => {
-                      if (post.authorId === user._id && !resizingPost) {
+                      if (isOwner && !resizingPost) {
                         handleMouseDown(e, post._id, posX, posY);
                       }
                     }}
                   >
-                    <div className="relative w-full h-full bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-4 border-white overflow-hidden">
+                    <div className={`relative w-full h-full bg-white rounded-xl shadow-lg transition-all border-4 border-white overflow-hidden ${
+                      isDragging || isResizing ? "shadow-2xl ring-4 ring-primary/30" : "hover:shadow-xl"
+                    }`}>
                       {post.mediaUrl && (
                         <img
                           src={post.mediaUrl}
                           alt="Meme"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover pointer-events-none"
                           draggable={false}
                         />
                       )}
@@ -465,21 +517,24 @@ export default function Chill() {
                           {post.content}
                         </div>
                       )}
-                      {post.authorId === user._id && (
+                      {isOwner && (
                         <>
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => handleDelete(post._id)}
-                            className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(post._id);
+                            }}
+                            className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                           <div
-                            className="absolute bottom-0 right-0 w-6 h-6 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute bottom-0 right-0 w-8 h-8 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1"
                             onMouseDown={(e) => handleResizeStart(e, post._id, width, height)}
                           >
-                            <div className="absolute bottom-1 right-1 w-3 h-3 border-r-2 border-b-2 border-white" />
+                            <div className="w-4 h-4 border-r-2 border-b-2 border-white" />
                           </div>
                         </>
                       )}
