@@ -43,7 +43,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { icon: FileText, label: "Collaborations", path: "/posts" },
     { icon: Calendar, label: "Events", path: "/events" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
-    { icon: User, label: "Profile", path: "/profile" },
   ];
 
   return (
@@ -84,6 +83,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/profile")}
+              aria-label="View profile"
+            >
+              <User className="h-5 w-5" />
             </Button>
             <Button variant="ghost" onClick={() => signOut()}>
               <LogOut className="h-4 w-4 mr-2" />
