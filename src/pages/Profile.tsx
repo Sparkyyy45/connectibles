@@ -15,26 +15,29 @@ import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 
 const AVATAR_OPTIONS = [
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=Emma",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=Noah",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=Olivia",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=Liam",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=Ava",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Sam",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Riley",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Quinn",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Blake",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Avery",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Chris",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Jamie",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Drew",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Skylar",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Reese",
+  // Male avatars - varied hairstyles and features
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus&hair=short01&accessories=prescription02",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan&hair=short02&accessories=none",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Ryan&hair=short03&accessories=prescription01",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel&hair=short04&accessories=none",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan&hair=short05&accessories=prescription02",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Lucas&hair=short&glasses=true",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Aaron&hair=curly",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Kevin&hair=straight",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Brandon&glasses=true",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Tyler&glasses=false",
+  
+  // Female avatars - varied hairstyles and features
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia&hair=long01&accessories=prescription01",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella&hair=long02&accessories=none",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Mia&hair=long03&accessories=prescription02",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte&hair=long04&accessories=none",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Amelia&hair=long&glasses=true",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Harper&hair=short&glasses=false",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Evelyn&hair=curly&glasses=true",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Abigail&hair=straight&glasses=false",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Emily&hair=long",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Madison&hair=medium",
 ];
 
 export default function Profile() {
