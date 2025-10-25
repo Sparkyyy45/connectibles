@@ -1,8 +1,10 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Home, Users, FileText, Calendar, MessageCircle, User, LogOut } from "lucide-react";
+import { Sparkles, Home, Users, FileText, Calendar, MessageCircle, User, LogOut, Bell } from "lucide-react";
 import { ReactNode } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface DashboardLayoutProps {
   children: ReactNode;

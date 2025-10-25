@@ -8,6 +8,7 @@ import Discover from "@/pages/Discover.tsx";
 import Posts from "@/pages/Posts.tsx";
 import Events from "@/pages/Events.tsx";
 import Messages from "@/pages/Messages.tsx";
+import Notifications from "@/pages/Notifications.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect } from "react";

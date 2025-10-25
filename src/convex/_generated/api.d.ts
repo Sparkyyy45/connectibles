@@ -16,6 +16,7 @@ import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as matching from "../matching.js";
 import type * as messages from "../messages.js";
+import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
 import type * as profiles from "../profiles.js";
 import type * as users from "../users.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   matching: typeof matching;
   messages: typeof messages;
+  notifications: typeof notifications;
   posts: typeof posts;
   profiles: typeof profiles;
   users: typeof users;

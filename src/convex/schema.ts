@@ -38,6 +38,15 @@ const schema = defineSchema(
       connections: v.optional(v.array(v.id("users"))),
     }).index("email", ["email"]),
 
+    // Notifications
+    notifications: defineTable({
+      userId: v.id("users"),
+      type: v.string(),
+      message: v.string(),
+      relatedUserId: v.optional(v.id("users")),
+      read: v.boolean(),
+    }).index("by_user", ["userId"]),
+
     // Chill posts - creative content sharing
     chill_posts: defineTable({
       authorId: v.id("users"),
