@@ -36,7 +36,10 @@ export default function Chill() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [brushColor, setBrushColor] = useState("#000000");
-  const [brushSize, setBrushSize] = useState(3);
+  const [brushSize, setBrushSize] = useState(5);
+  const [tool, setTool] = useState<"brush" | "eraser">("brush");
+  const [canvasHistory, setCanvasHistory] = useState<string[]>([]);
+  const [historyStep, setHistoryStep] = useState(-1);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -108,18 +111,71 @@ export default function Chill() {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
     
-    ctx.strokeStyle = brushColor;
+    ctx.strokeStyle = tool === "eraser" ? "#FFFFFF" : brushColor;
     ctx.lineWidth = brushSize;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.lineTo(x, y);
     ctx.stroke();
   };
 
   const stopDrawing = () => {
-    setIsDrawing(false);
+    if (isDrawing) {
+      setIsDrawing(false);
+      saveToHistory();
+    }
+  };
+
+  const saveToHistory = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const dataUrl = canvas.toDataURL();
+    const newHistory = canvasHistory.slice(0, historyStep + 1);
+    newHistory.push(dataUrl);
+    setCanvasHistory(newHistory);
+    setHistoryStep(newHistory.length - 1);
+  };
+
+  const undo = () => {
+    if (historyStep > 0) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      
+      const img = document.createElement('img');
+      img.src = canvasHistory[historyStep - 1];
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      setHistoryStep(historyStep - 1);
+    }
+  };
+
+  const redo = () => {
+    if (historyStep < canvasHistory.length - 1) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      
+      const img = document.createElement('img');
+      img.src = canvasHistory[historyStep + 1];
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      setHistoryStep(historyStep + 1);
+    }
   };
 
   const clearCanvas = () => {
@@ -129,7 +185,10 @@ export default function Chill() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    setCanvasHistory([]);
+    setHistoryStep(-1);
   };
 
   const saveDoodle = () => {
@@ -391,22 +450,25 @@ export default function Chill() {
                   Clear
                 </Button>
               </div>
+              {/* Caption */}
               <div>
-                <label className="text-sm font-medium mb-2 block">Caption (Optional)</label>
+                <label className="text-sm font-semibold mb-2 block">Caption (Optional)</label>
                 <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Describe your doodle..."
+                  placeholder="Describe your masterpiece..."
                   rows={2}
                   className="resize-none"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button onClick={() => { saveDoodle(); handleCreate(); }} disabled={creating} className="flex-1 h-11">
-                  {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                  {creating ? "Posting..." : "Post Doodle"}
+              
+              {/* Submit Buttons */}
+              <div className="flex gap-3 pt-2">
+                <Button onClick={() => { saveDoodle(); handleCreate(); }} disabled={creating} className="flex-1 h-12 text-base">
+                  {creating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Upload className="mr-2 h-5 w-5" />}
+                  {creating ? "Posting..." : "Post to Canvas"}
                 </Button>
-                <Button variant="outline" onClick={() => setCreationType(null)} className="h-11">
+                <Button variant="outline" onClick={() => setCreationType(null)} className="h-12 px-8">
                   Cancel
                 </Button>
               </div>
