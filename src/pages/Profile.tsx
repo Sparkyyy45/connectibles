@@ -15,16 +15,26 @@ import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 
 const AVATAR_OPTIONS = [
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Bella",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Mia",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Leo",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Emma",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Noah",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Olivia",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Liam",
+  "https://api.dicebear.com/7.x/lorelei/svg?seed=Ava",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Sam",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Riley",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Quinn",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Blake",
+  "https://api.dicebear.com/7.x/notionists/svg?seed=Avery",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Chris",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Jamie",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Drew",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Skylar",
+  "https://api.dicebear.com/7.x/adventurer/svg?seed=Reese",
 ];
 
 export default function Profile() {
@@ -132,7 +142,7 @@ export default function Profile() {
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-5 gap-3 max-h-[400px] overflow-y-auto">
                 {AVATAR_OPTIONS.map((avatar, index) => (
                   <motion.button
                     key={index}
