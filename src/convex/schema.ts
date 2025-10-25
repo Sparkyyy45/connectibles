@@ -104,6 +104,16 @@ const schema = defineSchema(
       .index("by_receiver", ["receiverId"])
       .index("by_sender", ["senderId"])
       .index("by_sender_and_receiver", ["senderId", "receiverId"]),
+
+    // Gossip messages - group chat for everyone
+    gossip_messages: defineTable({
+      senderId: v.id("users"),
+      message: v.string(),
+      reactions: v.optional(v.array(v.object({
+        userId: v.id("users"),
+        emoji: v.string(),
+      }))),
+    }).index("by_sender", ["senderId"]),
   },
   {
     schemaValidation: false,

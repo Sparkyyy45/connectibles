@@ -18,6 +18,7 @@ import "./index.css";
 import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Chill from "@/pages/Chill.tsx";
+import Gossip from "@/pages/Gossip.tsx";
 import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);

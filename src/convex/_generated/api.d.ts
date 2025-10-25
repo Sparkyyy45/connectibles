@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as chill from "../chill.js";
 import type * as connections from "../connections.js";
 import type * as events from "../events.js";
+import type * as gossip from "../gossip.js";
 import type * as http from "../http.js";
 import type * as matching from "../matching.js";
 import type * as messages from "../messages.js";
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   chill: typeof chill;
   connections: typeof connections;
   events: typeof events;
+  gossip: typeof gossip;
   http: typeof http;
   matching: typeof matching;
   messages: typeof messages;
