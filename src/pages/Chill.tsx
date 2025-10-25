@@ -158,6 +158,8 @@ export default function Chill() {
         width: post.width,
         height: post.height,
         zIndex: Date.now(), // Bring to front
+      }).catch((error) => {
+        console.error("Failed to update position:", error);
       });
     }
   };
@@ -191,6 +193,8 @@ export default function Chill() {
         width: newWidth,
         height: newHeight,
         zIndex: post.zIndex,
+      }).catch((error) => {
+        console.error("Failed to resize:", error);
       });
     }
   };
@@ -317,8 +321,11 @@ export default function Chill() {
           ref={canvasRef}
           className="relative w-full h-[calc(100vh-180px)]"
           onMouseMove={(e) => {
-            handleMouseMove(e);
-            handleResize(e);
+            if (draggedPost && !resizingPost) {
+              handleMouseMove(e);
+            } else if (resizingPost && !draggedPost) {
+              handleResize(e);
+            }
           }}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
@@ -342,7 +349,7 @@ export default function Chill() {
                   }}
                   className="group"
                   onMouseDown={(e) => {
-                    if (post.authorId === user._id) {
+                    if (post.authorId === user._id && !resizingPost) {
                       handleMouseDown(e, post._id, post.positionX || 20, post.positionY || 20);
                     }
                   }}
