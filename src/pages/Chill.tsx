@@ -230,8 +230,12 @@ export default function Chill() {
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-2xl">Add Meme</DialogTitle>
-              <DialogDescription>Upload an image and place it anywhere on the canvas</DialogDescription>
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Add Your Meme 🎨
+              </DialogTitle>
+              <DialogDescription className="text-base">
+                Upload an image and place it anywhere on the canvas
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-5 py-4">
               <div>
@@ -245,35 +249,63 @@ export default function Chill() {
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
-                  className="w-full h-32 border-2 border-dashed"
+                  className="w-full h-40 border-2 border-dashed border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all duration-300 group"
                 >
-                  <div className="flex flex-col items-center gap-2">
-                    <Upload className="h-8 w-8" />
-                    <span>Click to select image</span>
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Upload className="h-10 w-10 text-primary" />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-lg font-semibold block">Click to select image</span>
+                      <span className="text-sm text-muted-foreground">or drag and drop</span>
+                    </div>
                   </div>
                 </Button>
               </div>
               {previewUrl && (
-                <div className="rounded-lg overflow-hidden border">
-                  <img src={previewUrl} alt="Preview" className="w-full max-h-64 object-contain" />
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 p-2"
+                >
+                  <img src={previewUrl} alt="Preview" className="w-full max-h-64 object-contain rounded-lg" />
+                </motion.div>
               )}
               <div>
-                <label className="text-sm font-medium mb-2 block">Caption (Optional)</label>
+                <label className="text-sm font-semibold mb-2 block text-foreground">
+                  Caption (Optional)
+                </label>
                 <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Add a caption..."
+                  placeholder="Add a funny caption..."
                   rows={3}
-                  className="resize-none"
+                  className="resize-none border-primary/20 focus:border-primary/50 transition-colors"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button onClick={handleCreate} disabled={creating || uploading || !selectedFile} className="flex-1 h-11">
-                  {creating || uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                  {uploading ? "Uploading..." : creating ? "Posting..." : "Post Meme"}
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  onClick={handleCreate} 
+                  disabled={creating || uploading || !selectedFile} 
+                  className="flex-1 h-12 text-base font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all"
+                >
+                  {creating || uploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      {uploading ? "Uploading..." : "Posting..."}
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="mr-2 h-5 w-5" />
+                      Post Meme
+                    </>
+                  )}
                 </Button>
-                <Button variant="outline" onClick={() => setShowUploadDialog(false)} className="h-11">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowUploadDialog(false)} 
+                  className="h-12 px-6 border-2 hover:bg-muted"
+                >
                   Cancel
                 </Button>
               </div>
