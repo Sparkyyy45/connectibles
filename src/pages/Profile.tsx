@@ -8,10 +8,24 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
+
+const AVATAR_OPTIONS = [
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Bella",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Mia",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Leo",
+];
 
 export default function Profile() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -26,6 +40,7 @@ export default function Profile() {
   const [newInterest, setNewInterest] = useState("");
   const [newSkill, setNewSkill] = useState("");
   const [saving, setSaving] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -40,6 +55,7 @@ export default function Profile() {
       setLocation(user.location || "");
       setInterests(user.interests || []);
       setSkills(user.skills || []);
+      setSelectedAvatar(user.image || AVATAR_OPTIONS[0]);
     }
   }, [user]);
 
@@ -66,6 +82,7 @@ export default function Profile() {
         location,
         interests,
         skills,
+        image: selectedAvatar,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -100,6 +117,53 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile Picture</CardTitle>
+              <CardDescription>Choose an avatar that represents you</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-center mb-4">
+                <Avatar className="h-24 w-24 border-4 border-primary/20">
+                  <AvatarImage src={selectedAvatar} alt="Profile" />
+                  <AvatarFallback>
+                    {name?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="grid grid-cols-5 gap-3">
+                {AVATAR_OPTIONS.map((avatar, index) => (
+                  <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedAvatar(avatar)}
+                    className={`relative rounded-full border-2 transition-all ${
+                      selectedAvatar === avatar
+                        ? "border-primary ring-2 ring-primary/20"
+                        : "border-muted hover:border-primary/50"
+                    }`}
+                  >
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
+                    </Avatar>
+                    {selectedAvatar === avatar && (
+                      <div className="absolute -top-1 -right-1 bg-primary rounded-full p-1">
+                        <Check className="h-3 w-3 text-primary-foreground" />
+                      </div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
           <Card>
             <CardHeader>
@@ -139,7 +203,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
         >
           <Card>
             <CardHeader>
@@ -176,7 +240,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.4 }}
         >
           <Card>
             <CardHeader>
@@ -211,7 +275,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
         >
           <Button onClick={handleSave} disabled={saving} size="lg" className="w-full">
             {saving ? (
