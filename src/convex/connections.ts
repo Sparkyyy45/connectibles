@@ -6,10 +6,10 @@ export const sendWave = mutation({
   args: { receiverId: v.id("users") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw new Error("AUTH_REQUIRED: Please sign in to send a wave");
 
     if (userId === args.receiverId) {
-      throw new Error("Cannot wave to yourself");
+      throw new Error("SELF_WAVE: You cannot wave to yourself");
     }
 
     // Check if request already exists in either direction
@@ -21,7 +21,10 @@ export const sendWave = mutation({
       .first();
 
     if (existing) {
-      throw new Error("Already sent a wave or connection request");
+      if (existing.status === "waved") {
+        throw new Error("ALREADY_WAVED: You've already waved to this user");
+      }
+      throw new Error("REQUEST_EXISTS: You've already sent a connection request to this user");
     }
 
     const requestId = await ctx.db.insert("connection_requests", {
@@ -59,16 +62,16 @@ export const sendConnectionRequest = mutation({
   args: { receiverId: v.id("users") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw new Error("AUTH_REQUIRED: Please sign in to send a connection request");
 
     if (userId === args.receiverId) {
-      throw new Error("Cannot connect with yourself");
+      throw new Error("SELF_CONNECT: You cannot connect with yourself");
     }
 
     // Check if already connected
     const currentUser = await ctx.db.get(userId);
     if (currentUser?.connections?.includes(args.receiverId)) {
-      throw new Error("Already connected");
+      throw new Error("ALREADY_CONNECTED: You're already connected with this user");
     }
 
     // Check if request already exists from current user to receiver
@@ -85,7 +88,7 @@ export const sendConnectionRequest = mutation({
         await ctx.db.patch(existingSent._id, { status: "pending" });
         return existingSent._id;
       }
-      throw new Error("Connection request already sent");
+      throw new Error("REQUEST_PENDING: Connection request already sent");
     }
 
     // Check if there's a pending request from the other user
@@ -104,14 +107,16 @@ export const sendConnectionRequest = mutation({
       const sender = await ctx.db.get(args.receiverId);
       const receiver = await ctx.db.get(userId);
 
-      if (sender && receiver) {
-        await ctx.db.patch(args.receiverId, {
-          connections: [...(sender.connections || []), userId],
-        });
-        await ctx.db.patch(userId, {
-          connections: [...(receiver.connections || []), args.receiverId],
-        });
+      if (!sender || !receiver) {
+        throw new Error("USER_NOT_FOUND: One of the users no longer exists");
       }
+
+      await ctx.db.patch(args.receiverId, {
+        connections: [...(sender.connections || []), userId],
+      });
+      await ctx.db.patch(userId, {
+        connections: [...(receiver.connections || []), args.receiverId],
+      });
 
       return existingReceived._id;
     }
@@ -130,15 +135,22 @@ export const acceptConnectionRequest = mutation({
   args: { requestId: v.id("connection_requests") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw new Error("AUTH_REQUIRED: Please sign in to accept connection requests");
 
     const request = await ctx.db.get(args.requestId);
-    if (!request || request.receiverId !== userId) {
-      throw new Error("Invalid request");
+    if (!request) {
+      throw new Error("REQUEST_NOT_FOUND: This connection request no longer exists");
+    }
+    
+    if (request.receiverId !== userId) {
+      throw new Error("UNAUTHORIZED: You can only accept requests sent to you");
     }
 
     if (request.status !== "pending") {
-      throw new Error("Request is not pending");
+      if (request.status === "accepted") {
+        throw new Error("ALREADY_ACCEPTED: This request has already been accepted");
+      }
+      throw new Error("INVALID_STATUS: This request cannot be accepted");
     }
 
     await ctx.db.patch(args.requestId, { status: "accepted" });
@@ -147,14 +159,16 @@ export const acceptConnectionRequest = mutation({
     const sender = await ctx.db.get(request.senderId);
     const receiver = await ctx.db.get(request.receiverId);
 
-    if (sender && receiver) {
-      await ctx.db.patch(request.senderId, {
-        connections: [...(sender.connections || []), request.receiverId],
-      });
-      await ctx.db.patch(request.receiverId, {
-        connections: [...(receiver.connections || []), request.senderId],
-      });
+    if (!sender || !receiver) {
+      throw new Error("USER_NOT_FOUND: One of the users no longer exists");
     }
+
+    await ctx.db.patch(request.senderId, {
+      connections: [...(sender.connections || []), request.receiverId],
+    });
+    await ctx.db.patch(request.receiverId, {
+      connections: [...(receiver.connections || []), request.senderId],
+    });
 
     return args.requestId;
   },

@@ -41,8 +41,20 @@ export default function Messages() {
     try {
       await acceptRequest({ requestId });
       toast.success("Connection request accepted!");
-    } catch (error) {
-      toast.error("Failed to accept request");
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("ALREADY_ACCEPTED")) {
+        toast.error("This request has already been accepted");
+      } else if (errorMessage.includes("REQUEST_NOT_FOUND")) {
+        toast.error("This connection request no longer exists");
+      } else if (errorMessage.includes("UNAUTHORIZED")) {
+        toast.error("You can only accept requests sent to you");
+      } else if (errorMessage.includes("AUTH_REQUIRED")) {
+        toast.error("Please sign in to accept requests");
+      } else {
+        toast.error("Failed to accept connection request");
+      }
     }
   };
 

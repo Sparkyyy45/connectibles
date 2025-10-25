@@ -36,8 +36,20 @@ export default function Discover() {
     try {
       await sendRequest({ receiverId: userId });
       toast.success("Connection request sent!");
-    } catch (error) {
-      toast.error("Failed to send request");
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("ALREADY_CONNECTED")) {
+        toast.error("You're already connected with this user");
+      } else if (errorMessage.includes("REQUEST_PENDING")) {
+        toast.error("Connection request already sent");
+      } else if (errorMessage.includes("SELF_CONNECT")) {
+        toast.error("You cannot connect with yourself");
+      } else if (errorMessage.includes("AUTH_REQUIRED")) {
+        toast.error("Please sign in to send connection requests");
+      } else {
+        toast.error("Failed to send connection request");
+      }
     }
   };
 
@@ -45,8 +57,20 @@ export default function Discover() {
     try {
       await sendWave({ receiverId: userId });
       toast.success("Wave sent! 👋");
-    } catch (error) {
-      toast.error("Failed to send wave");
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("ALREADY_WAVED")) {
+        toast.error("You've already waved to this user");
+      } else if (errorMessage.includes("REQUEST_EXISTS")) {
+        toast.error("You've already sent a connection request");
+      } else if (errorMessage.includes("SELF_WAVE")) {
+        toast.error("You cannot wave to yourself");
+      } else if (errorMessage.includes("AUTH_REQUIRED")) {
+        toast.error("Please sign in to send waves");
+      } else {
+        toast.error("Failed to send wave");
+      }
     }
   };
 
