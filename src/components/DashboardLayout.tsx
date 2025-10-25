@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { icon: Users, label: "Discover", path: "/discover" },
     { icon: Sparkles, label: "Chill", path: "/chill" },
     { icon: MessageCircle, label: "Gossip", path: "/gossip" },
-    { icon: FileText, label: "Posts", path: "/posts" },
+    { icon: FileText, label: "Collaborations", path: "/posts" },
     { icon: Calendar, label: "Events", path: "/events" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: "/profile" },

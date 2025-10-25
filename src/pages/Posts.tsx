@@ -196,9 +196,9 @@ export default function Posts() {
         {posts?.length === 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>No Posts Yet</CardTitle>
+              <CardTitle>No Collaborations Yet</CardTitle>
               <CardDescription>
-                Be the first to create a collaboration post!
+                Be the first to create a collaboration!
               </CardDescription>
             </CardHeader>
           </Card>
