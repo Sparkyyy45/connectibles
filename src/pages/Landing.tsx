@@ -318,8 +318,74 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Footer spacing */}
-      <div className="h-20" />
+      {/* Footer */}
+      <footer className="border-t bg-background/80 backdrop-blur-sm mt-20">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Brand Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span className="text-lg font-bold">Connectibles</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Connect with your tribe. Collaborate on projects. Build meaningful connections.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h3 className="font-semibold">Quick Links</h3>
+              <nav className="flex flex-col space-y-2">
+                <button
+                  onClick={() => scrollToSection("features")}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => handleNavigation("/discover")}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Discover
+                </button>
+                <button
+                  onClick={() => handleNavigation("/dashboard")}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Dashboard
+                </button>
+              </nav>
+            </div>
+
+            {/* Contact Section */}
+            <div className="space-y-4">
+              <h3 className="font-semibold">Contact</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">Suyash Yadav</p>
+                <a
+                  href="mailto:suyashyadav1709@gmail.com"
+                  className="hover:text-primary transition-colors block"
+                >
+                  suyashyadav1709@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-8 border-t">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} Connectibles. All rights reserved.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Developed by Suyash Yadav
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
