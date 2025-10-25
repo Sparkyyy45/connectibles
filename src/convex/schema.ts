@@ -43,6 +43,12 @@ const schema = defineSchema(
       major: v.optional(v.string()),
       lookingFor: v.optional(v.array(v.string())), // e.g., "Study Partner", "Project Collaborator", "Friend"
       availability: v.optional(v.string()), // e.g., "Weekends", "Evenings", "Flexible"
+      
+      // Profile prompts for personality
+      studySpot: v.optional(v.string()),
+      favoriteSubject: v.optional(v.string()),
+      weekendActivity: v.optional(v.string()),
+      superpower: v.optional(v.string()),
     }).index("email", ["email"]),
 
     // Notifications

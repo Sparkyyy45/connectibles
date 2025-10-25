@@ -56,6 +56,10 @@ export default function Profile() {
   const [lookingFor, setLookingFor] = useState<string[]>([]);
   const [newLookingFor, setNewLookingFor] = useState("");
   const [availability, setAvailability] = useState("");
+  const [studySpot, setStudySpot] = useState("");
+  const [favoriteSubject, setFavoriteSubject] = useState("");
+  const [weekendActivity, setWeekendActivity] = useState("");
+  const [superpower, setSuperpower] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -76,6 +80,10 @@ export default function Profile() {
       setMajor(user.major || "");
       setLookingFor(user.lookingFor || []);
       setAvailability(user.availability || "");
+      setStudySpot(user.studySpot || "");
+      setFavoriteSubject(user.favoriteSubject || "");
+      setWeekendActivity(user.weekendActivity || "");
+      setSuperpower(user.superpower || "");
     }
   }, [user]);
 
@@ -115,6 +123,10 @@ export default function Profile() {
         major,
         lookingFor,
         availability,
+        studySpot,
+        favoriteSubject,
+        weekendActivity,
+        superpower,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -393,6 +405,53 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile Prompts</CardTitle>
+              <CardDescription>Share more about yourself with fun questions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">My go-to study spot is...</label>
+                <Input
+                  value={studySpot}
+                  onChange={(e) => setStudySpot(e.target.value)}
+                  placeholder="e.g., The library corner by the window"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">My favorite subject is...</label>
+                <Input
+                  value={favoriteSubject}
+                  onChange={(e) => setFavoriteSubject(e.target.value)}
+                  placeholder="e.g., Quantum Physics"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">On weekends, you'll find me...</label>
+                <Input
+                  value={weekendActivity}
+                  onChange={(e) => setWeekendActivity(e.target.value)}
+                  placeholder="e.g., Hiking or binge-watching anime"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">If I had a superpower, it would be...</label>
+                <Input
+                  value={superpower}
+                  onChange={(e) => setSuperpower(e.target.value)}
+                  placeholder="e.g., Time travel to ace all my exams"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
         >
           <Button onClick={handleSave} disabled={saving} size="lg" className="w-full">
             {saving ? (
