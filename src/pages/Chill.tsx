@@ -110,13 +110,12 @@ export default function Chill() {
   const uploadFile = async (file: File): Promise<string | null> => {
     try {
       setUploading(true);
-      const compressedFile = await compressImage(file);
       const uploadUrl = await generateUploadUrl();
       
       const result = await fetch(uploadUrl, {
         method: "POST",
-        headers: { "Content-Type": compressedFile.type },
-        body: compressedFile,
+        headers: { "Content-Type": file.type },
+        body: file,
       });
 
       if (!result.ok) {
