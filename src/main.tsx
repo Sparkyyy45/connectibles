@@ -66,6 +66,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/posts" element={<Posts />} />
             <Route path="/events" element={<Events />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/gossip" element={<Gossip />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
