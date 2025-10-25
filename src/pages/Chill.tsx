@@ -414,8 +414,8 @@ export default function Chill() {
               <div className="border-2 border-dashed rounded-lg overflow-hidden bg-white">
                 <canvas
                   ref={canvasRef}
-                  width={700}
-                  height={400}
+                  width={900}
+                  height={600}
                   onMouseDown={startDrawing}
                   onMouseMove={draw}
                   onMouseUp={stopDrawing}
@@ -423,7 +423,25 @@ export default function Chill() {
                   className="cursor-crosshair w-full"
                 />
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium">Tool:</label>
+                  <Button
+                    variant={tool === "brush" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setTool("brush")}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Brush
+                  </Button>
+                  <Button
+                    variant={tool === "eraser" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setTool("eraser")}
+                  >
+                    Eraser
+                  </Button>
+                </div>
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium">Color:</label>
                   <input
@@ -431,6 +449,7 @@ export default function Chill() {
                     value={brushColor}
                     onChange={(e) => setBrushColor(e.target.value)}
                     className="h-10 w-16 rounded cursor-pointer"
+                    disabled={tool === "eraser"}
                   />
                 </div>
                 <div className="flex items-center gap-2 flex-1">
@@ -438,28 +457,23 @@ export default function Chill() {
                   <input
                     type="range"
                     min="1"
-                    max="20"
+                    max="50"
                     value={brushSize}
                     onChange={(e) => setBrushSize(Number(e.target.value))}
                     className="flex-1"
                   />
-                  <span className="text-sm text-muted-foreground w-8">{brushSize}px</span>
+                  <span className="text-sm text-muted-foreground w-10">{brushSize}px</span>
                 </div>
+                <Button variant="outline" size="sm" onClick={undo} disabled={historyStep <= 0}>
+                  Undo
+                </Button>
+                <Button variant="outline" size="sm" onClick={redo} disabled={historyStep >= canvasHistory.length - 1}>
+                  Redo
+                </Button>
                 <Button variant="outline" size="sm" onClick={clearCanvas}>
                   <X className="h-4 w-4 mr-2" />
                   Clear
                 </Button>
-              </div>
-              {/* Caption */}
-              <div>
-                <label className="text-sm font-semibold mb-2 block">Caption (Optional)</label>
-                <Textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Describe your masterpiece..."
-                  rows={2}
-                  className="resize-none"
-                />
               </div>
               
               {/* Submit Buttons */}
