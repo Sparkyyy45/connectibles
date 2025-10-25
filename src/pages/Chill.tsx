@@ -309,7 +309,7 @@ export default function Chill() {
                 </div>
                 <CardTitle className="text-2xl mb-2">No Posts Yet</CardTitle>
                 <p className="text-muted-foreground text-base">
-                  Be the first to share something cool in the Chill Zone! 🎨
+                  Be the first to paint your canvas! 🎨
                 </p>
               </CardHeader>
             </Card>

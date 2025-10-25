@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: Users, label: "Discover", path: "/discover" },
-    { icon: Sparkles, label: "Chill", path: "/chill" },
+    { icon: Sparkles, label: "Canvas", path: "/chill" },
     { icon: MessageCircle, label: "Gossip", path: "/gossip" },
     { icon: FileText, label: "Collaborations", path: "/posts" },
     { icon: Calendar, label: "Events", path: "/events" },
