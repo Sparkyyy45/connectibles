@@ -23,6 +23,11 @@ export const createChillPost = mutation({
       v.literal("music"),
       v.literal("other")
     )),
+    positionX: v.optional(v.number()),
+    positionY: v.optional(v.number()),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    zIndex: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -41,6 +46,11 @@ export const createChillPost = mutation({
       mediaUrl: finalMediaUrl || undefined,
       mediaType: args.mediaType,
       reactions: [],
+      positionX: args.positionX,
+      positionY: args.positionY,
+      width: args.width,
+      height: args.height,
+      zIndex: args.zIndex,
     });
 
     return postId;
@@ -103,6 +113,35 @@ export const deleteChillPost = mutation({
     if (post.authorId !== userId) throw new Error("Not authorized");
 
     await ctx.db.delete(args.postId);
+    return args.postId;
+  },
+});
+
+export const updatePostPosition = mutation({
+  args: {
+    postId: v.id("chill_posts"),
+    positionX: v.number(),
+    positionY: v.number(),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    zIndex: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const post = await ctx.db.get(args.postId);
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== userId) throw new Error("Not authorized");
+
+    await ctx.db.patch(args.postId, {
+      positionX: args.positionX,
+      positionY: args.positionY,
+      width: args.width,
+      height: args.height,
+      zIndex: args.zIndex,
+    });
+
     return args.postId;
   },
 });

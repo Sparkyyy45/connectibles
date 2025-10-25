@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Plus, Upload, X } from "lucide-react";
+import { Loader2, Plus, Upload, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -18,15 +18,20 @@ export default function Chill() {
   const posts = useQuery(api.chill.getAllChillPosts);
   const createPost = useMutation(api.chill.createChillPost);
   const deletePost = useMutation(api.chill.deleteChillPost);
+  const updatePosition = useMutation(api.chill.updatePostPosition);
   const generateUploadUrl = useMutation(api.chill.generateUploadUrl);
 
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [content, setContent] = useState("");
-  const [mediaUrl, setMediaUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [creating, setCreating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const [draggedPost, setDraggedPost] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -38,8 +43,8 @@ export default function Chill() {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setMediaUrl(previewUrl);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
 
@@ -69,37 +74,40 @@ export default function Chill() {
   };
 
   const handleCreate = async () => {
-    if (!selectedFile && !content.trim()) {
-      toast.error("Please add an image or caption");
+    if (!selectedFile) {
+      toast.error("Please select an image");
       return;
     }
 
     setCreating(true);
     try {
-      let storageId: string | null = null;
-      let finalMediaUrl = mediaUrl;
-
-      if (selectedFile) {
-        storageId = await uploadFile(selectedFile);
-        if (!storageId) {
-          setCreating(false);
-          return;
-        }
-        finalMediaUrl = "";
+      const storageId = await uploadFile(selectedFile);
+      if (!storageId) {
+        setCreating(false);
+        return;
       }
+
+      // Random initial position
+      const randomX = Math.random() * 60 + 10; // 10-70%
+      const randomY = Math.random() * 60 + 10; // 10-70%
+      const randomSize = Math.random() * 150 + 150; // 150-300px
 
       await createPost({
         content: content.trim() || undefined,
-        mediaUrl: finalMediaUrl || undefined,
-        storageId: storageId as Id<"_storage"> | undefined,
+        storageId: storageId as Id<"_storage">,
         mediaType: "image",
+        positionX: randomX,
+        positionY: randomY,
+        width: randomSize,
+        height: randomSize,
+        zIndex: Date.now(),
       });
       
       toast.success("Meme posted! 🎨");
       setShowUploadDialog(false);
       setContent("");
-      setMediaUrl("");
       setSelectedFile(null);
+      setPreviewUrl("");
     } catch (error) {
       console.error("Failed to create post:", error);
       toast.error("Failed to create post");
@@ -117,6 +125,45 @@ export default function Chill() {
     }
   };
 
+  const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
+    if (!canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const offsetX = e.clientX - (rect.left + (currentX / 100) * rect.width);
+    const offsetY = e.clientY - (rect.top + (currentY / 100) * rect.height);
+    
+    setDraggedPost(postId);
+    setDragOffset({ x: offsetX, y: offsetY });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!draggedPost || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const newX = ((e.clientX - rect.left - dragOffset.x) / rect.width) * 100;
+    const newY = ((e.clientY - rect.top - dragOffset.y) / rect.height) * 100;
+    
+    // Clamp values
+    const clampedX = Math.max(0, Math.min(90, newX));
+    const clampedY = Math.max(0, Math.min(90, newY));
+    
+    const post = posts?.find(p => p._id === draggedPost);
+    if (post) {
+      updatePosition({
+        postId: draggedPost as Id<"chill_posts">,
+        positionX: clampedX,
+        positionY: clampedY,
+        width: post.width,
+        height: post.height,
+        zIndex: Date.now(), // Bring to front
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setDraggedPost(null);
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -127,17 +174,7 @@ export default function Chill() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-[calc(100vh-180px)] bg-white relative">
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          <div className="w-full h-full" style={{
-            backgroundImage: `
-              linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px'
-          }} />
-        </div>
-
+      <div className="min-h-[calc(100vh-180px)] bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 relative overflow-hidden">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -156,14 +193,14 @@ export default function Chill() {
           if (!open) {
             setShowUploadDialog(false);
             setContent("");
-            setMediaUrl("");
             setSelectedFile(null);
+            setPreviewUrl("");
           }
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl">Add Meme</DialogTitle>
-              <DialogDescription>Share your favorite meme with the community</DialogDescription>
+              <DialogDescription>Upload an image and place it anywhere on the canvas</DialogDescription>
             </DialogHeader>
             <div className="space-y-5 py-4">
               <div>
@@ -185,9 +222,9 @@ export default function Chill() {
                   </div>
                 </Button>
               </div>
-              {mediaUrl && (
+              {previewUrl && (
                 <div className="rounded-lg overflow-hidden border">
-                  <img src={mediaUrl} alt="Preview" className="w-full max-h-64 object-contain" />
+                  <img src={previewUrl} alt="Preview" className="w-full max-h-64 object-contain" />
                 </div>
               )}
               <div>
@@ -213,62 +250,79 @@ export default function Chill() {
           </DialogContent>
         </Dialog>
 
-        <div className="max-w-6xl mx-auto p-8">
+        <div 
+          ref={canvasRef}
+          className="relative w-full h-[calc(100vh-180px)]"
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
           <AnimatePresence>
             {posts && posts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post, index) => (
-                  <motion.div
-                    key={post._id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="relative group"
-                  >
-                    <div className="bg-white rounded-xl border-2 shadow-sm hover:shadow-xl transition-all overflow-hidden">
-                      {post.mediaUrl && (
-                        <div className="aspect-square bg-gray-50">
-                          <img
-                            src={post.mediaUrl}
-                            alt="Meme"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="p-4">
-                        {post.content && (
-                          <p className="text-sm text-gray-700 mb-3">{post.content}</p>
-                        )}
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <span>{post.author?.name || "Anonymous"}</span>
-                          {post.authorId === user._id && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(post._id)}
-                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
+              posts.map((post) => (
+                <motion.div
+                  key={post._id}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  style={{
+                    position: "absolute",
+                    left: `${post.positionX || 20}%`,
+                    top: `${post.positionY || 20}%`,
+                    width: `${post.width || 200}px`,
+                    height: `${post.height || 200}px`,
+                    zIndex: post.zIndex || 1,
+                    cursor: post.authorId === user._id ? "move" : "default",
+                  }}
+                  className="group"
+                  onMouseDown={(e) => {
+                    if (post.authorId === user._id) {
+                      handleMouseDown(e, post._id, post.positionX || 20, post.positionY || 20);
+                    }
+                  }}
+                >
+                  <div className="relative w-full h-full bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-4 border-white overflow-hidden">
+                    {post.mediaUrl && (
+                      <img
+                        src={post.mediaUrl}
+                        alt="Meme"
+                        className="w-full h-full object-cover"
+                        draggable={false}
+                      />
+                    )}
+                    {post.content && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs">
+                        {post.content}
                       </div>
+                    )}
+                    {post.authorId === user._id && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(post._id)}
+                        className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                      {post.author?.name || "Anonymous"}
                     </div>
-                  </motion.div>
-                ))}
-              </div>
+                  </div>
+                </motion.div>
+              ))
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center min-h-[60vh] text-center"
+                className="flex flex-col items-center justify-center h-full text-center"
               >
                 <div className="text-gray-300 mb-4">
                   <Upload className="h-24 w-24 mx-auto" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
-                <p className="text-gray-400">Click the + button to share your first meme</p>
+                <p className="text-gray-400">Click the + button to add your first meme</p>
+                <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere!</p>
               </motion.div>
             )}
           </AnimatePresence>

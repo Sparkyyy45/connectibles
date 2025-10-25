@@ -76,6 +76,12 @@ const schema = defineSchema(
         userId: v.id("users"),
         emoji: v.string(),
       }))),
+      // Position for freeform placement
+      positionX: v.optional(v.number()),
+      positionY: v.optional(v.number()),
+      width: v.optional(v.number()),
+      height: v.optional(v.number()),
+      zIndex: v.optional(v.number()),
     }).index("by_author", ["authorId"]),
 
     // Collaboration posts
