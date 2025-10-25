@@ -44,14 +44,14 @@
 
 /* MODERN MINIMALIST THEME */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --background: oklch(0.99 0 0);
   --foreground: oklch(0.15 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.25 0 0);
+  --primary: oklch(0.45 0.15 260);
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.96 0 0);
   --secondary-foreground: oklch(0.15 0 0);
@@ -62,7 +62,7 @@
   --destructive: oklch(0.55 0.22 25);
   --border: oklch(0.90 0 0);
   --input: oklch(0.90 0 0);
-  --ring: oklch(0.25 0 0);
+  --ring: oklch(0.45 0.15 260);
   --chart-1: oklch(0.60 0.15 250);
   --chart-2: oklch(0.65 0.12 180);
   --chart-3: oklch(0.55 0.10 140);
@@ -70,12 +70,12 @@
   --chart-5: oklch(0.75 0.16 40);
   --sidebar: oklch(0.99 0 0);
   --sidebar-foreground: oklch(0.15 0 0);
-  --sidebar-primary: oklch(0.25 0 0);
+  --sidebar-primary: oklch(0.45 0.15 260);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.96 0 0);
   --sidebar-accent-foreground: oklch(0.15 0 0);
   --sidebar-border: oklch(0.90 0 0);
-  --sidebar-ring: oklch(0.25 0 0);
+  --sidebar-ring: oklch(0.45 0.15 260);
 }
 
 .dark {
@@ -85,7 +85,7 @@
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.15 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.90 0 0);
+  --primary: oklch(0.65 0.15 260);
   --primary-foreground: oklch(0.12 0 0);
   --secondary: oklch(0.20 0 0);
   --secondary-foreground: oklch(0.98 0 0);
@@ -96,7 +96,7 @@
   --destructive: oklch(0.60 0.20 25);
   --border: oklch(0.25 0 0);
   --input: oklch(0.25 0 0);
-  --ring: oklch(0.70 0 0);
+  --ring: oklch(0.65 0.15 260);
   --chart-1: oklch(0.55 0.15 250);
   --chart-2: oklch(0.60 0.12 180);
   --chart-3: oklch(0.50 0.10 140);
@@ -104,22 +104,28 @@
   --chart-5: oklch(0.70 0.16 40);
   --sidebar: oklch(0.15 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.90 0 0);
+  --sidebar-primary: oklch(0.65 0.15 260);
   --sidebar-primary-foreground: oklch(0.12 0 0);
   --sidebar-accent: oklch(0.20 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.70 0 0);
+  --sidebar-ring: oklch(0.65 0.15 260);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
+  
   button:not([disabled]),
   [role="button"]:not([disabled]) {
     cursor: pointer;
