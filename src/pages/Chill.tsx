@@ -202,7 +202,14 @@ export default function Chill() {
   };
 
   const handleCreate = async () => {
-    if (!content.trim() && !mediaUrl.trim() && !selectedFile) {
+    // For doodles, check if canvas has content via mediaUrl
+    // For images/music, check if file is selected
+    if (creationType === "doodle" && !mediaUrl) {
+      toast.error("Please draw something on the canvas");
+      return;
+    }
+    
+    if (creationType !== "doodle" && !selectedFile && !content.trim()) {
       toast.error("Please add some content or media");
       return;
     }
@@ -224,7 +231,7 @@ export default function Chill() {
 
       await createPost({
         content: content.trim() || undefined,
-        mediaUrl: finalMediaUrl ? finalMediaUrl : undefined,
+        mediaUrl: finalMediaUrl || undefined,
         storageId: storageId as Id<"_storage"> | undefined,
         mediaType: creationType || undefined,
       });
