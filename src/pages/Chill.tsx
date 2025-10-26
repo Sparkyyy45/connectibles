@@ -36,8 +36,7 @@ export default function Chill() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizingPost, setResizingPost] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
-  const [rotatingPost, setRotatingPost] = useState<string | null>(null);
-  const [rotationStart, setRotationStart] = useState({ angle: 0, centerX: 0, centerY: 0, startAngle: 0 });
+  const [showRotationSlider, setShowRotationSlider] = useState<string | null>(null);
   
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number; rotation: number }>>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -279,7 +278,7 @@ export default function Chill() {
   };
 
   const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
-    if (!canvasRef.current || resizingPost || rotatingPost) return;
+    if (!canvasRef.current || resizingPost) return;
     
     e.preventDefault();
     e.stopPropagation();
@@ -294,7 +293,7 @@ export default function Chill() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggedPost || !canvasRef.current || resizingPost || rotatingPost) return;
+    if (!draggedPost || !canvasRef.current || resizingPost) return;
     
     e.preventDefault();
     
@@ -340,13 +339,6 @@ export default function Chill() {
         updateTimeoutRef.current = null;
       }
     }
-    if (rotatingPost) {
-      setRotatingPost(null);
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-        updateTimeoutRef.current = null;
-      }
-    }
     if (isPanning) {
       setIsPanning(false);
     }
@@ -360,7 +352,7 @@ export default function Chill() {
   };
 
   const handleResize = (e: React.MouseEvent) => {
-    if (!resizingPost || !canvasRef.current || draggedPost || rotatingPost) return;
+    if (!resizingPost || !canvasRef.current || draggedPost) return;
     
     e.preventDefault();
     
@@ -387,59 +379,22 @@ export default function Chill() {
     }
   };
 
-  const handleRotateStart = (e: React.MouseEvent, postId: string, currentRotation: number) => {
-    e.stopPropagation();
-    bringToFront(postId);
-    
-    if (!canvasRef.current) return;
-    
+  const handleRotationChange = (postId: string, newRotation: number) => {
     const post = posts?.find(p => p._id === postId);
     if (!post) return;
     
-    const rect = canvasRef.current.getBoundingClientRect();
-    const posX = (localPositions[postId]?.x ?? post.positionX ?? 50) / 100 * rect.width;
-    const posY = (localPositions[postId]?.y ?? post.positionY ?? 50) / 100 * rect.height;
-    const width = localPositions[postId]?.width ?? post.width ?? 200;
-    const height = localPositions[postId]?.height ?? post.height ?? 200;
+    setLocalPositions(prev => ({
+      ...prev,
+      [postId]: {
+        x: post.positionX || 20,
+        y: post.positionY || 20,
+        width: post.width || 200,
+        height: post.height || 200,
+        rotation: newRotation,
+      }
+    }));
     
-    const centerX = posX + width / 2;
-    const centerY = posY + height / 2;
-    
-    const startAngle = Math.atan2(e.clientY - rect.top - centerY, e.clientX - rect.left - centerX) * (180 / Math.PI);
-    
-    setRotatingPost(postId);
-    setRotationStart({ angle: currentRotation, centerX, centerY, startAngle });
-  };
-
-  const handleRotate = (e: React.MouseEvent) => {
-    if (!rotatingPost || !canvasRef.current || draggedPost || resizingPost) return;
-    
-    e.preventDefault();
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const currentAngle = Math.atan2(
-      e.clientY - rect.top - rotationStart.centerY,
-      e.clientX - rect.left - rotationStart.centerX
-    ) * (180 / Math.PI);
-    
-    const angleDiff = currentAngle - rotationStart.startAngle;
-    const newRotation = (rotationStart.angle + angleDiff) % 360;
-    
-    const post = posts?.find(p => p._id === rotatingPost);
-    if (post) {
-      setLocalPositions(prev => ({
-        ...prev,
-        [rotatingPost]: {
-          x: post.positionX || 20,
-          y: post.positionY || 20,
-          width: post.width || 200,
-          height: post.height || 200,
-          rotation: newRotation,
-        }
-      }));
-      
-      syncPositionToDatabase(rotatingPost, post.positionX || 20, post.positionY || 20, post.width || 200, post.height || 200, maxZIndex, newRotation);
-    }
+    syncPositionToDatabase(postId, post.positionX || 20, post.positionY || 20, post.width || 200, post.height || 200, post.zIndex || maxZIndex, newRotation);
   };
 
   const handleCanvasClick = async (e: React.MouseEvent) => {
@@ -662,12 +617,10 @@ export default function Chill() {
           onMouseMove={(e) => {
             if (isPanning) {
               handleCanvasPan(e);
-            } else if (draggedPost && !resizingPost && !rotatingPost) {
+            } else if (draggedPost && !resizingPost) {
               handleMouseMove(e);
-            } else if (resizingPost && !draggedPost && !rotatingPost) {
+            } else if (resizingPost && !draggedPost) {
               handleResize(e);
-            } else if (rotatingPost && !draggedPost && !resizingPost) {
-              handleRotate(e);
             }
           }}
           onMouseUp={handleMouseUp}
@@ -691,7 +644,7 @@ export default function Chill() {
                 const isOwner = post.authorId === user._id;
                 const isDragging = draggedPost === post._id;
                 const isResizing = resizingPost === post._id;
-                const isRotating = rotatingPost === post._id;
+                const isRotating = false; // Rotation is now handled by slider, not drag
                 
                 return (
                   <motion.div
@@ -699,7 +652,7 @@ export default function Chill() {
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ 
                       opacity: 1, 
-                      scale: isDragging || isResizing || isRotating ? 1.02 : 1,
+                      scale: isDragging || isResizing ? 1.02 : 1,
                     }}
                     exit={{ opacity: 0, scale: 0.5 }}
                     transition={{ duration: 0.2 }}
@@ -717,7 +670,7 @@ export default function Chill() {
                     }}
                     className="group"
                     onMouseDown={(e) => {
-                      if (isOwner && !resizingPost && !rotatingPost) {
+                      if (isOwner && !resizingPost) {
                         handleMouseDown(e, post._id, posX, posY);
                       }
                     }}
@@ -756,12 +709,6 @@ export default function Chill() {
                             onMouseDown={(e) => handleResizeStart(e, post._id, width, height)}
                           >
                             <div className="w-4 h-4 border-r-2 border-b-2 border-white" />
-                          </div>
-                          <div
-                            className="absolute top-2 left-2 w-8 h-8 bg-purple-500/80 rounded-full cursor-grab opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                            onMouseDown={(e) => handleRotateStart(e, post._id, rotation)}
-                          >
-                            <div className="w-5 h-5 border-2 border-white rounded-full border-dashed" />
                           </div>
                         </>
                       )}
