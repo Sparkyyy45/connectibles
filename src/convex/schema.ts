@@ -82,6 +82,7 @@ const schema = defineSchema(
       width: v.optional(v.number()),
       height: v.optional(v.number()),
       zIndex: v.optional(v.number()),
+      rotation: v.optional(v.number()),
     }).index("by_author", ["authorId"]),
 
     // Collaboration posts

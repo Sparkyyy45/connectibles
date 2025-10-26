@@ -28,6 +28,7 @@ export const createChillPost = mutation({
     width: v.optional(v.number()),
     height: v.optional(v.number()),
     zIndex: v.optional(v.number()),
+    rotation: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -51,6 +52,7 @@ export const createChillPost = mutation({
       width: args.width,
       height: args.height,
       zIndex: args.zIndex,
+      rotation: args.rotation || 0,
     });
 
     return postId;
@@ -125,6 +127,7 @@ export const updatePostPosition = mutation({
     width: v.optional(v.number()),
     height: v.optional(v.number()),
     zIndex: v.optional(v.number()),
+    rotation: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -140,6 +143,7 @@ export const updatePostPosition = mutation({
       width: args.width,
       height: args.height,
       zIndex: args.zIndex,
+      rotation: args.rotation,
     });
 
     return args.postId;

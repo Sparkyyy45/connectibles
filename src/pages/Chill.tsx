@@ -36,8 +36,10 @@ export default function Chill() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizingPost, setResizingPost] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [rotatingPost, setRotatingPost] = useState<string | null>(null);
+  const [rotationStart, setRotationStart] = useState({ angle: 0, centerX: 0, centerY: 0, startAngle: 0 });
   
-  const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
+  const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number; rotation: number }>>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [maxZIndex, setMaxZIndex] = useState(1000);
 
@@ -215,7 +217,7 @@ export default function Chill() {
     }
   };
 
-  const syncPositionToDatabase = (postId: string, x: number, y: number, width: number, height: number, zIndex: number) => {
+  const syncPositionToDatabase = (postId: string, x: number, y: number, width: number, height: number, zIndex: number, rotation: number) => {
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
     }
@@ -228,6 +230,7 @@ export default function Chill() {
         width,
         height,
         zIndex,
+        rotation,
       }).catch((error) => {
         console.error("Failed to update position:", error);
       });
@@ -248,6 +251,7 @@ export default function Chill() {
         y: post.positionY || 20,
         width: post.width || 200,
         height: post.height || 200,
+        rotation: post.rotation || 0,
       }
     }));
 
@@ -257,12 +261,13 @@ export default function Chill() {
       post.positionY || 20,
       post.width || 200,
       post.height || 200,
-      newZIndex
+      newZIndex,
+      post.rotation || 0
     );
   };
 
   const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
-    if (!canvasRef.current || resizingPost) return;
+    if (!canvasRef.current || resizingPost || rotatingPost) return;
     
     e.preventDefault();
     e.stopPropagation();
@@ -277,7 +282,7 @@ export default function Chill() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggedPost || !canvasRef.current || resizingPost) return;
+    if (!draggedPost || !canvasRef.current || resizingPost || rotatingPost) return;
     
     e.preventDefault();
     
@@ -301,10 +306,11 @@ export default function Chill() {
         y: clampedY,
         width: post.width || 200,
         height: post.height || 200,
+        rotation: localPositions[draggedPost]?.rotation || post.rotation || 0,
       }
     }));
     
-    syncPositionToDatabase(draggedPost, clampedX, clampedY, post.width || 200, post.height || 200, maxZIndex);
+    syncPositionToDatabase(draggedPost, clampedX, clampedY, post.width || 200, post.height || 200, maxZIndex, localPositions[draggedPost]?.rotation || post.rotation || 0);
   };
 
   const handleMouseUp = () => {
@@ -317,6 +323,13 @@ export default function Chill() {
     }
     if (resizingPost) {
       setResizingPost(null);
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+        updateTimeoutRef.current = null;
+      }
+    }
+    if (rotatingPost) {
+      setRotatingPost(null);
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
         updateTimeoutRef.current = null;
@@ -335,7 +348,7 @@ export default function Chill() {
   };
 
   const handleResize = (e: React.MouseEvent) => {
-    if (!resizingPost || !canvasRef.current || draggedPost) return;
+    if (!resizingPost || !canvasRef.current || draggedPost || rotatingPost) return;
     
     e.preventDefault();
     
@@ -354,10 +367,66 @@ export default function Chill() {
           y: post.positionY || 20,
           width: newWidth,
           height: newHeight,
+          rotation: localPositions[resizingPost]?.rotation || post.rotation || 0,
         }
       }));
       
-      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, maxZIndex);
+      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, maxZIndex, localPositions[resizingPost]?.rotation || post.rotation || 0);
+    }
+  };
+
+  const handleRotateStart = (e: React.MouseEvent, postId: string, currentRotation: number) => {
+    e.stopPropagation();
+    bringToFront(postId);
+    
+    if (!canvasRef.current) return;
+    
+    const post = posts?.find(p => p._id === postId);
+    if (!post) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const posX = (localPositions[postId]?.x ?? post.positionX ?? 50) / 100 * rect.width;
+    const posY = (localPositions[postId]?.y ?? post.positionY ?? 50) / 100 * rect.height;
+    const width = localPositions[postId]?.width ?? post.width ?? 200;
+    const height = localPositions[postId]?.height ?? post.height ?? 200;
+    
+    const centerX = posX + width / 2;
+    const centerY = posY + height / 2;
+    
+    const startAngle = Math.atan2(e.clientY - rect.top - centerY, e.clientX - rect.left - centerX) * (180 / Math.PI);
+    
+    setRotatingPost(postId);
+    setRotationStart({ angle: currentRotation, centerX, centerY, startAngle });
+  };
+
+  const handleRotate = (e: React.MouseEvent) => {
+    if (!rotatingPost || !canvasRef.current || draggedPost || resizingPost) return;
+    
+    e.preventDefault();
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const currentAngle = Math.atan2(
+      e.clientY - rect.top - rotationStart.centerY,
+      e.clientX - rect.left - rotationStart.centerX
+    ) * (180 / Math.PI);
+    
+    const angleDiff = currentAngle - rotationStart.startAngle;
+    const newRotation = (rotationStart.angle + angleDiff) % 360;
+    
+    const post = posts?.find(p => p._id === rotatingPost);
+    if (post) {
+      setLocalPositions(prev => ({
+        ...prev,
+        [rotatingPost]: {
+          x: post.positionX || 20,
+          y: post.positionY || 20,
+          width: post.width || 200,
+          height: post.height || 200,
+          rotation: newRotation,
+        }
+      }));
+      
+      syncPositionToDatabase(rotatingPost, post.positionX || 20, post.positionY || 20, post.width || 200, post.height || 200, maxZIndex, newRotation);
     }
   };
 
@@ -581,10 +650,12 @@ export default function Chill() {
           onMouseMove={(e) => {
             if (isPanning) {
               handleCanvasPan(e);
-            } else if (draggedPost && !resizingPost) {
+            } else if (draggedPost && !resizingPost && !rotatingPost) {
               handleMouseMove(e);
-            } else if (resizingPost && !draggedPost) {
+            } else if (resizingPost && !draggedPost && !rotatingPost) {
               handleResize(e);
+            } else if (rotatingPost && !draggedPost && !resizingPost) {
+              handleRotate(e);
             }
           }}
           onMouseUp={handleMouseUp}
@@ -604,9 +675,11 @@ export default function Chill() {
                 const posY = localPos?.y ?? post.positionY ?? 50;
                 const width = localPos?.width ?? post.width ?? 200;
                 const height = localPos?.height ?? post.height ?? 200;
+                const rotation = localPos?.rotation ?? post.rotation ?? 0;
                 const isOwner = post.authorId === user._id;
                 const isDragging = draggedPost === post._id;
                 const isResizing = resizingPost === post._id;
+                const isRotating = rotatingPost === post._id;
                 
                 return (
                   <motion.div
@@ -614,7 +687,7 @@ export default function Chill() {
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ 
                       opacity: 1, 
-                      scale: isDragging || isResizing ? 1.02 : 1,
+                      scale: isDragging || isResizing || isRotating ? 1.02 : 1,
                     }}
                     exit={{ opacity: 0, scale: 0.5 }}
                     transition={{ duration: 0.2 }}
@@ -628,16 +701,17 @@ export default function Chill() {
                       cursor: isOwner ? (isDragging ? "grabbing" : "grab") : "default",
                       userSelect: "none",
                       touchAction: "none",
+                      transform: `rotate(${rotation}deg)`,
                     }}
                     className="group"
                     onMouseDown={(e) => {
-                      if (isOwner && !resizingPost) {
+                      if (isOwner && !resizingPost && !rotatingPost) {
                         handleMouseDown(e, post._id, posX, posY);
                       }
                     }}
                   >
-                    <div className={`relative w-full h-full bg-white rounded-xl shadow-lg transition-all duration-200 border-4 border-white overflow-hidden ${
-                      isDragging || isResizing ? "shadow-2xl ring-4 ring-primary/50 scale-[1.02]" : "hover:shadow-xl"
+                    <div className={`relative w-full h-full transition-all duration-200 overflow-hidden ${
+                      isDragging || isResizing || isRotating ? "shadow-2xl ring-4 ring-primary/50 scale-[1.02]" : ""
                     }`}>
                       {post.mediaUrl && (
                         <img
@@ -671,9 +745,15 @@ export default function Chill() {
                           >
                             <div className="w-4 h-4 border-r-2 border-b-2 border-white" />
                           </div>
+                          <div
+                            className="absolute top-2 left-2 w-8 h-8 bg-purple-500/80 rounded-full cursor-grab opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                            onMouseDown={(e) => handleRotateStart(e, post._id, rotation)}
+                          >
+                            <div className="w-5 h-5 border-2 border-white rounded-full border-dashed" />
+                          </div>
                         </>
                       )}
-                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                      <div className="absolute top-2 left-12 bg-black/70 text-white px-2 py-1 rounded text-xs">
                         {post.author?.name || "Anonymous"}
                       </div>
                     </div>
