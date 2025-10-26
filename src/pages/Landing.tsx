@@ -380,7 +380,7 @@ export default function Landing() {
                 © {new Date().getFullYear()} Connectibles. All rights reserved.
               </p>
               <p className="text-sm text-muted-foreground">
-                Developed by Suyash Yadav
+                Crafted with 💜 by Suyash Yadav
               </p>
             </div>
           </div>
