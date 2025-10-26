@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart } from "lucide-react";
+import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart, Instagram, Linkedin } from "lucide-react";
 import { useMemo } from "react";
 
 export default function Landing() {
@@ -361,7 +361,7 @@ export default function Landing() {
             {/* Contact Section */}
             <div className="space-y-4">
               <h3 className="font-semibold">Contact</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
+              <div className="space-y-3 text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">Suyash Yadav</p>
                 <a
                   href="mailto:suyashyadav1709@gmail.com"
@@ -369,6 +369,26 @@ export default function Landing() {
                 >
                   suyashyadav1709@gmail.com
                 </a>
+                <div className="flex items-center gap-3 pt-1">
+                  <a
+                    href="https://www.instagram.com/suyash.yadv/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors"
+                    aria-label="Instagram profile"
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/suyash-yadav-b63251378?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors"
+                    aria-label="LinkedIn profile"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
