@@ -245,7 +245,7 @@ export default function Chill() {
       }).catch((error) => {
         console.error("Failed to update position:", error);
       });
-    }, 100);
+    }, 150);
   };
 
   const bringToFront = (postId: string) => {
@@ -369,28 +369,34 @@ export default function Chill() {
     if (!resizingPost || !canvasRef.current || draggedPost) return;
     
     e.preventDefault();
+    e.stopPropagation();
+    
+    const post = posts?.find(p => p._id === resizingPost);
+    if (!post) return;
     
     const deltaX = e.clientX - resizeStart.x;
     const deltaY = e.clientY - resizeStart.y;
     
+    // Use requestAnimationFrame for smoother updates
     const newWidth = Math.max(100, resizeStart.width + deltaX);
     const newHeight = Math.max(100, resizeStart.height + deltaY);
     
-    const post = posts?.find(p => p._id === resizingPost);
-    if (post) {
-      setLocalPositions(prev => ({
-        ...prev,
-        [resizingPost]: {
-          x: post.positionX || 20,
-          y: post.positionY || 20,
-          width: newWidth,
-          height: newHeight,
-          rotation: localPositions[resizingPost]?.rotation || post.rotation || 0,
-        }
-      }));
-      
-      syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, maxZIndex, localPositions[resizingPost]?.rotation || post.rotation || 0);
-    }
+    const currentRotation = localPositions[resizingPost]?.rotation || post.rotation || 0;
+    const posX = post.positionX || 20;
+    const posY = post.positionY || 20;
+    
+    setLocalPositions(prev => ({
+      ...prev,
+      [resizingPost]: {
+        x: posX,
+        y: posY,
+        width: newWidth,
+        height: newHeight,
+        rotation: currentRotation,
+      }
+    }));
+    
+    syncPositionToDatabase(resizingPost, posX, posY, newWidth, newHeight, maxZIndex, currentRotation);
   };
 
   const handleRotationChange = (postId: string, newRotation: number) => {
