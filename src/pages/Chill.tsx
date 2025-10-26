@@ -400,6 +400,9 @@ export default function Chill() {
   const handleCanvasClick = async (e: React.MouseEvent) => {
     if (!placementMode || !pendingImage || !canvasRef.current) return;
     
+    // Prevent double-click issues
+    if (e.detail > 1) return;
+    
     // Only place if clicking on the canvas background
     if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
       const rect = canvasRef.current.getBoundingClientRect();
