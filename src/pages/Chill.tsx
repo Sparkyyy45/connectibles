@@ -27,6 +27,8 @@ export default function Chill() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [creating, setCreating] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [placementMode, setPlacementMode] = useState(false);
+  const [pendingImage, setPendingImage] = useState<{ file: File; storageId: string; width: number; height: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -50,12 +52,12 @@ export default function Chill() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  // Center the canvas on initial load
+  // Center the canvas on initial load (horizontally only)
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       canvas.scrollLeft = (canvas.scrollWidth - canvas.clientWidth) / 2;
-      canvas.scrollTop = (canvas.scrollHeight - canvas.clientHeight) / 2;
+      canvas.scrollTop = 0; // Start at top for vertical
     }
   }, []);
 
@@ -185,28 +187,20 @@ export default function Chill() {
 
       URL.revokeObjectURL(imageUrl);
 
-      const randomX = Math.random() * 60 + 10;
-      const randomY = Math.random() * 60 + 10;
-
-      await createPost({
-        content: content.trim() || undefined,
-        storageId: storageId as Id<"_storage">,
-        mediaType: "image",
-        positionX: randomX,
-        positionY: randomY,
+      // Enter placement mode
+      setPendingImage({
+        file: selectedFile,
+        storageId,
         width: displayWidth,
         height: displayHeight,
-        zIndex: Date.now(),
       });
-      
-      toast.success("Meme posted! 🎨");
+      setPlacementMode(true);
       setShowUploadDialog(false);
-      setContent("");
-      setSelectedFile(null);
-      setPreviewUrl("");
+      
+      toast.success("Click anywhere on the canvas to place your image! 🎨");
     } catch (error) {
-      console.error("Failed to create post:", error);
-      toast.error("Failed to create post");
+      console.error("Failed to prepare image:", error);
+      toast.error("Failed to prepare image");
     } finally {
       setCreating(false);
     }
@@ -367,7 +361,48 @@ export default function Chill() {
     }
   };
 
+  const handleCanvasClick = async (e: React.MouseEvent) => {
+    if (!placementMode || !pendingImage || !canvasRef.current) return;
+    
+    // Only place if clicking on the canvas background
+    if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const clickX = e.clientX - rect.left + canvasRef.current.scrollLeft;
+      const clickY = e.clientY - rect.top + canvasRef.current.scrollTop;
+      
+      // Convert to percentage
+      const posX = (clickX / (rect.width * zoom)) * 100;
+      const posY = (clickY / (rect.height * zoom)) * 100;
+      
+      try {
+        await createPost({
+          content: content.trim() || undefined,
+          storageId: pendingImage.storageId as Id<"_storage">,
+          mediaType: "image",
+          positionX: posX,
+          positionY: posY,
+          width: pendingImage.width,
+          height: pendingImage.height,
+          zIndex: Date.now(),
+        });
+        
+        toast.success("Image placed! 🎨");
+        setPlacementMode(false);
+        setPendingImage(null);
+        setContent("");
+        setSelectedFile(null);
+        setPreviewUrl("");
+      } catch (error) {
+        console.error("Failed to place image:", error);
+        toast.error("Failed to place image");
+      }
+    }
+  };
+
   const handleCanvasPanStart = (e: React.MouseEvent) => {
+    // Don't pan in placement mode
+    if (placementMode) return;
+    
     // Only start panning if clicking on the canvas background (not on a post)
     if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
       setIsPanning(true);
@@ -542,7 +577,7 @@ export default function Chill() {
         <div 
           ref={canvasRef}
           className="relative w-full h-[calc(100vh-180px)] overflow-auto scroll-smooth"
-          style={{ cursor: isPanning ? 'grabbing' : 'default' }}
+          style={{ cursor: placementMode ? 'crosshair' : (isPanning ? 'grabbing' : 'default') }}
           onMouseMove={(e) => {
             if (isPanning) {
               handleCanvasPan(e);
@@ -554,9 +589,10 @@ export default function Chill() {
           }}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onClick={handleCanvasClick}
         >
           <div 
-            className="relative min-h-[1000vh] min-w-[1000vw] canvas-background origin-top-left transition-transform duration-200"
+            className="relative min-h-[100vh] min-w-[1000vw] canvas-background origin-top-left transition-transform duration-200"
             style={{ transform: `scale(${zoom})` }}
             onMouseDown={handleCanvasPanStart}
           >
@@ -655,7 +691,7 @@ export default function Chill() {
                   </div>
                   <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
                   <p className="text-gray-400">Click the + button to add your first meme</p>
-                  <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere on the infinite canvas!</p>
+                  <p className="text-sm text-gray-400 mt-2">Place them anywhere on the infinite horizontal canvas!</p>
                 </motion.div>
               )}
             </AnimatePresence>
