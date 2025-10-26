@@ -242,6 +242,7 @@ export default function Chill() {
   const handleMouseDown = (e: React.MouseEvent, postId: string, currentX: number, currentY: number) => {
     if (!canvasRef.current || resizingPost) return;
     
+    e.preventDefault();
     e.stopPropagation();
     bringToFront(postId);
     
@@ -255,6 +256,8 @@ export default function Chill() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!draggedPost || !canvasRef.current || resizingPost) return;
+    
+    e.preventDefault();
     
     const rect = canvasRef.current.getBoundingClientRect();
     const newX = ((e.clientX - rect.left - dragOffset.x) / rect.width) * 100;
@@ -308,6 +311,8 @@ export default function Chill() {
 
   const handleResize = (e: React.MouseEvent) => {
     if (!resizingPost || !canvasRef.current || draggedPost) return;
+    
+    e.preventDefault();
     
     const deltaX = e.clientX - resizeStart.x;
     const deltaY = e.clientY - resizeStart.y;
@@ -493,6 +498,7 @@ export default function Chill() {
                       zIndex: localPos ? maxZIndex : (post.zIndex || 1),
                       cursor: isOwner ? (isDragging ? "grabbing" : "grab") : "default",
                       userSelect: "none",
+                      touchAction: "none",
                     }}
                     className="group"
                     onMouseDown={(e) => {
@@ -501,8 +507,8 @@ export default function Chill() {
                       }
                     }}
                   >
-                    <div className={`relative w-full h-full bg-white rounded-xl shadow-lg transition-all border-4 border-white overflow-hidden ${
-                      isDragging || isResizing ? "shadow-2xl ring-4 ring-primary/30" : "hover:shadow-xl"
+                    <div className={`relative w-full h-full bg-white rounded-xl shadow-lg transition-all duration-200 border-4 border-white overflow-hidden ${
+                      isDragging || isResizing ? "shadow-2xl ring-4 ring-primary/50 scale-[1.02]" : "hover:shadow-xl"
                     }`}>
                       {post.mediaUrl && (
                         <img
