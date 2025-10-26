@@ -360,6 +360,7 @@ export default function Chill() {
 
   const handleResizeStart = (e: React.MouseEvent, postId: string, currentWidth: number, currentHeight: number) => {
     e.stopPropagation();
+    e.preventDefault();
     bringToFront(postId);
     setResizingPost(postId);
     setResizeStart({ x: e.clientX, y: e.clientY, width: currentWidth, height: currentHeight });
@@ -377,13 +378,12 @@ export default function Chill() {
     const deltaX = e.clientX - resizeStart.x;
     const deltaY = e.clientY - resizeStart.y;
     
-    // Use requestAnimationFrame for smoother updates
     const newWidth = Math.max(100, resizeStart.width + deltaX);
     const newHeight = Math.max(100, resizeStart.height + deltaY);
     
     const currentRotation = localPositions[resizingPost]?.rotation || post.rotation || 0;
-    const posX = post.positionX || 20;
-    const posY = post.positionY || 20;
+    const posX = localPositions[resizingPost]?.x ?? post.positionX ?? 20;
+    const posY = localPositions[resizingPost]?.y ?? post.positionY ?? 20;
     
     setLocalPositions(prev => ({
       ...prev,
@@ -396,7 +396,7 @@ export default function Chill() {
       }
     }));
     
-    syncPositionToDatabase(resizingPost, posX, posY, newWidth, newHeight, maxZIndex, currentRotation);
+    syncPositionToDatabase(resizingPost, posX, posY, newWidth, newHeight, post.zIndex || maxZIndex, currentRotation);
   };
 
   const handleRotationChange = (postId: string, newRotation: number) => {
