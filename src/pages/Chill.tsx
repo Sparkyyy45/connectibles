@@ -40,6 +40,11 @@ export default function Chill() {
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [maxZIndex, setMaxZIndex] = useState(1000);
 
+  // Canvas panning state
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
@@ -315,6 +320,9 @@ export default function Chill() {
         updateTimeoutRef.current = null;
       }
     }
+    if (isPanning) {
+      setIsPanning(false);
+    }
   };
 
   const handleResizeStart = (e: React.MouseEvent, postId: string, currentWidth: number, currentHeight: number) => {
@@ -349,6 +357,32 @@ export default function Chill() {
       
       syncPositionToDatabase(resizingPost, post.positionX || 20, post.positionY || 20, newWidth, newHeight, maxZIndex);
     }
+  };
+
+  const handleCanvasPanStart = (e: React.MouseEvent) => {
+    // Only start panning if clicking on the canvas background (not on a post)
+    if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
+      setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
+      if (canvasRef.current) {
+        setScrollStart({
+          left: canvasRef.current.scrollLeft,
+          top: canvasRef.current.scrollTop,
+        });
+      }
+    }
+  };
+
+  const handleCanvasPan = (e: React.MouseEvent) => {
+    if (!isPanning || !canvasRef.current) return;
+    
+    e.preventDefault();
+    
+    const deltaX = panStart.x - e.clientX;
+    const deltaY = panStart.y - e.clientY;
+    
+    canvasRef.current.scrollLeft = scrollStart.left + deltaX;
+    canvasRef.current.scrollTop = scrollStart.top + deltaY;
   };
 
   if (isLoading || !user) {
@@ -472,8 +506,11 @@ export default function Chill() {
         <div 
           ref={canvasRef}
           className="relative w-full h-[calc(100vh-180px)] overflow-auto scroll-smooth"
+          style={{ cursor: isPanning ? 'grabbing' : 'default' }}
           onMouseMove={(e) => {
-            if (draggedPost && !resizingPost) {
+            if (isPanning) {
+              handleCanvasPan(e);
+            } else if (draggedPost && !resizingPost) {
               handleMouseMove(e);
             } else if (resizingPost && !draggedPost) {
               handleResize(e);
@@ -482,7 +519,10 @@ export default function Chill() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <div className="relative min-h-[200vh] min-w-[200vw]">
+          <div 
+            className="relative min-h-[200vh] min-w-[200vw] canvas-background"
+            onMouseDown={handleCanvasPanStart}
+          >
             <AnimatePresence>
               {posts && posts.length > 0 ? (
                 posts.map((post) => {
