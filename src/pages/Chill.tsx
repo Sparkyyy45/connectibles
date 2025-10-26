@@ -284,9 +284,15 @@ export default function Chill() {
     e.stopPropagation();
     bringToFront(postId);
     
-    const rect = canvasRef.current.getBoundingClientRect();
-    const offsetX = e.clientX - (rect.left + (currentX / 100) * rect.width);
-    const offsetY = e.clientY - (rect.top + (currentY / 100) * rect.height);
+    const canvasInner = canvasRef.current.querySelector('.canvas-background') as HTMLElement;
+    if (!canvasInner) return;
+    
+    const rect = canvasInner.getBoundingClientRect();
+    const currentPosX = (currentX / 100) * rect.width;
+    const currentPosY = (currentY / 100) * rect.height;
+    
+    const offsetX = e.clientX - rect.left - currentPosX;
+    const offsetY = e.clientY - rect.top - currentPosY;
     
     setDraggedPost(postId);
     setDragOffset({ x: offsetX, y: offsetY });
@@ -297,18 +303,26 @@ export default function Chill() {
     
     e.preventDefault();
     
-    const rect = canvasRef.current.getBoundingClientRect();
-    const newX = ((e.clientX - rect.left - dragOffset.x) / rect.width) * 100;
-    const newY = ((e.clientY - rect.top - dragOffset.y) / rect.height) * 100;
+    const canvasInner = canvasRef.current.querySelector('.canvas-background') as HTMLElement;
+    if (!canvasInner) return;
+    
+    const rect = canvasInner.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left - dragOffset.x;
+    const mouseY = e.clientY - rect.top - dragOffset.y;
+    
+    const newX = (mouseX / rect.width) * 100;
+    const newY = (mouseY / rect.height) * 100;
     
     const post = posts?.find(p => p._id === draggedPost);
     if (!post) return;
 
-    const postWidth = (localPositions[draggedPost]?.width || post.width || 200) / rect.width * 100;
-    const postHeight = (localPositions[draggedPost]?.height || post.height || 200) / rect.height * 100;
+    const postWidth = (localPositions[draggedPost]?.width || post.width || 200);
+    const postHeight = (localPositions[draggedPost]?.height || post.height || 200);
+    const postWidthPercent = (postWidth / rect.width) * 100;
+    const postHeightPercent = (postHeight / rect.height) * 100;
     
-    const clampedX = Math.max(0, Math.min(100 - postWidth, newX));
-    const clampedY = Math.max(0, Math.min(100 - postHeight, newY));
+    const clampedX = Math.max(0, Math.min(100 - postWidthPercent, newX));
+    const clampedY = Math.max(0, Math.min(100 - postHeightPercent, newY));
     
     setLocalPositions(prev => ({
       ...prev,
@@ -405,20 +419,18 @@ export default function Chill() {
     
     // Only place if clicking on the canvas background
     if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      
-      // Get the actual click position relative to the scaled canvas
-      const clickX = (e.clientX - rect.left + canvasRef.current.scrollLeft) / zoom;
-      const clickY = (e.clientY - rect.top + canvasRef.current.scrollTop) / zoom;
-      
-      // Get the inner canvas dimensions (the actual scrollable area)
       const canvasInner = canvasRef.current.querySelector('.canvas-background') as HTMLElement;
-      const innerWidth = canvasInner?.offsetWidth || rect.width;
-      const innerHeight = canvasInner?.offsetHeight || rect.height;
+      if (!canvasInner) return;
       
-      // Convert to percentage based on the inner canvas dimensions
-      const posX = (clickX / innerWidth) * 100;
-      const posY = (clickY / innerHeight) * 100;
+      const rect = canvasInner.getBoundingClientRect();
+      
+      // Calculate position relative to the scaled canvas background
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      
+      // Convert to percentage of the inner canvas dimensions
+      const posX = (clickX / rect.width) * 100;
+      const posY = (clickY / rect.height) * 100;
       
       try {
         await createPost({
