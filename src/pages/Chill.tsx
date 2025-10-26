@@ -183,9 +183,21 @@ export default function Chill() {
         img.src = imageUrl;
       });
 
-      // Use original dimensions without any scaling
-      const displayWidth = img.width;
-      const displayHeight = img.height;
+      // Scale down to a reasonable size while maintaining aspect ratio
+      const maxDimension = 300; // Maximum width or height
+      let displayWidth = img.width;
+      let displayHeight = img.height;
+
+      if (displayWidth > maxDimension || displayHeight > maxDimension) {
+        const aspectRatio = displayWidth / displayHeight;
+        if (displayWidth > displayHeight) {
+          displayWidth = maxDimension;
+          displayHeight = maxDimension / aspectRatio;
+        } else {
+          displayHeight = maxDimension;
+          displayWidth = maxDimension * aspectRatio;
+        }
+      }
 
       URL.revokeObjectURL(imageUrl);
 
