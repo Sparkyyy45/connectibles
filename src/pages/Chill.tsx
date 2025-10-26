@@ -166,22 +166,9 @@ export default function Chill() {
         img.src = imageUrl;
       });
 
-      // Calculate display dimensions while maintaining aspect ratio
-      const maxDisplaySize = 300;
-      let displayWidth = img.width;
-      let displayHeight = img.height;
-      
-      if (img.width > img.height) {
-        if (img.width > maxDisplaySize) {
-          displayWidth = maxDisplaySize;
-          displayHeight = (img.height * maxDisplaySize) / img.width;
-        }
-      } else {
-        if (img.height > maxDisplaySize) {
-          displayHeight = maxDisplaySize;
-          displayWidth = (img.width * maxDisplaySize) / img.height;
-        }
-      }
+      // Use original dimensions without any scaling
+      const displayWidth = img.width;
+      const displayHeight = img.height;
 
       URL.revokeObjectURL(imageUrl);
 
