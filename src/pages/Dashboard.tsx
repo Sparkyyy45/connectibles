@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, FileText, Calendar, Sparkles, MessageSquare, Palette, MessageCircle, Briefcase, Bell } from "lucide-react";
+import { Loader2, Users, FileText, Calendar, Sparkles, MessageSquare, Palette, MessageCircle, Briefcase, Bell, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,8 +39,7 @@ export default function Dashboard() {
       description: "Find your perfect matches and connect with like-minded people",
       icon: Users,
       path: "/discover",
-      gradient: "from-violet-500 to-purple-600",
-      bgGradient: "from-violet-500/10 to-purple-600/10",
+      gradient: "from-violet-500 via-purple-500 to-fuchsia-600",
       stat: `${matches?.length || 0} matches`,
       delay: 0.1
     },
@@ -49,8 +48,7 @@ export default function Dashboard() {
       description: "Collaborate on a shared visual space with images and creativity",
       icon: Palette,
       path: "/chill",
-      gradient: "from-pink-500 to-rose-600",
-      bgGradient: "from-pink-500/10 to-rose-600/10",
+      gradient: "from-pink-500 via-rose-500 to-red-600",
       stat: "Create together",
       delay: 0.2
     },
@@ -59,8 +57,7 @@ export default function Dashboard() {
       description: "Join the conversation and connect with everyone in real-time",
       icon: MessageSquare,
       path: "/gossip",
-      gradient: "from-blue-500 to-cyan-600",
-      bgGradient: "from-blue-500/10 to-cyan-600/10",
+      gradient: "from-blue-500 via-cyan-500 to-teal-600",
       stat: "Live chat",
       delay: 0.3
     },
@@ -69,8 +66,7 @@ export default function Dashboard() {
       description: "Discover projects and find partners for your next big idea",
       icon: Briefcase,
       path: "/posts",
-      gradient: "from-amber-500 to-orange-600",
-      bgGradient: "from-amber-500/10 to-orange-600/10",
+      gradient: "from-amber-500 via-orange-500 to-red-600",
       stat: `${posts?.length || 0} active posts`,
       delay: 0.4
     },
@@ -79,8 +75,7 @@ export default function Dashboard() {
       description: "Private conversations with your connections",
       icon: MessageCircle,
       path: "/messages",
-      gradient: "from-emerald-500 to-teal-600",
-      bgGradient: "from-emerald-500/10 to-teal-600/10",
+      gradient: "from-emerald-500 via-teal-500 to-cyan-600",
       stat: "Direct messages",
       delay: 0.5
     },
@@ -89,8 +84,7 @@ export default function Dashboard() {
       description: "Explore upcoming activities and create your own events",
       icon: Calendar,
       path: "/events",
-      gradient: "from-indigo-500 to-blue-600",
-      bgGradient: "from-indigo-500/10 to-blue-600/10",
+      gradient: "from-indigo-500 via-blue-500 to-purple-600",
       stat: "Discover events",
       delay: 0.6
     }
@@ -145,7 +139,7 @@ export default function Dashboard() {
             </motion.div>
           )}
 
-          {/* Navigation Sections Grid */}
+          {/* Navigation Hub - Unique Design */}
           <div className="space-y-6">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -165,43 +159,49 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: section.delay }}
-                    whileHover={{ scale: 1.02, y: -4 }}
+                    whileHover={{ scale: 1.02, y: -8 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(section.path)}
+                    className="group cursor-pointer relative overflow-hidden rounded-3xl h-64"
                   >
-                    <Card
-                      className="cursor-pointer shadow-xl border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-2xl hover:border-primary/30 transition-all duration-300 h-full group overflow-hidden relative"
-                      onClick={() => navigate(section.path)}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${section.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      
-                      <CardHeader className="relative z-10 pb-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className={`p-4 rounded-2xl bg-gradient-to-br ${section.gradient} shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                            <Icon className="h-7 w-7 text-white" />
+                    {/* Gradient Background */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${section.gradient} opacity-90 group-hover:opacity-100 transition-opacity duration-500`} />
+                    
+                    {/* Animated Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+                    
+                    {/* Shine Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative h-full p-8 flex flex-col justify-between text-white">
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                            <Icon className="h-8 w-8 text-white" />
                           </div>
-                          <Badge variant="secondary" className="px-3 py-1.5 font-semibold shadow-sm group-hover:shadow-md transition-shadow">
+                          <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-3 py-1.5 font-semibold">
                             {section.stat}
                           </Badge>
                         </div>
-                        <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors duration-300">
-                          {section.title}
-                        </CardTitle>
-                        <CardDescription className="text-base leading-relaxed">
-                          {section.description}
-                        </CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent className="relative z-10">
-                        <Button 
-                          variant="ghost" 
-                          className="w-full justify-start gap-2 group-hover:bg-primary/10 transition-colors duration-300"
-                        >
-                          Explore
-                          <span className="ml-auto group-hover:translate-x-1 transition-transform duration-300">→</span>
-                        </Button>
-                      </CardContent>
-                    </Card>
+                        
+                        <div>
+                          <h3 className="text-3xl font-bold mb-2 tracking-tight">
+                            {section.title}
+                          </h3>
+                          <p className="text-white/90 text-sm leading-relaxed">
+                            {section.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-white font-semibold group-hover:gap-4 transition-all duration-300">
+                        <span>Explore</span>
+                        <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}
