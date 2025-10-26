@@ -4,6 +4,7 @@ import { InstrumentationProvider } from "@/instrumentation.tsx";
 import AuthPage from "@/pages/Auth.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import Profile from "@/pages/Profile.tsx";
+import UserProfile from "@/pages/UserProfile.tsx";
 import Discover from "@/pages/Discover.tsx";
 import Posts from "@/pages/Posts.tsx";
 import Events from "@/pages/Events.tsx";
@@ -61,6 +62,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:userId" element={<UserProfile />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/chill" element={<Chill />} />
             <Route path="/posts" element={<Posts />} />
