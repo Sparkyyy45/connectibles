@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Plus, Upload, X, Trash2 } from "lucide-react";
+import { Loader2, Plus, Upload, X, Trash2, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -42,6 +42,7 @@ export default function Chill() {
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -392,6 +393,14 @@ export default function Chill() {
     canvasRef.current.scrollTop = scrollStart.top + deltaY;
   };
 
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 0.2, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 0.2, 0.5));
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -406,7 +415,7 @@ export default function Chill() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="fixed bottom-8 right-8 z-50"
+          className="fixed bottom-8 right-8 z-50 flex flex-col gap-2"
         >
           <Button
             size="lg"
@@ -415,6 +424,26 @@ export default function Chill() {
           >
             <Plus className="h-8 w-8" />
           </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleZoomIn}
+              className="h-12 w-12 rounded-full shadow-lg"
+              disabled={zoom >= 3}
+            >
+              <ZoomIn className="h-5 w-5" />
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleZoomOut}
+              className="h-12 w-12 rounded-full shadow-lg"
+              disabled={zoom <= 0.5}
+            >
+              <ZoomOut className="h-5 w-5" />
+            </Button>
+          </div>
         </motion.div>
 
         <Dialog open={showUploadDialog} onOpenChange={(open) => {
@@ -527,7 +556,8 @@ export default function Chill() {
           onMouseLeave={handleMouseUp}
         >
           <div 
-            className="relative min-h-[1000vh] min-w-[1000vw] canvas-background"
+            className="relative min-h-[1000vh] min-w-[1000vw] canvas-background origin-top-left transition-transform duration-200"
+            style={{ transform: `scale(${zoom})` }}
             onMouseDown={handleCanvasPanStart}
           >
             <AnimatePresence>
