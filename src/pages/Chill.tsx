@@ -697,8 +697,13 @@ export default function Chill() {
                     className="group"
                     onMouseDown={(e) => {
                       if (isOwner && !resizingPost) {
+                        e.preventDefault();
                         handleMouseDown(e, post._id, posX, posY);
                       }
+                    }}
+                    onDoubleClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                     }}
                   >
                     <div className={`relative w-full h-full transition-all duration-200 overflow-hidden rounded-lg ${
@@ -708,8 +713,12 @@ export default function Chill() {
                         <img
                           src={post.mediaUrl}
                           alt="Meme"
-                          className="w-full h-full object-cover pointer-events-none"
+                          className="w-full h-full object-cover pointer-events-none select-none"
                           draggable={false}
+                          onDoubleClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
                         />
                       )}
                       {post.content && (
