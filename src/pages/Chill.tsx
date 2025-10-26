@@ -156,9 +156,37 @@ export default function Chill() {
         return;
       }
 
+      // Get actual image dimensions
+      const img = new Image();
+      const imageUrl = URL.createObjectURL(selectedFile);
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+
+      // Calculate display dimensions while maintaining aspect ratio
+      const maxDisplaySize = 300;
+      let displayWidth = img.width;
+      let displayHeight = img.height;
+      
+      if (img.width > img.height) {
+        if (img.width > maxDisplaySize) {
+          displayWidth = maxDisplaySize;
+          displayHeight = (img.height * maxDisplaySize) / img.width;
+        }
+      } else {
+        if (img.height > maxDisplaySize) {
+          displayHeight = maxDisplaySize;
+          displayWidth = (img.width * maxDisplaySize) / img.height;
+        }
+      }
+
+      URL.revokeObjectURL(imageUrl);
+
       const randomX = Math.random() * 60 + 10;
       const randomY = Math.random() * 60 + 10;
-      const randomSize = Math.random() * 150 + 150;
 
       await createPost({
         content: content.trim() || undefined,
@@ -166,8 +194,8 @@ export default function Chill() {
         mediaType: "image",
         positionX: randomX,
         positionY: randomY,
-        width: randomSize,
-        height: randomSize,
+        width: displayWidth,
+        height: displayHeight,
         zIndex: Date.now(),
       });
       
