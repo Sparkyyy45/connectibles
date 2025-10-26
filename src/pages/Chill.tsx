@@ -482,7 +482,7 @@ export default function Chill() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-[calc(100vh-180px)] bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 relative overflow-hidden">
+      <div className="min-h-[calc(100vh-180px)] bg-[#f5f5f5] relative overflow-hidden">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -491,25 +491,23 @@ export default function Chill() {
           <Button
             size="lg"
             onClick={() => setShowUploadDialog(true)}
-            className="h-16 w-16 rounded-full shadow-2xl hover:shadow-3xl transition-all"
+            className="h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all bg-white text-foreground hover:bg-gray-50 border border-gray-200"
           >
             <Plus className="h-8 w-8" />
           </Button>
           <div className="flex flex-col gap-2">
             <Button
               size="sm"
-              variant="secondary"
               onClick={handleZoomIn}
-              className="h-12 w-12 rounded-full shadow-lg"
+              className="h-12 w-12 rounded-full shadow-lg bg-white text-foreground hover:bg-gray-50 border border-gray-200"
               disabled={zoom >= 3}
             >
               <ZoomIn className="h-5 w-5" />
             </Button>
             <Button
               size="sm"
-              variant="secondary"
               onClick={handleZoomOut}
-              className="h-12 w-12 rounded-full shadow-lg"
+              className="h-12 w-12 rounded-full shadow-lg bg-white text-foreground hover:bg-gray-50 border border-gray-200"
               disabled={zoom <= 0.5}
             >
               <ZoomOut className="h-5 w-5" />
@@ -675,8 +673,8 @@ export default function Chill() {
                       }
                     }}
                   >
-                    <div className={`relative w-full h-full transition-all duration-200 overflow-hidden ${
-                      isDragging || isResizing || isRotating ? "shadow-2xl ring-4 ring-primary/50 scale-[1.02]" : ""
+                    <div className={`relative w-full h-full transition-all duration-200 overflow-hidden rounded-lg ${
+                      isDragging || isResizing ? "shadow-2xl scale-[1.02]" : "shadow-md"
                     }`}>
                       {post.mediaUrl && (
                         <img
@@ -700,12 +698,12 @@ export default function Chill() {
                               e.stopPropagation();
                               handleDelete(post._id);
                             }}
-                            className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 hover:bg-white text-red-600 hover:text-red-700 shadow-md"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                           <div
-                            className="absolute bottom-0 right-0 w-8 h-8 bg-primary/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1"
+                            className="absolute bottom-0 right-0 w-8 h-8 bg-gray-800/80 rounded-tl-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-end p-1"
                             onMouseDown={(e) => handleResizeStart(e, post._id, width, height)}
                           >
                             <div className="w-4 h-4 border-r-2 border-b-2 border-white" />
@@ -722,12 +720,12 @@ export default function Chill() {
                   animate={{ opacity: 1 }}
                   className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center"
                 >
-                  <div className="text-gray-300 mb-4">
+                  <div className="text-gray-400 mb-4">
                     <Upload className="h-24 w-24 mx-auto" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
-                  <p className="text-gray-400">Click the + button to add your first meme</p>
-                  <p className="text-sm text-gray-400 mt-2">Place them anywhere on the infinite vertical canvas!</p>
+                  <h2 className="text-2xl font-bold text-gray-600 mb-2">No Images Yet</h2>
+                  <p className="text-gray-500">Click the + button to add your first image</p>
+                  <p className="text-sm text-gray-500 mt-2">Place them anywhere on the infinite vertical canvas!</p>
                 </motion.div>
               )}
             </AnimatePresence>
