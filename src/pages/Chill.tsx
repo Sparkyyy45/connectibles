@@ -406,12 +406,19 @@ export default function Chill() {
     // Only place if clicking on the canvas background
     if (e.target === canvasRef.current || (e.target as HTMLElement).closest('.canvas-background')) {
       const rect = canvasRef.current.getBoundingClientRect();
-      const clickX = e.clientX - rect.left + canvasRef.current.scrollLeft;
-      const clickY = e.clientY - rect.top + canvasRef.current.scrollTop;
       
-      // Convert to percentage
-      const posX = (clickX / (rect.width * zoom)) * 100;
-      const posY = (clickY / (rect.height * zoom)) * 100;
+      // Get the actual click position relative to the scaled canvas
+      const clickX = (e.clientX - rect.left + canvasRef.current.scrollLeft) / zoom;
+      const clickY = (e.clientY - rect.top + canvasRef.current.scrollTop) / zoom;
+      
+      // Get the inner canvas dimensions (the actual scrollable area)
+      const canvasInner = canvasRef.current.querySelector('.canvas-background') as HTMLElement;
+      const innerWidth = canvasInner?.offsetWidth || rect.width;
+      const innerHeight = canvasInner?.offsetHeight || rect.height;
+      
+      // Convert to percentage based on the inner canvas dimensions
+      const posX = (clickX / innerWidth) * 100;
+      const posY = (clickY / innerHeight) * 100;
       
       try {
         await createPost({
