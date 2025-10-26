@@ -70,20 +70,22 @@ export default function Gossip() {
 
   return (
     <DashboardLayout>
-      <div className="bg-gradient-to-br from-background via-background to-primary/5 min-h-[calc(100vh-180px)]">
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="bg-gradient-to-br from-background via-muted/20 to-primary/5 min-h-[calc(100vh-180px)]">
+        <div className="max-w-5xl mx-auto p-8 space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            className="text-center space-y-3"
           >
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <MessageSquare className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            <div className="flex items-center justify-center gap-4 mb-3">
+              <div className="p-3 rounded-2xl bg-primary/10 backdrop-blur-sm">
+                <MessageSquare className="h-7 w-7 text-primary" />
+              </div>
+              <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Community Chat
               </h1>
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-base font-medium">
               Connect with everyone in real-time
             </p>
           </motion.div>
@@ -93,10 +95,10 @@ export default function Gossip() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="shadow-lg border bg-card">
+            <Card className="shadow-2xl border-2 border-border/50 bg-card/95 backdrop-blur-sm overflow-hidden">
               <CardContent className="p-0">
-                <ScrollArea className="h-[500px] px-6 pt-6" ref={scrollRef}>
-                  <div className="space-y-4">
+                <ScrollArea className="h-[550px] px-8 pt-8" ref={scrollRef}>
+                  <div className="space-y-5">
                     {messages?.map((msg, index) => {
                       const isOwner = msg.senderId === user._id;
                       
@@ -106,70 +108,72 @@ export default function Gossip() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.01 }}
-                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
+                          className={`flex gap-4 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
                         >
-                          <Avatar className="h-10 w-10 flex-shrink-0">
+                          <Avatar className="h-11 w-11 flex-shrink-0 ring-2 ring-border/30">
                             <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
-                            <AvatarFallback className="bg-muted text-foreground font-medium">
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-foreground font-semibold text-base">
                               {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>
                           </Avatar>
-                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[70%] group`}>
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <p className={`text-xs font-semibold text-foreground ${isOwner ? "order-2" : "order-1"}`}>
+                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[72%] group`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <p className={`text-sm font-bold text-foreground/90 ${isOwner ? "order-2" : "order-1"}`}>
                                 {isOwner ? "You" : msg.sender?.name || "Anonymous"}
                               </p>
                               {isOwner && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity order-1"
+                                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all hover:bg-destructive/10 order-1"
                                   onClick={() => handleDelete(msg._id)}
                                 >
-                                  <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                                  <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive transition-colors" />
                                 </Button>
                               )}
                             </div>
                             <div
-                              className={`rounded-2xl px-4 py-3 ${
+                              className={`rounded-2xl px-5 py-3.5 shadow-sm ${
                                 isOwner
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-muted/80"
+                                  ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground"
+                                  : "bg-muted/90 backdrop-blur-sm border border-border/50"
                               }`}
                             >
-                              <p className="text-sm leading-relaxed break-words">{msg.message}</p>
+                              <p className="text-[15px] leading-relaxed break-words">{msg.message}</p>
                             </div>
                           </div>
                         </motion.div>
                       );
                     })}
                     {messages?.length === 0 && (
-                      <div className="text-center py-20 text-muted-foreground">
-                        <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                        <p className="text-base font-medium">No messages yet</p>
+                      <div className="text-center py-24 text-muted-foreground">
+                        <div className="p-6 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                          <MessageSquare className="h-16 w-16 opacity-30" />
+                        </div>
+                        <p className="text-lg font-semibold mb-1">No messages yet</p>
                         <p className="text-sm">Be the first to start the conversation</p>
                       </div>
                     )}
                   </div>
                 </ScrollArea>
-                <div className="flex gap-3 p-6 border-t bg-background/50">
+                <div className="flex gap-4 p-6 border-t-2 border-border/50 bg-gradient-to-r from-background/80 to-muted/30 backdrop-blur-sm">
                   <Input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder="Type your message..."
                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    className="flex-1 h-11 rounded-lg px-4 border focus:border-primary"
+                    className="flex-1 h-12 rounded-xl px-5 border-2 border-border/50 focus:border-primary/60 bg-background/80 text-[15px] shadow-sm transition-all"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={sending || !message.trim()}
                     size="icon"
-                    className="h-11 w-11 rounded-lg"
+                    className="h-12 w-12 rounded-xl shadow-md hover:shadow-lg transition-all"
                   >
                     {sending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                      <Send className="h-4 w-4" />
+                      <Send className="h-5 w-5" />
                     )}
                   </Button>
                 </div>
