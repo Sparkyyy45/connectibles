@@ -712,9 +712,6 @@ export default function Chill() {
                           </div>
                         </>
                       )}
-                      <div className="absolute top-2 left-12 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                        {post.author?.name || "Anonymous"}
-                      </div>
                     </div>
                   </motion.div>
                   );
