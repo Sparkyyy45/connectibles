@@ -16,6 +16,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const posts = useQuery(api.posts.getAllPosts);
   const matches = useQuery(api.matching.getMatches);
+  const connections = useQuery(api.connections.getConnections);
+  const events = useQuery(api.events.getAllEvents);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -139,16 +141,60 @@ export default function Dashboard() {
             </motion.div>
           )}
 
+          {/* Statistics Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="grid md:grid-cols-3 gap-6"
+          >
+            <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
+              <CardHeader className="pb-3">
+                <CardDescription className="text-sm font-medium">Total Connections</CardDescription>
+                <CardTitle className="text-4xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">
+                  {connections?.length || 0}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">People you're connected with</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
+              <CardHeader className="pb-3">
+                <CardDescription className="text-sm font-medium">Active Collaborations</CardDescription>
+                <CardTitle className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                  {posts?.length || 0}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Projects seeking partners</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
+              <CardHeader className="pb-3">
+                <CardDescription className="text-sm font-medium">Upcoming Events</CardDescription>
+                <CardTitle className="text-4xl font-bold bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent">
+                  {events?.length || 0}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Events to explore</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Navigation Hub - Unique Design */}
           <div className="space-y-6">
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="text-3xl font-bold tracking-tight"
-            >
-              Explore Connect Minds
-            </motion.h2>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-3xl font-bold tracking-tight"
+          >
+            Explore Connect Minds
+          </motion.h2>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {navigationSections.map((section) => {
@@ -158,7 +204,7 @@ export default function Dashboard() {
                     key={section.path}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: section.delay }}
+                    transition={{ delay: section.delay + 0.1 }}
                     whileHover={{ scale: 1.02, y: -8 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate(section.path)}
@@ -213,7 +259,7 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.8 }}
               className="space-y-6"
             >
               <div className="flex items-center justify-between">
@@ -229,7 +275,7 @@ export default function Dashboard() {
                     key={post._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.75 + index * 0.05 }}
+                    transition={{ delay: 0.85 + index * 0.05 }}
                     whileHover={{ scale: 1.02, y: -4 }}
                   >
                     <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm cursor-pointer hover:shadow-xl hover:border-primary/30 transition-all duration-300 h-full" onClick={() => navigate("/posts")}>
