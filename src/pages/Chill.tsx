@@ -52,12 +52,12 @@ export default function Chill() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  // Center the canvas on initial load (horizontally only)
+  // Start at the top on initial load
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
-      canvas.scrollLeft = (canvas.scrollWidth - canvas.clientWidth) / 2;
-      canvas.scrollTop = 0; // Start at top for vertical
+      canvas.scrollLeft = 0;
+      canvas.scrollTop = 0;
     }
   }, []);
 
@@ -592,7 +592,7 @@ export default function Chill() {
           onClick={handleCanvasClick}
         >
           <div 
-            className="relative min-h-[100vh] min-w-[1000vw] canvas-background origin-top-left transition-transform duration-200"
+            className="relative min-h-[1000vh] w-full canvas-background origin-top-left transition-transform duration-200"
             style={{ transform: `scale(${zoom})` }}
             onMouseDown={handleCanvasPanStart}
           >
@@ -691,7 +691,7 @@ export default function Chill() {
                   </div>
                   <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
                   <p className="text-gray-400">Click the + button to add your first meme</p>
-                  <p className="text-sm text-gray-400 mt-2">Place them anywhere on the infinite horizontal canvas!</p>
+                  <p className="text-sm text-gray-400 mt-2">Place them anywhere on the infinite vertical canvas!</p>
                 </motion.div>
               )}
             </AnimatePresence>
