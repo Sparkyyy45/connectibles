@@ -165,25 +165,26 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: section.delay }}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, y: -4 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Card
-                      className="cursor-pointer shadow-xl border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-2xl hover:border-primary/30 transition-all h-full group overflow-hidden relative"
+                      className="cursor-pointer shadow-xl border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-2xl hover:border-primary/30 transition-all duration-300 h-full group overflow-hidden relative"
                       onClick={() => navigate(section.path)}
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${section.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       
                       <CardHeader className="relative z-10 pb-4">
                         <div className="flex items-start justify-between mb-3">
-                          <div className={`p-4 rounded-2xl bg-gradient-to-br ${section.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <div className={`p-4 rounded-2xl bg-gradient-to-br ${section.gradient} shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                             <Icon className="h-7 w-7 text-white" />
                           </div>
-                          <Badge variant="secondary" className="px-3 py-1.5 font-semibold">
+                          <Badge variant="secondary" className="px-3 py-1.5 font-semibold shadow-sm group-hover:shadow-md transition-shadow">
                             {section.stat}
                           </Badge>
                         </div>
-                        <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                        <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors duration-300">
                           {section.title}
                         </CardTitle>
                         <CardDescription className="text-base leading-relaxed">
@@ -194,10 +195,10 @@ export default function Dashboard() {
                       <CardContent className="relative z-10">
                         <Button 
                           variant="ghost" 
-                          className="w-full justify-start gap-2 group-hover:bg-primary/10 transition-colors"
+                          className="w-full justify-start gap-2 group-hover:bg-primary/10 transition-colors duration-300"
                         >
                           Explore
-                          <span className="ml-auto group-hover:translate-x-1 transition-transform">→</span>
+                          <span className="ml-auto group-hover:translate-x-1 transition-transform duration-300">→</span>
                         </Button>
                       </CardContent>
                     </Card>
@@ -229,9 +230,9 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.75 + index * 0.05 }}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, y: -4 }}
                   >
-                    <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm cursor-pointer hover:shadow-xl hover:border-primary/30 transition-all h-full" onClick={() => navigate("/posts")}>
+                    <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm cursor-pointer hover:shadow-xl hover:border-primary/30 transition-all duration-300 h-full" onClick={() => navigate("/posts")}>
                       <CardHeader className="pb-4">
                         <div className="flex items-start gap-3 mb-3">
                           <Avatar className="h-11 w-11 ring-2 ring-border/30">
