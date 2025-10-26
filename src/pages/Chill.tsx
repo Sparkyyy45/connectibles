@@ -471,7 +471,7 @@ export default function Chill() {
 
         <div 
           ref={canvasRef}
-          className="relative w-full h-[calc(100vh-180px)]"
+          className="relative w-full h-[calc(100vh-180px)] overflow-auto scroll-smooth"
           onMouseMove={(e) => {
             if (draggedPost && !resizingPost) {
               handleMouseMove(e);
@@ -482,9 +482,10 @@ export default function Chill() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <AnimatePresence>
-            {posts && posts.length > 0 ? (
-              posts.map((post) => {
+          <div className="relative min-h-[200vh] min-w-[200vw]">
+            <AnimatePresence>
+              {posts && posts.length > 0 ? (
+                posts.map((post) => {
                 const localPos = localPositions[post._id];
                 const posX = localPos?.x ?? post.positionX ?? 20;
                 const posY = localPos?.y ?? post.positionY ?? 20;
@@ -564,23 +565,24 @@ export default function Chill() {
                       </div>
                     </div>
                   </motion.div>
-                );
-              })
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center h-full text-center"
-              >
-                <div className="text-gray-300 mb-4">
-                  <Upload className="h-24 w-24 mx-auto" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
-                <p className="text-gray-400">Click the + button to add your first meme</p>
-                <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere!</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  );
+                })
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center text-center"
+                >
+                  <div className="text-gray-300 mb-4">
+                    <Upload className="h-24 w-24 mx-auto" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
+                  <p className="text-gray-400">Click the + button to add your first meme</p>
+                  <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere!</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </DashboardLayout>
