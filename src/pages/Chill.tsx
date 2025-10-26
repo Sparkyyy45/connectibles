@@ -35,12 +35,10 @@ export default function Chill() {
   const [resizingPost, setResizingPost] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   
-  // Local position state for smooth dragging
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [maxZIndex, setMaxZIndex] = useState(1000);
 
-  // Canvas panning state
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
@@ -50,6 +48,15 @@ export default function Chill() {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Center the canvas on initial load
+  useEffect(() => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      canvas.scrollLeft = (canvas.scrollWidth - canvas.clientWidth) / 2;
+      canvas.scrollTop = (canvas.scrollHeight - canvas.clientHeight) / 2;
+    }
+  }, []);
 
   // Calculate max z-index from posts
   useEffect(() => {
@@ -520,15 +527,15 @@ export default function Chill() {
           onMouseLeave={handleMouseUp}
         >
           <div 
-            className="relative min-h-[200vh] min-w-[200vw] canvas-background"
+            className="relative min-h-[1000vh] min-w-[1000vw] canvas-background"
             onMouseDown={handleCanvasPanStart}
           >
             <AnimatePresence>
               {posts && posts.length > 0 ? (
                 posts.map((post) => {
                 const localPos = localPositions[post._id];
-                const posX = localPos?.x ?? post.positionX ?? 20;
-                const posY = localPos?.y ?? post.positionY ?? 20;
+                const posX = localPos?.x ?? post.positionX ?? 50;
+                const posY = localPos?.y ?? post.positionY ?? 50;
                 const width = localPos?.width ?? post.width ?? 200;
                 const height = localPos?.height ?? post.height ?? 200;
                 const isOwner = post.authorId === user._id;
@@ -611,14 +618,14 @@ export default function Chill() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center text-center"
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center"
                 >
                   <div className="text-gray-300 mb-4">
                     <Upload className="h-24 w-24 mx-auto" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-400 mb-2">No Memes Yet</h2>
                   <p className="text-gray-400">Click the + button to add your first meme</p>
-                  <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere!</p>
+                  <p className="text-sm text-gray-400 mt-2">Drag and drop them anywhere on the infinite canvas!</p>
                 </motion.div>
               )}
             </AnimatePresence>
