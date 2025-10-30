@@ -127,41 +127,43 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-border/50 space-y-2">
-          <Button
-            variant="outline"
-            className="w-full justify-start gap-3 h-12 hover:bg-muted/50 transition-all relative"
-            onClick={() => navigate("/notifications")}
-          >
-            <Bell className="h-5 w-5" />
-            <span>Notifications</span>
-            <AnimatePresence>
-              {unreadCount !== undefined && unreadCount > 0 && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  className="ml-auto"
-                >
-                  <Badge
-                    variant="destructive"
-                    className="h-6 min-w-6 flex items-center justify-center px-2"
+        <div className="p-4 border-t border-border/50">
+          <div className="flex items-center justify-around mb-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-12 w-12 relative hover:bg-muted/50 transition-all"
+              onClick={() => navigate("/notifications")}
+            >
+              <Bell className="h-5 w-5" />
+              <AnimatePresence>
+                {unreadCount !== undefined && unreadCount > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1"
                   >
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </Badge>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Button>
-          
-          <Button
-            variant="outline"
-            className="w-full justify-start gap-3 h-12 hover:bg-muted/50 transition-all"
-            onClick={() => navigate("/profile")}
-          >
-            <User className="h-5 w-5" />
-            <span>Profile</span>
-          </Button>
+                    <Badge
+                      variant="destructive"
+                      className="h-5 min-w-5 flex items-center justify-center px-1 text-xs"
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-12 w-12 hover:bg-muted/50 transition-all"
+              onClick={() => navigate("/profile")}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+          </div>
           
           <Button
             variant="ghost"
