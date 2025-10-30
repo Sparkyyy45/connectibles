@@ -367,86 +367,82 @@ export default function Landing() {
       {/* Footer */}
       <footer className="border-t bg-card/50 backdrop-blur-md mt-24">
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid md:grid-cols-3 gap-12 mb-12">
-            {/* Brand Section */}
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Connectibles</span>
+          {/* Centered Brand Section */}
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
+                <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Connect with your tribe. Collaborate on projects. Build meaningful connections in a vibrant community.
-              </p>
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Connectibles</span>
             </div>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Connect with your tribe. Collaborate on projects. Build meaningful connections in a vibrant community.
+            </p>
+          </div>
 
-            {/* Quick Links */}
-            <div className="space-y-5">
-              <h3 className="font-bold text-lg">Quick Links</h3>
-              <nav className="flex flex-col space-y-3">
-                <button
-                  onClick={() => scrollToSection("features")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
-                >
-                  Features
-                </button>
-                <button
-                  onClick={() => handleNavigation("/discover")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
-                >
-                  Discover
-                </button>
-                <button
-                  onClick={() => handleNavigation("/dashboard")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
-                >
-                  Dashboard
-                </button>
-              </nav>
+          {/* Centered Navigation Links */}
+          <div className="flex flex-wrap items-center justify-center gap-8 mb-12 pb-12 border-b border-border/50">
+            <button
+              onClick={() => scrollToSection("features")}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => handleNavigation("/discover")}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold"
+            >
+              Discover
+            </button>
+            <button
+              onClick={() => handleNavigation("/dashboard")}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold"
+            >
+              Dashboard
+            </button>
+          </div>
+
+          {/* Centered Contact & Social */}
+          <div className="text-center space-y-6">
+            <div>
+              <p className="font-bold text-lg mb-2">Suyash Yadav</p>
+              <a
+                href="mailto:suyashyadav1709@gmail.com"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
+              >
+                suyashyadav1709@gmail.com
+              </a>
             </div>
-
-            {/* Contact Section */}
-            <div className="space-y-5">
-              <h3 className="font-bold text-lg">Contact</h3>
-              <div className="space-y-4 text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground text-base">Suyash Yadav</p>
-                <a
-                  href="mailto:suyashyadav1709@gmail.com"
-                  className="hover:text-primary transition-colors block font-medium"
-                >
-                  suyashyadav1709@gmail.com
-                </a>
-                <div className="flex items-center gap-4 pt-2">
-                  <a
-                    href="https://www.instagram.com/suyash.yadv/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all"
-                    aria-label="Instagram profile"
-                  >
-                    <Instagram className="h-5 w-5" />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/suyash-yadav-b63251378?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all"
-                    aria-label="LinkedIn profile"
-                  >
-                    <Linkedin className="h-5 w-5" />
-                  </a>
-                </div>
-              </div>
+            
+            <div className="flex items-center justify-center gap-4">
+              <a
+                href="https://www.instagram.com/suyash.yadv/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-muted hover:bg-primary/10 hover:text-primary transition-all hover:scale-110"
+                aria-label="Instagram profile"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/suyash-yadav-b63251378?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-muted hover:bg-primary/10 hover:text-primary transition-all hover:scale-110"
+                aria-label="LinkedIn profile"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-10 border-t">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-10 mt-10 border-t border-border/50">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-center">
               <p className="text-sm text-muted-foreground font-medium">
                 © {new Date().getFullYear()} Connectibles. All rights reserved.
               </p>
+              <span className="hidden md:inline text-muted-foreground">•</span>
               <p className="text-sm text-muted-foreground font-medium">
                 Developed by Suyash Yadav
               </p>
