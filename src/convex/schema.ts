@@ -135,6 +135,49 @@ const schema = defineSchema(
         emoji: v.string(),
       }))),
     }).index("by_sender", ["senderId"]),
+
+    // Game sessions for multiplayer games
+    game_sessions: defineTable({
+      gameType: v.union(
+        v.literal("tic_tac_toe"),
+        v.literal("memory_match"),
+        v.literal("reaction_test")
+      ),
+      player1Id: v.id("users"),
+      player2Id: v.id("users"),
+      status: v.union(
+        v.literal("waiting"),
+        v.literal("in_progress"),
+        v.literal("completed"),
+        v.literal("cancelled")
+      ),
+      currentTurn: v.optional(v.id("users")),
+      gameState: v.optional(v.string()), // JSON stringified game state
+      winnerId: v.optional(v.id("users")),
+    })
+      .index("by_player1", ["player1Id"])
+      .index("by_player2", ["player2Id"])
+      .index("by_status", ["status"]),
+
+    // Game invitations
+    game_invitations: defineTable({
+      senderId: v.id("users"),
+      receiverId: v.id("users"),
+      gameType: v.union(
+        v.literal("tic_tac_toe"),
+        v.literal("memory_match"),
+        v.literal("reaction_test")
+      ),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("accepted"),
+        v.literal("rejected"),
+        v.literal("cancelled")
+      ),
+      sessionId: v.optional(v.id("game_sessions")),
+    })
+      .index("by_receiver", ["receiverId"])
+      .index("by_sender", ["senderId"]),
   },
   {
     schemaValidation: false,
