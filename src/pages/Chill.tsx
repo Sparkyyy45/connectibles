@@ -175,20 +175,9 @@ export default function Chill() {
                   >
                     <Card className={`${colorClass} border-none shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1`}>
                       <CardContent className="p-6 space-y-4">
-                        {/* Author Info */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8 border-2 border-white shadow-md">
-                              <AvatarImage src={spill.author?.image} />
-                              <AvatarFallback className="text-xs bg-white/50">
-                                {spill.author?.name?.charAt(0).toUpperCase() || "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-semibold text-sm text-gray-800">
-                              {spill.author?.name || "Anonymous"}
-                            </span>
-                          </div>
-                          {isOwner && (
+                        {/* Delete Button (only for owner) */}
+                        {isOwner && (
+                          <div className="flex justify-end">
                             <Button
                               size="sm"
                               variant="ghost"
@@ -197,8 +186,8 @@ export default function Chill() {
                             >
                               <Trash2 className="h-4 w-4 text-gray-700" />
                             </Button>
-                          )}
-                        </div>
+                          </div>
+                        )}
 
                         {/* Content */}
                         <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words font-handwriting text-base">
