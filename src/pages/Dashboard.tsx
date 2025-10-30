@@ -83,27 +83,23 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-12 max-w-7xl mx-auto">
+      <div className="p-8 space-y-12">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+          className="space-y-4"
         >
-          <div className="flex items-center gap-6">
-            <motion.div 
-              className="p-5 rounded-3xl bg-gradient-to-br from-primary/20 via-purple-500/15 to-primary/10 backdrop-blur-sm shadow-lg"
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Sparkles className="h-10 w-10 text-primary" />
-            </motion.div>
+          <div className="flex items-center gap-4">
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-sm">
+              <Sparkles className="h-8 w-8 text-primary" />
+            </div>
             <div>
-              <h1 className="text-6xl font-bold tracking-tight bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
                 Welcome back, {user.name || "there"}!
               </h1>
-              <p className="text-muted-foreground text-xl font-medium mt-3">
-                Your hub for connections, collaborations, and community ✨
+              <p className="text-muted-foreground text-lg font-medium mt-2">
+                Your hub for connections, collaborations, and community
               </p>
             </div>
           </div>
@@ -112,32 +108,22 @@ export default function Dashboard() {
         {/* Profile Setup Alert */}
         {needsProfile && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
           >
-            <Card className="border-2 border-primary/60 shadow-2xl bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/10 backdrop-blur-sm overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-purple-500/5 animate-pulse" />
-              <CardHeader className="relative">
-                <CardTitle className="text-3xl flex items-center gap-3">
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Bell className="h-7 w-7 text-primary" />
-                  </motion.div>
+            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-3">
+                  <Bell className="h-6 w-6 text-primary" />
                   Complete Your Profile
                 </CardTitle>
-                <CardDescription className="text-lg mt-2">
-                  Add your interests and skills to unlock the full potential of Connect Minds 🚀
+                <CardDescription className="text-base">
+                  Add your interests and skills to unlock the full potential of Connect Minds
                 </CardDescription>
               </CardHeader>
-              <CardContent className="relative">
-                <Button 
-                  onClick={() => navigate("/profile")} 
-                  size="lg" 
-                  className="shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
-                >
+              <CardContent>
+                <Button onClick={() => navigate("/profile")} size="lg" className="shadow-lg hover:shadow-xl transition-all">
                   Set Up Profile
                 </Button>
               </CardContent>
@@ -150,54 +136,45 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="grid md:grid-cols-2 gap-8"
+          className="grid md:grid-cols-2 gap-6"
         >
-          <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-            <Card className="shadow-2xl border-2 border-violet-200/50 bg-gradient-to-br from-violet-50/80 to-purple-50/80 backdrop-blur-sm hover:shadow-violet-200/50 transition-all overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-violet-400/20 to-purple-500/20 rounded-full blur-3xl" />
-              <CardHeader className="pb-4 relative">
-                <CardDescription className="text-sm font-semibold text-violet-700">Total Connections</CardDescription>
-                <CardTitle className="text-6xl font-bold bg-gradient-to-r from-violet-600 to-purple-700 bg-clip-text text-transparent">
-                  {connections?.length || 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative">
-                <p className="text-base text-muted-foreground font-medium">People you're connected with 🤝</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm font-medium">Total Connections</CardDescription>
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">
+                {connections?.length || 0}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">People you're connected with</p>
+            </CardContent>
+          </Card>
 
-          <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-            <Card className="shadow-2xl border-2 border-indigo-200/50 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 backdrop-blur-sm hover:shadow-indigo-200/50 transition-all overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-blue-500/20 rounded-full blur-3xl" />
-              <CardHeader className="pb-4 relative">
-                <CardDescription className="text-sm font-semibold text-indigo-700">Upcoming Events</CardDescription>
-                <CardTitle className="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-blue-700 bg-clip-text text-transparent">
-                  {events?.length || 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative">
-                <p className="text-base text-muted-foreground font-medium">Events to explore 📅</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm font-medium">Upcoming Events</CardDescription>
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent">
+                {events?.length || 0}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Events to explore</p>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Navigation Hub */}
-        <div className="space-y-8">
-          <motion.div
+        <div className="space-y-6">
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-center"
+            className="text-3xl font-bold tracking-tight"
           >
-            <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
-              Explore Connect Minds
-            </h2>
-            <p className="text-muted-foreground text-lg">Discover all the amazing features we have to offer</p>
-          </motion.div>
+            Explore Connect Minds
+          </motion.h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {navigationSections.map((section) => {
               const Icon = section.icon;
               return (
