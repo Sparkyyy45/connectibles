@@ -104,26 +104,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Quick Actions Section */}
         <div className="p-5 border-b border-border/30">
-          <div className="space-y-2">
+          <div className="flex items-center justify-around gap-2">
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 h-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
+              size="icon"
+              className="h-12 w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl relative"
               onClick={() => handleNavigation("/notifications")}
             >
-              <div className="p-2 rounded-lg bg-transparent group-hover:bg-muted transition-all">
-                <Bell className="h-5 w-5" />
-              </div>
-              <span className="flex-1 text-left font-semibold">Notifications</span>
+              <Bell className="h-5 w-5" />
               <AnimatePresence>
                 {unreadCount !== undefined && unreadCount > 0 && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1"
                   >
                     <Badge
                       variant="destructive"
-                      className="h-6 min-w-6 flex items-center justify-center px-1.5 text-xs font-bold shadow-lg"
+                      className="h-5 min-w-5 flex items-center justify-center px-1 text-xs font-bold shadow-lg"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
@@ -134,24 +133,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 h-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
+              size="icon"
+              className="h-12 w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
               onClick={() => handleNavigation("/profile")}
             >
-              <div className="p-2 rounded-lg bg-transparent group-hover:bg-muted transition-all">
-                <User className="h-5 w-5" />
-              </div>
-              <span className="flex-1 text-left font-semibold">Profile</span>
+              <User className="h-5 w-5" />
             </Button>
 
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 h-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl"
+              size="icon"
+              className="h-12 w-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl"
               onClick={() => signOut()}
             >
-              <div className="p-2 rounded-lg hover:bg-destructive/10 transition-all">
-                <LogOut className="h-5 w-5" />
-              </div>
-              <span className="flex-1 text-left font-semibold">Sign Out</span>
+              <LogOut className="h-5 w-5" />
             </Button>
           </div>
         </div>
