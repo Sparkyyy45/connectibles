@@ -8,19 +8,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Loader2, Sparkles, Trash2, Plus } from "lucide-react";
+import { Loader2, Sparkles, Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 
-const STICKY_COLORS = [
-  "bg-gradient-to-br from-yellow-200 to-yellow-300",
-  "bg-gradient-to-br from-pink-200 to-pink-300",
-  "bg-gradient-to-br from-blue-200 to-blue-300",
-  "bg-gradient-to-br from-green-200 to-green-300",
-  "bg-gradient-to-br from-purple-200 to-purple-300",
-  "bg-gradient-to-br from-orange-200 to-orange-300",
+const DIARY_COLORS = [
+  "bg-gradient-to-br from-amber-50 to-yellow-100",
+  "bg-gradient-to-br from-rose-50 to-pink-100",
+  "bg-gradient-to-br from-sky-50 to-blue-100",
+  "bg-gradient-to-br from-emerald-50 to-green-100",
+  "bg-gradient-to-br from-violet-50 to-purple-100",
+  "bg-gradient-to-br from-orange-50 to-amber-100",
 ];
 
 export default function Chill() {
@@ -29,7 +29,8 @@ export default function Chill() {
   const spills = useQuery(api.chill.getAllSpills);
   const createSpill = useMutation(api.chill.createSpill);
   const deleteSpill = useMutation(api.chill.deleteSpill);
-  const addReaction = useMutation(api.chill.addReaction);
+  const upvoteSpill = useMutation(api.chill.upvoteSpill);
+  const downvoteSpill = useMutation(api.chill.downvoteSpill);
 
   const [content, setContent] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -74,11 +75,19 @@ export default function Chill() {
     }
   };
 
-  const handleReaction = async (postId: Id<"chill_posts">, emoji: string) => {
+  const handleUpvote = async (postId: Id<"chill_posts">) => {
     try {
-      await addReaction({ postId, emoji });
+      await upvoteSpill({ postId });
     } catch (error: any) {
-      toast.error("Failed to add reaction");
+      toast.error("Failed to upvote");
+    }
+  };
+
+  const handleDownvote = async (postId: Id<"chill_posts">) => {
+    try {
+      await downvoteSpill({ postId });
+    } catch (error: any) {
+      toast.error("Failed to downvote");
     }
   };
 
@@ -161,68 +170,95 @@ export default function Chill() {
           <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {spills?.map((spill, index) => {
-                const colorClass = STICKY_COLORS[index % STICKY_COLORS.length];
+                const colorClass = DIARY_COLORS[index % DIARY_COLORS.length];
                 const isOwner = spill.authorId === user._id;
+                const upvoteCount = spill.upvotes?.length || 0;
+                const downvoteCount = spill.downvotes?.length || 0;
+                const hasUpvoted = spill.upvotes?.includes(user._id);
+                const hasDownvoted = spill.downvotes?.includes(user._id);
                 
                 return (
                   <motion.div
                     key={spill._id}
-                    initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-                    animate={{ opacity: 1, scale: 1, rotate: Math.random() * 4 - 2 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ delay: index * 0.05 }}
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                    transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid"
                   >
-                    <Card className={`${colorClass} border-none shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1`}>
-                      <CardContent className="p-6 space-y-4">
+                    <Card className={`${colorClass} border-2 border-gray-300/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden`}>
+                      {/* Diary page lines effect */}
+                      <div className="absolute inset-0 pointer-events-none opacity-20">
+                        {[...Array(12)].map((_, i) => (
+                          <div key={i} className="h-8 border-b border-gray-400/30" />
+                        ))}
+                      </div>
+                      
+                      {/* Red margin line */}
+                      <div className="absolute left-12 top-0 bottom-0 w-0.5 bg-red-300/40 pointer-events-none" />
+                      
+                      <CardContent className="p-8 space-y-4 relative">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
-                          <div className="flex justify-end">
+                          <div className="absolute top-3 right-3">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteSpill(spill._id)}
-                              className="h-8 w-8 p-0 hover:bg-white/50"
+                              className="h-7 w-7 p-0 hover:bg-gray-300/50 rounded-full"
                             >
-                              <Trash2 className="h-4 w-4 text-gray-700" />
+                              <Trash2 className="h-3.5 w-3.5 text-gray-600" />
                             </Button>
                           </div>
                         )}
 
                         {/* Content */}
-                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words font-handwriting text-base">
+                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words text-base font-serif italic pl-4 pt-2">
                           {spill.content}
                         </p>
 
-                        {/* Reactions */}
-                        <div className="flex items-center gap-2 pt-2 border-t border-gray-400/30">
-                          {["❤️", "😂", "🔥", "👏"].map((emoji) => {
-                            const reactionCount = spill.reactions?.filter(r => r.emoji === emoji).length || 0;
-                            const hasReacted = spill.reactions?.some(r => r.emoji === emoji && r.userId === user._id);
-                            
-                            return (
-                              <Button
-                                key={emoji}
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleReaction(spill._id, emoji)}
-                                className={`h-8 px-2 hover:bg-white/50 ${hasReacted ? "bg-white/50" : ""}`}
-                              >
-                                <span className="text-lg">{emoji}</span>
-                                {reactionCount > 0 && (
-                                  <span className="ml-1 text-xs font-semibold text-gray-700">
-                                    {reactionCount}
-                                  </span>
-                                )}
-                              </Button>
-                            );
-                          })}
-                        </div>
+                        {/* Footer with votes and date */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-400/20">
+                          {/* Vote buttons */}
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleUpvote(spill._id)}
+                              className={`h-9 w-9 p-0 rounded-full transition-all ${
+                                hasUpvoted 
+                                  ? "bg-green-200/60 hover:bg-green-300/60 text-green-700" 
+                                  : "hover:bg-gray-200/60 text-gray-600"
+                              }`}
+                            >
+                              <ChevronUp className="h-5 w-5" />
+                            </Button>
+                            <span className="text-sm font-semibold text-gray-700 min-w-[2rem] text-center">
+                              {upvoteCount - downvoteCount}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDownvote(spill._id)}
+                              className={`h-9 w-9 p-0 rounded-full transition-all ${
+                                hasDownvoted 
+                                  ? "bg-red-200/60 hover:bg-red-300/60 text-red-700" 
+                                  : "hover:bg-gray-200/60 text-gray-600"
+                              }`}
+                            >
+                              <ChevronDown className="h-5 w-5" />
+                            </Button>
+                          </div>
 
-                        {/* Timestamp */}
-                        <p className="text-xs text-gray-600 text-right">
-                          {new Date(spill._creationTime).toLocaleDateString()}
-                        </p>
+                          {/* Timestamp */}
+                          <p className="text-xs text-gray-500 font-serif">
+                            {new Date(spill._creationTime).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </p>
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>

@@ -74,25 +74,8 @@ const schema = defineSchema(
     chill_posts: defineTable({
       authorId: v.id("users"),
       content: v.optional(v.string()),
-      mediaUrl: v.optional(v.string()),
-      mediaType: v.optional(v.union(
-        v.literal("image"),
-        v.literal("doodle"),
-        v.literal("sticker"),
-        v.literal("music"),
-        v.literal("other")
-      )),
-      reactions: v.optional(v.array(v.object({
-        userId: v.id("users"),
-        emoji: v.string(),
-      }))),
-      // Position for freeform placement
-      positionX: v.optional(v.number()),
-      positionY: v.optional(v.number()),
-      width: v.optional(v.number()),
-      height: v.optional(v.number()),
-      zIndex: v.optional(v.number()),
-      rotation: v.optional(v.number()),
+      upvotes: v.optional(v.array(v.id("users"))),
+      downvotes: v.optional(v.array(v.id("users"))),
     }).index("by_author", ["authorId"]),
 
     // Collaboration posts

@@ -30,7 +30,6 @@ export const createSpill = mutation({
     const postId = await ctx.db.insert("chill_posts", {
       authorId: userId,
       content: args.content.trim(),
-      reactions: [],
     });
 
     return postId;
@@ -40,23 +39,25 @@ export const createSpill = mutation({
 export const getAllSpills = query({
   args: {},
   handler: async (ctx) => {
-    const posts = await ctx.db.query("chill_posts").order("desc").take(50);
+    const posts = await ctx.db.query("chill_posts").order("desc").take(100);
     
-    const postsWithAuthors = await Promise.all(
-      posts.map(async (post) => {
-        const author = await ctx.db.get(post.authorId);
-        return { ...post, author };
-      })
-    );
+    const postsWithScores = posts.map((post) => {
+      const upvoteCount = post.upvotes?.length || 0;
+      const downvoteCount = post.downvotes?.length || 0;
+      const score = upvoteCount - downvoteCount;
+      return { ...post, score };
+    });
 
-    return postsWithAuthors;
+    // Sort by score (most upvotes first)
+    postsWithScores.sort((a, b) => b.score - a.score);
+
+    return postsWithScores;
   },
 });
 
-export const addReaction = mutation({
+export const upvoteSpill = mutation({
   args: {
     postId: v.id("chill_posts"),
-    emoji: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -65,16 +66,56 @@ export const addReaction = mutation({
     const post = await ctx.db.get(args.postId);
     if (!post) throw new Error("Post not found");
 
-    const reactions = post.reactions || [];
-    const existingReaction = reactions.find(r => r.userId === userId && r.emoji === args.emoji);
+    const upvotes = post.upvotes || [];
+    const downvotes = post.downvotes || [];
+    
+    const hasUpvoted = upvotes.includes(userId);
+    const hasDownvoted = downvotes.includes(userId);
 
-    if (existingReaction) {
+    if (hasUpvoted) {
+      // Remove upvote
       await ctx.db.patch(args.postId, {
-        reactions: reactions.filter(r => !(r.userId === userId && r.emoji === args.emoji)),
+        upvotes: upvotes.filter(id => id !== userId),
       });
     } else {
+      // Add upvote and remove downvote if exists
       await ctx.db.patch(args.postId, {
-        reactions: [...reactions, { userId, emoji: args.emoji }],
+        upvotes: [...upvotes, userId],
+        downvotes: hasDownvoted ? downvotes.filter(id => id !== userId) : downvotes,
+      });
+    }
+
+    return args.postId;
+  },
+});
+
+export const downvoteSpill = mutation({
+  args: {
+    postId: v.id("chill_posts"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const post = await ctx.db.get(args.postId);
+    if (!post) throw new Error("Post not found");
+
+    const upvotes = post.upvotes || [];
+    const downvotes = post.downvotes || [];
+    
+    const hasUpvoted = upvotes.includes(userId);
+    const hasDownvoted = downvotes.includes(userId);
+
+    if (hasDownvoted) {
+      // Remove downvote
+      await ctx.db.patch(args.postId, {
+        downvotes: downvotes.filter(id => id !== userId),
+      });
+    } else {
+      // Add downvote and remove upvote if exists
+      await ctx.db.patch(args.postId, {
+        downvotes: [...downvotes, userId],
+        upvotes: hasUpvoted ? upvotes.filter(id => id !== userId) : upvotes,
       });
     }
 
