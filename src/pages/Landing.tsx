@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart, Instagram, Linkedin } from "lucide-react";
+import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart, Instagram, Linkedin, Lock, Gamepad2 } from "lucide-react";
 import { useMemo } from "react";
 
 export default function Landing() {
@@ -13,20 +13,32 @@ export default function Landing() {
     {
       icon: Users,
       title: "Discover Matches",
-      description: "Connect with people who share your passions and interests",
-      gradient: "from-blue-500 to-cyan-500",
+      description: "Connect with people who share your passions and interests through intelligent matching",
+      gradient: "from-violet-500 via-purple-500 to-fuchsia-600",
     },
     {
       icon: MessageCircle,
-      title: "Collaborate",
-      description: "Post requests and find partners for your projects",
-      gradient: "from-purple-500 to-pink-500",
+      title: "Real-Time Chat",
+      description: "Engage in meaningful conversations with your connections and community",
+      gradient: "from-emerald-500 via-teal-500 to-cyan-600",
+    },
+    {
+      icon: Lock,
+      title: "Anonymous Confessions",
+      description: "Share your thoughts freely in a judgment-free, anonymous space",
+      gradient: "from-slate-700 via-purple-800 to-indigo-900",
+    },
+    {
+      icon: Gamepad2,
+      title: "Interactive Games",
+      description: "Challenge friends with multiplayer games and track your achievements",
+      gradient: "from-orange-500 via-amber-500 to-yellow-600",
     },
     {
       icon: Calendar,
-      title: "Join Events",
-      description: "Participate in community meetups and activities",
-      gradient: "from-orange-500 to-red-500",
+      title: "Community Events",
+      description: "Discover and create events to bring your community together",
+      gradient: "from-indigo-500 via-blue-500 to-purple-600",
     },
   ], []);
 
@@ -46,43 +58,60 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
+      {/* Enhanced animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+          className="absolute top-20 left-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
+            opacity: [0.3, 0.6, 0.3],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
             ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.4, 1],
+            opacity: [0.2, 0.5, 0.2],
+            x: [0, -50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
             delay: 1,
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
           }}
         />
       </div>
 
       {/* Navigation */}
-      <nav className="border-b backdrop-blur-sm bg-background/80 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <nav className="border-b backdrop-blur-md bg-background/90 sticky top-0 z-50 shadow-sm" role="navigation" aria-label="Main navigation">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 cursor-pointer group"
+            className="flex items-center gap-3 cursor-pointer group"
             onClick={() => handleNavigation("/")}
             role="button"
             tabIndex={0}
@@ -95,30 +124,37 @@ export default function Landing() {
             }}
           >
             <div className="relative">
-              <Sparkles className="h-6 w-6 text-primary group-hover:rotate-12 transition-transform" aria-hidden="true" />
+              <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 group-hover:from-primary/30 group-hover:to-purple-500/30 transition-all duration-300">
+                <Sparkles className="h-7 w-7 text-primary group-hover:rotate-12 transition-transform duration-300" aria-hidden="true" />
+              </div>
               <motion.div
-                className="absolute inset-0 bg-primary/20 rounded-full blur-md"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 bg-primary/20 rounded-xl blur-lg"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
               />
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-              Connectibles
-            </span>
+            <div>
+              <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary via-purple-500 to-purple-600 bg-clip-text text-transparent">
+                Connectibles
+              </span>
+              <p className="text-xs text-muted-foreground font-medium">Connect & Collaborate</p>
+            </div>
           </motion.div>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection("features")}
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-semibold hover:text-primary transition-colors relative group"
             >
               Features
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </button>
             <button
               onClick={() => scrollToSection("cta")}
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-semibold hover:text-primary transition-colors relative group"
             >
               Get Started
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </button>
           </div>
 
@@ -130,7 +166,7 @@ export default function Landing() {
               <Button
                 onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
                 size="lg"
-                className="relative overflow-hidden group"
+                className="relative overflow-hidden group shadow-lg hover:shadow-xl transition-all px-6 py-6 text-base font-semibold"
                 aria-label={isAuthenticated ? "Go to dashboard" : "Get started with Connectibles"}
               >
                 <span className="relative z-10">{isAuthenticated ? "Dashboard" : "Get Started"}</span>
@@ -146,56 +182,56 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="max-w-7xl mx-auto px-6 py-20 md:py-32 relative" aria-labelledby="hero-heading">
+      <section id="hero" className="max-w-7xl mx-auto px-6 py-24 md:py-40 relative" aria-labelledby="hero-heading">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-4xl mx-auto"
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-5xl mx-auto"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20 mb-10 shadow-lg backdrop-blur-sm"
           >
-            <Zap className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Connect. Collaborate. Create.</span>
+            <Zap className="h-5 w-5 text-primary" />
+            <span className="text-sm font-semibold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Connect. Collaborate. Create.</span>
           </motion.div>
 
-          <h1 id="hero-heading" className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+          <h1 id="hero-heading" className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent">
               Connect with Your
             </span>
             <br />
-            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent inline-block mt-2">
               Tribe
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-            Discover people who share your passions. Collaborate on projects. Build meaningful connections.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-14 max-w-3xl mx-auto leading-relaxed font-medium">
+            Discover people who share your passions. Collaborate on projects. Build meaningful connections in a vibrant community.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <Button
               size="lg"
               onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-8 py-6 h-auto relative overflow-hidden group shadow-lg hover:shadow-xl transition-shadow"
+              className="text-lg px-10 py-7 h-auto relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all font-bold"
               aria-label={isAuthenticated ? "Go to your dashboard" : "Join Connectibles now"}
             >
               <span className="relative z-10 flex items-center gap-2">
                 {isAuthenticated ? "Go to Dashboard" : "Join Connectibles"}
                 <Sparkles className="h-5 w-5" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Button>
 
             <Button
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("features")}
-              className="text-lg px-8 py-6 h-auto border-2 hover:border-primary transition-colors"
+              className="text-lg px-10 py-7 h-auto border-2 hover:border-primary hover:bg-primary/5 transition-all font-semibold"
             >
               Learn More
               <ChevronDown className="h-5 w-5 ml-2" />
@@ -203,69 +239,79 @@ export default function Landing() {
           </div>
 
           <motion.div
-            className="mt-16 flex items-center justify-center gap-8 text-sm text-muted-foreground"
+            className="mt-20 flex items-center justify-center gap-12 text-sm text-muted-foreground flex-wrap"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 1 }}
           >
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-              <span>Trusted by students</span>
+            <div className="flex items-center gap-2 group cursor-default">
+              <div className="p-2 rounded-full bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
+                <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+              </div>
+              <span className="font-medium">Trusted by students</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-yellow-500" />
-              <span>Instant matching</span>
+            <div className="flex items-center gap-2 group cursor-default">
+              <div className="p-2 rounded-full bg-yellow-500/10 group-hover:bg-yellow-500/20 transition-colors">
+                <Zap className="h-4 w-4 text-yellow-500" />
+              </div>
+              <span className="font-medium">Instant matching</span>
             </div>
           </motion.div>
         </motion.div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 md:py-32 scroll-mt-20 relative" aria-labelledby="features-heading">
+      <section id="features" className="max-w-7xl mx-auto px-6 py-24 md:py-40 scroll-mt-20 relative" aria-labelledby="features-heading">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <h2 id="features-heading" className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          <h2 id="features-heading" className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
             Everything You Need to
-            <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent"> Connect</span>
+            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent"> Connect</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Powerful features designed to help you build meaningful relationships
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
+            Powerful features designed to help you build meaningful relationships and collaborate effectively
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                className="relative group"
+                whileHover={{ y: -12, transition: { duration: 0.3 } }}
+                className="relative group cursor-default"
               >
-                <div className="relative p-8 rounded-2xl border bg-card hover:shadow-2xl transition-all duration-300 h-full">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                <div className="relative p-10 rounded-3xl border-2 border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/30 hover:shadow-2xl transition-all duration-500 h-full">
+                  {/* Gradient overlay on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-[0.07] rounded-3xl transition-opacity duration-500`} />
                   
                   <div className="relative">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-6 shadow-lg`}>
-                      <Icon className="h-8 w-8 text-white" aria-hidden="true" />
+                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-8 shadow-xl group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="h-10 w-10 text-white" aria-hidden="true" />
                     </div>
                     
-                    <h3 className="text-2xl font-bold tracking-tight mb-4">
+                    <h3 className="text-2xl font-bold tracking-tight mb-5">
                       {feature.title}
                     </h3>
                     
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed text-base">
                       {feature.description}
                     </p>
+                  </div>
+
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-3xl overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
                   </div>
                 </div>
               </motion.div>
@@ -275,15 +321,15 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section id="cta" className="max-w-7xl mx-auto px-6 py-20 md:py-32 scroll-mt-20 relative" aria-labelledby="cta-heading">
+      <section id="cta" className="max-w-7xl mx-auto px-6 py-24 md:py-40 scroll-mt-20 relative" aria-labelledby="cta-heading">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl p-12 md:p-16 text-center"
+          transition={{ duration: 0.8 }}
+          className="relative overflow-hidden rounded-[2rem] p-16 md:p-24 text-center shadow-2xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-purple-500 to-pink-500 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-purple-500 to-pink-500" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20" />
           
           <div className="relative z-10">
@@ -291,24 +337,24 @@ export default function Landing() {
               initial={{ scale: 0 }}
               whileInView={{ scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mb-6"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm mb-8 shadow-xl"
             >
-              <Sparkles className="h-10 w-10 text-white" />
+              <Sparkles className="h-12 w-12 text-white" />
             </motion.div>
 
-            <h2 id="cta-heading" className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
+            <h2 id="cta-heading" className="text-5xl md:text-6xl font-bold tracking-tight mb-8 text-white">
               Ready to Connect?
             </h2>
             
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of students building meaningful connections
+            <p className="text-xl md:text-2xl text-white/95 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
+              Join thousands of students building meaningful connections and collaborating on amazing projects
             </p>
             
             <Button
               size="lg"
               onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-8 py-6 h-auto bg-white text-primary hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+              className="text-lg px-10 py-7 h-auto bg-white text-primary hover:bg-white/95 shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all hover:scale-105 font-bold"
               aria-label="Get started with Connectibles"
             >
               Get Started Now
@@ -319,39 +365,41 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-background/80 backdrop-blur-sm mt-20">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+      <footer className="border-t bg-card/50 backdrop-blur-md mt-24">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid md:grid-cols-3 gap-12 mb-12">
             {/* Brand Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <span className="text-lg font-bold">Connectibles</span>
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Connectibles</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Connect with your tribe. Collaborate on projects. Build meaningful connections.
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Connect with your tribe. Collaborate on projects. Build meaningful connections in a vibrant community.
               </p>
             </div>
 
             {/* Quick Links */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Quick Links</h3>
-              <nav className="flex flex-col space-y-2">
+            <div className="space-y-5">
+              <h3 className="font-bold text-lg">Quick Links</h3>
+              <nav className="flex flex-col space-y-3">
                 <button
                   onClick={() => scrollToSection("features")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
                 >
                   Features
                 </button>
                 <button
                   onClick={() => handleNavigation("/discover")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
                 >
                   Discover
                 </button>
                 <button
                   onClick={() => handleNavigation("/dashboard")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors text-left font-medium"
                 >
                   Dashboard
                 </button>
@@ -359,22 +407,22 @@ export default function Landing() {
             </div>
 
             {/* Contact Section */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Contact</h3>
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">Suyash Yadav</p>
+            <div className="space-y-5">
+              <h3 className="font-bold text-lg">Contact</h3>
+              <div className="space-y-4 text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground text-base">Suyash Yadav</p>
                 <a
                   href="mailto:suyashyadav1709@gmail.com"
-                  className="hover:text-primary transition-colors block"
+                  className="hover:text-primary transition-colors block font-medium"
                 >
                   suyashyadav1709@gmail.com
                 </a>
-                <div className="flex items-center gap-3 pt-1">
+                <div className="flex items-center gap-4 pt-2">
                   <a
                     href="https://www.instagram.com/suyash.yadv/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors"
+                    className="p-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all"
                     aria-label="Instagram profile"
                   >
                     <Instagram className="h-5 w-5" />
@@ -383,7 +431,7 @@ export default function Landing() {
                     href="https://www.linkedin.com/in/suyash-yadav-b63251378?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors"
+                    className="p-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all"
                     aria-label="LinkedIn profile"
                   >
                     <Linkedin className="h-5 w-5" />
@@ -394,12 +442,12 @@ export default function Landing() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 border-t">
+          <div className="pt-10 border-t">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground font-medium">
                 © {new Date().getFullYear()} Connectibles. All rights reserved.
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground font-medium">
                 Developed by Suyash Yadav
               </p>
             </div>
