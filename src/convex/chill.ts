@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { internal } from "./_generated/api";
 
 export const generateUploadUrl = mutation({
   args: {},
@@ -31,6 +32,19 @@ export const createSpill = mutation({
       authorId: userId,
       content: args.content.trim(),
     });
+
+    // Notify all connections about the new spill
+    const author = await ctx.db.get(userId);
+    if (author?.connections && author.connections.length > 0) {
+      for (const connectionId of author.connections) {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+          userId: connectionId,
+          type: "new_spill",
+          message: `${author.name || "Someone"} just posted a new spill! ✨`,
+          relatedUserId: userId,
+        });
+      }
+    }
 
     return postId;
   },
