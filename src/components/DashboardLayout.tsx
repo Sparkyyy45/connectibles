@@ -73,7 +73,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <div>
               <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Connectibles
+                Connect Minds
               </span>
               <p className="text-xs text-muted-foreground">Connect & Collaborate</p>
             </div>
