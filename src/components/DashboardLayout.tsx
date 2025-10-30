@@ -58,46 +58,51 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <motion.aside
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className="w-72 bg-card/80 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col fixed h-screen z-50"
+        className="w-80 bg-gradient-to-b from-card/95 via-card/90 to-card/95 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col fixed h-screen z-50"
       >
         {/* Logo Section */}
-        <div className="p-6 border-b border-border/50">
+        <div className="p-7 border-b border-border/30">
           <motion.div
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-4 cursor-pointer group"
             onClick={() => navigate("/")}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
-            <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 group-hover:from-primary/30 group-hover:to-purple-500/30 transition-all">
-              <Sparkles className="h-6 w-6 text-primary" />
+            <div className="relative p-3 rounded-2xl bg-gradient-to-br from-primary/25 to-purple-500/25 group-hover:from-primary/35 group-hover:to-purple-500/35 transition-all duration-300 shadow-lg group-hover:shadow-xl">
+              <Sparkles className="h-7 w-7 text-primary group-hover:rotate-12 transition-transform duration-300" />
+              <motion.div
+                className="absolute inset-0 bg-primary/20 rounded-2xl blur-md"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
             </div>
             <div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary via-purple-500 to-purple-600 bg-clip-text text-transparent">
                 Connect Minds
               </span>
-              <p className="text-xs text-muted-foreground">Connect & Collaborate</p>
+              <p className="text-xs text-muted-foreground font-medium mt-0.5">Connect & Collaborate</p>
             </div>
           </motion.div>
         </div>
 
         {/* User Profile Section */}
-        <div className="p-6 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
+        <div className="p-7 border-b border-border/30">
+          <div className="flex items-center gap-4 p-3 rounded-2xl bg-gradient-to-br from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30 transition-all duration-300">
+            <Avatar className="h-14 w-14 border-2 border-primary/30 shadow-xl ring-2 ring-primary/10">
               <AvatarImage src={user?.image} alt={user?.name || "User"} />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white font-bold text-lg">
+              <AvatarFallback className="bg-gradient-to-br from-primary via-purple-500 to-purple-600 text-white font-bold text-xl">
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              <p className="font-bold text-base truncate">{user?.name || "User"}</p>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-5 space-y-2.5 overflow-y-auto">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -111,20 +116,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Button
                   variant={active ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start gap-3 h-12 text-base font-medium transition-all",
+                    "w-full justify-start gap-4 h-14 text-base font-semibold transition-all duration-300 rounded-xl",
                     active
-                      ? "bg-gradient-to-r from-primary to-purple-600 text-primary-foreground shadow-lg shadow-primary/25"
-                      : "hover:bg-muted/50 hover:translate-x-1"
+                      ? "bg-gradient-to-r from-primary via-purple-500 to-purple-600 text-primary-foreground shadow-xl shadow-primary/30 scale-[1.02]"
+                      : "hover:bg-muted/60 hover:translate-x-2 hover:shadow-md"
                   )}
                   onClick={() => navigate(item.path)}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
+                  <div className={cn(
+                    "p-2 rounded-lg transition-all duration-300",
+                    active ? "bg-white/20" : "bg-transparent group-hover:bg-muted"
+                  )}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="tracking-wide">{item.label}</span>
                   {active && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className="ml-auto h-2 w-2 rounded-full bg-white"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="ml-auto h-2.5 w-2.5 rounded-full bg-white shadow-lg"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
                 </Button>
@@ -134,15 +144,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-border/50">
-          <div className="flex items-center justify-around mb-3">
+        <div className="p-5 border-t border-border/30 bg-gradient-to-t from-muted/20 to-transparent">
+          <div className="flex items-center justify-around mb-4 gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 relative hover:bg-muted/50 transition-all"
+              className="h-14 w-14 relative hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
               onClick={() => navigate("/notifications")}
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-6 w-6" />
               <AnimatePresence>
                 {unreadCount !== undefined && unreadCount > 0 && (
                   <motion.div
@@ -153,7 +163,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   >
                     <Badge
                       variant="destructive"
-                      className="h-5 min-w-5 flex items-center justify-center px-1 text-xs"
+                      className="h-6 min-w-6 flex items-center justify-center px-1.5 text-xs font-bold shadow-lg"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
@@ -165,26 +175,28 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 hover:bg-muted/50 transition-all"
+              className="h-14 w-14 hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
               onClick={() => navigate("/profile")}
             >
-              <User className="h-5 w-5" />
+              <User className="h-6 w-6" />
             </Button>
           </div>
           
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 h-12 text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
+            className="w-full justify-start gap-4 h-14 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl font-semibold hover:shadow-md"
             onClick={() => signOut()}
           >
-            <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
+            <div className="p-2 rounded-lg hover:bg-destructive/10 transition-all">
+              <LogOut className="h-5 w-5" />
+            </div>
+            <span className="tracking-wide">Sign Out</span>
           </Button>
         </div>
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 min-h-screen overflow-auto">
+      <main className="flex-1 ml-80 min-h-screen overflow-auto">
         {children}
       </main>
     </div>
