@@ -188,6 +188,27 @@ const schema = defineSchema(
     })
       .index("by_receiver", ["receiverId"])
       .index("by_sender", ["senderId"]),
+
+    // Game statistics for tracking player performance
+    game_stats: defineTable({
+      userId: v.id("users"),
+      gameType: v.union(
+        v.literal("tic_tac_toe"),
+        v.literal("memory_match"),
+        v.literal("reaction_test"),
+        v.literal("word_chain"),
+        v.literal("quick_draw"),
+        v.literal("trivia_duel"),
+        v.literal("number_guess"),
+        v.literal("emoji_match")
+      ),
+      wins: v.number(),
+      losses: v.number(),
+      draws: v.number(),
+      totalGames: v.number(),
+    })
+      .index("by_user", ["userId"])
+      .index("by_user_and_game", ["userId", "gameType"]),
   },
   {
     schemaValidation: false,

@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound.tsx";
 import Chill from "@/pages/Chill.tsx";
 import Gossip from "@/pages/Gossip.tsx";
 import Games from "@/pages/Games.tsx";
+import GameStats from "@/pages/GameStats.tsx";
 import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
@@ -69,6 +70,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/messages" element={<Messages />} />
             <Route path="/gossip" element={<Gossip />} />
             <Route path="/games" element={<Games />} />
+            <Route path="/game-stats" element={<GameStats />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

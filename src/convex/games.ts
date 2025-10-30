@@ -178,9 +178,14 @@ export const updateGameState = mutation({
       gameState: args.gameState,
     };
 
-    if (args.winnerId) {
+    if (args.winnerId !== undefined) {
       updates.winnerId = args.winnerId;
       updates.status = "completed";
+      
+      // Update game statistics
+      await ctx.scheduler.runAfter(0, internal.gameStats.updateGameStats, {
+        sessionId: args.sessionId,
+      });
     } else {
       // Switch turn
       updates.currentTurn =
