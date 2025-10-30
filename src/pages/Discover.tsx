@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp } from "lucide-react";
+import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Discover() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -22,9 +24,12 @@ export default function Discover() {
   const reverseMatches = useQuery(api.matching.getReverseMatches);
   const sendRequest = useMutation(api.connections.sendConnectionRequest);
   const sendWave = useMutation(api.connections.sendWave);
+  const reportUser = useMutation(api.reports.reportUser);
   const profileCompletion = useQuery(api.profiles.getProfileCompletion);
 
   const [activeTab, setActiveTab] = useState("matches");
+  const [selectedUser, setSelectedUser] = useState<{ id: Id<"users">, name: string, image?: string } | null>(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -57,6 +62,7 @@ export default function Discover() {
     try {
       await sendWave({ receiverId: userId });
       toast.success("Wave sent! 👋");
+      setSelectedUser(null);
     } catch (error: any) {
       const errorMessage = error?.message || String(error);
       
@@ -70,6 +76,24 @@ export default function Discover() {
         toast.error("Please sign in to send waves");
       } else {
         toast.error("Failed to send wave");
+      }
+    }
+  };
+
+  const handleReport = async (userId: Id<"users">) => {
+    try {
+      const result = await reportUser({ reportedUserId: userId });
+      toast.success(`User reported. Total reports: ${result.reportCount}`);
+      setShowReportDialog(false);
+      setSelectedUser(null);
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      if (errorMessage.includes("ALREADY_REPORTED")) {
+        toast.error("You have already reported this user");
+      } else if (errorMessage.includes("SELF_REPORT")) {
+        toast.error("You cannot report yourself");
+      } else {
+        toast.error("Failed to report user");
       }
     }
   };
@@ -94,7 +118,14 @@ export default function Discover() {
       <Card>
         <CardHeader>
           <div className="flex items-start gap-4">
-            <Avatar className="h-12 w-12">
+            <Avatar 
+              className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+              onClick={() => setSelectedUser({ 
+                id: match.user._id, 
+                name: match.user.name || "Anonymous",
+                image: match.user.image 
+              })}
+            >
               <AvatarImage src={match.user.image} alt={match.user.name || "User"} />
               <AvatarFallback>
                 {match.user.name?.charAt(0).toUpperCase() || "U"}
@@ -168,6 +199,62 @@ export default function Discover() {
 
   return (
     <DashboardLayout>
+      <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={selectedUser?.image} alt={selectedUser?.name} />
+                <AvatarFallback>
+                  {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              {selectedUser?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Choose an action
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-4">
+            <Button
+              onClick={() => selectedUser && handleWave(selectedUser.id)}
+              className="w-full gap-2"
+              size="lg"
+            >
+              <Hand className="h-5 w-5" />
+              Wave
+            </Button>
+            <Button
+              onClick={() => setShowReportDialog(true)}
+              variant="destructive"
+              className="w-full gap-2"
+              size="lg"
+            >
+              <Flag className="h-5 w-5" />
+              Report User
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Report User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to report this user? This action will be reviewed by moderators. 
+              Users with 10 or more reports will be automatically banned.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => selectedUser && handleReport(selectedUser.id)}>
+              Report
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
