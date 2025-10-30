@@ -41,13 +41,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: Users, label: "Discover", path: "/discover" },
+    { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: Palette, label: "Spillz", path: "/chill" },
     { icon: MessageSquare, label: "Gossip", path: "/gossip" },
     { icon: Heart, label: "Truth/Dare", path: "/truth-dare" },
     { icon: Gamepad2, label: "Games", path: "/games" },
     { icon: Trophy, label: "Stats", path: "/game-stats" },
     { icon: Calendar, label: "Events", path: "/events" },
-    { icon: MessageCircle, label: "Messages", path: "/messages" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
