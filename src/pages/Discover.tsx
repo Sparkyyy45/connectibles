@@ -154,22 +154,13 @@ export default function Discover() {
               </div>
             </div>
           )}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => navigate(`/profile/${match.user._id}`)}
-            >
-              View Profile
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={() => handleConnect(match.user._id)}
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              Connect
-            </Button>
-          </div>
+          <Button
+            className="w-full"
+            onClick={() => handleConnect(match.user._id)}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Connect
+          </Button>
         </CardContent>
       </Card>
     </motion.div>
