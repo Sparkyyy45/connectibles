@@ -11,58 +11,36 @@ export const generateUploadUrl = mutation({
   },
 });
 
-export const createChillPost = mutation({
+export const createSpill = mutation({
   args: {
-    content: v.optional(v.string()),
-    mediaUrl: v.optional(v.string()),
-    storageId: v.optional(v.id("_storage")),
-    mediaType: v.optional(v.union(
-      v.literal("image"),
-      v.literal("doodle"),
-      v.literal("sticker"),
-      v.literal("music"),
-      v.literal("other")
-    )),
-    positionX: v.optional(v.number()),
-    positionY: v.optional(v.number()),
-    width: v.optional(v.number()),
-    height: v.optional(v.number()),
-    zIndex: v.optional(v.number()),
-    rotation: v.optional(v.number()),
+    content: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // If storageId is provided, get the URL
-    let finalMediaUrl: string | undefined = args.mediaUrl;
-    if (args.storageId) {
-      const url = await ctx.storage.getUrl(args.storageId);
-      finalMediaUrl = url ?? undefined;
+    if (!args.content || args.content.trim().length === 0) {
+      throw new Error("Spill content cannot be empty");
+    }
+
+    if (args.content.length > 1200) {
+      throw new Error("Spill content cannot exceed 1200 characters");
     }
 
     const postId = await ctx.db.insert("chill_posts", {
       authorId: userId,
-      content: args.content,
-      mediaUrl: finalMediaUrl || undefined,
-      mediaType: args.mediaType,
+      content: args.content.trim(),
       reactions: [],
-      positionX: args.positionX,
-      positionY: args.positionY,
-      width: args.width,
-      height: args.height,
-      zIndex: args.zIndex,
-      rotation: args.rotation || 0,
     });
 
     return postId;
   },
 });
 
-export const getAllChillPosts = query({
+export const getAllSpills = query({
   args: {},
   handler: async (ctx) => {
-    const posts = await ctx.db.query("chill_posts").order("desc").collect();
+    const posts = await ctx.db.query("chill_posts").order("desc").take(50);
     
     const postsWithAuthors = await Promise.all(
       posts.map(async (post) => {
@@ -104,48 +82,17 @@ export const addReaction = mutation({
   },
 });
 
-export const deleteChillPost = mutation({
+export const deleteSpill = mutation({
   args: { postId: v.id("chill_posts") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     const post = await ctx.db.get(args.postId);
-    if (!post) throw new Error("Post not found");
+    if (!post) throw new Error("Spill not found");
     if (post.authorId !== userId) throw new Error("Not authorized");
 
     await ctx.db.delete(args.postId);
-    return args.postId;
-  },
-});
-
-export const updatePostPosition = mutation({
-  args: {
-    postId: v.id("chill_posts"),
-    positionX: v.number(),
-    positionY: v.number(),
-    width: v.optional(v.number()),
-    height: v.optional(v.number()),
-    zIndex: v.optional(v.number()),
-    rotation: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    const post = await ctx.db.get(args.postId);
-    if (!post) throw new Error("Post not found");
-    if (post.authorId !== userId) throw new Error("Not authorized");
-
-    await ctx.db.patch(args.postId, {
-      positionX: args.positionX,
-      positionY: args.positionY,
-      width: args.width,
-      height: args.height,
-      zIndex: args.zIndex,
-      rotation: args.rotation,
-    });
-
     return args.postId;
   },
 });
