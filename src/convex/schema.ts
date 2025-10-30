@@ -141,7 +141,12 @@ const schema = defineSchema(
       gameType: v.union(
         v.literal("tic_tac_toe"),
         v.literal("memory_match"),
-        v.literal("reaction_test")
+        v.literal("reaction_test"),
+        v.literal("word_chain"),
+        v.literal("quick_draw"),
+        v.literal("trivia_duel"),
+        v.literal("number_guess"),
+        v.literal("emoji_match")
       ),
       player1Id: v.id("users"),
       player2Id: v.id("users"),
@@ -166,7 +171,12 @@ const schema = defineSchema(
       gameType: v.union(
         v.literal("tic_tac_toe"),
         v.literal("memory_match"),
-        v.literal("reaction_test")
+        v.literal("reaction_test"),
+        v.literal("word_chain"),
+        v.literal("quick_draw"),
+        v.literal("trivia_duel"),
+        v.literal("number_guess"),
+        v.literal("emoji_match")
       ),
       status: v.union(
         v.literal("pending"),

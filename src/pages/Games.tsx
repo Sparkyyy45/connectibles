@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
 
-type GameType = "tic_tac_toe" | "memory_match" | "reaction_test";
+type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "word_chain" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
 
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -51,6 +51,36 @@ export default function Games() {
       name: "Reaction Test",
       description: "Test your reflexes",
       icon: "⚡",
+    },
+    {
+      type: "word_chain" as GameType,
+      name: "Word Chain",
+      description: "Build words from last letter",
+      icon: "📝",
+    },
+    {
+      type: "quick_draw" as GameType,
+      name: "Quick Draw",
+      description: "Draw and guess together",
+      icon: "🎨",
+    },
+    {
+      type: "trivia_duel" as GameType,
+      name: "Trivia Duel",
+      description: "Battle of knowledge",
+      icon: "🧩",
+    },
+    {
+      type: "number_guess" as GameType,
+      name: "Number Guess",
+      description: "Guess the secret number",
+      icon: "🔢",
+    },
+    {
+      type: "emoji_match" as GameType,
+      name: "Emoji Match",
+      description: "Match emoji expressions",
+      icon: "😊",
     },
   ];
 
