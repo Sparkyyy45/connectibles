@@ -96,30 +96,60 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center">
+    <Card className="max-w-2xl mx-auto shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
+        <CardTitle className="text-center text-2xl">
           {session.status === "completed" 
-            ? session.winnerId === currentUserId ? "🎉 You Won!" : "😔 You Lost"
+            ? session.winnerId === currentUserId ? "🎉 Victory!" : "😔 Defeat"
             : isMyTurn ? "Your Turn" : "Opponent's Turn"}
         </CardTitle>
-        <div className="flex justify-around text-sm">
-          <span>Your Score: {session.player1Id === currentUserId ? scores.player1 : scores.player2}</span>
-          <span>Opponent: {session.player1Id === currentUserId ? scores.player2 : scores.player1}</span>
+        <div className="flex justify-around text-lg font-semibold mt-3">
+          <div className="text-center">
+            <div className="text-2xl text-green-500">{session.player1Id === currentUserId ? scores.player1 : scores.player2}</div>
+            <div className="text-xs text-muted-foreground">Your Matches</div>
+          </div>
+          <div className="text-4xl">🆚</div>
+          <div className="text-center">
+            <div className="text-2xl text-red-500">{session.player1Id === currentUserId ? scores.player2 : scores.player1}</div>
+            <div className="text-xs text-muted-foreground">Opponent</div>
+          </div>
         </div>
+        {session.status === "in_progress" && (
+          <div className="text-center mt-2">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="inline-block"
+            >
+              {isMyTurn ? (
+                <span className="text-green-500 font-semibold">● Your Move</span>
+              ) : (
+                <span className="text-yellow-500 font-semibold">● Waiting...</span>
+              )}
+            </motion.div>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-4 gap-3">
           {cards.map((emoji, index) => (
             <motion.button
               key={index}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isMyTurn && !matched.includes(index) && !flipped.includes(index) ? 1.08 : 1 }}
+              whileTap={{ scale: isMyTurn && !matched.includes(index) && !flipped.includes(index) ? 0.92 : 1 }}
+              initial={{ rotateY: 180, opacity: 0 }}
+              animate={{ 
+                rotateY: flipped.includes(index) || matched.includes(index) ? 0 : 180,
+                opacity: 1
+              }}
+              transition={{ duration: 0.3, delay: index * 0.03 }}
               onClick={() => handleCardClick(index)}
-              className={`aspect-square rounded-lg text-4xl flex items-center justify-center transition-all ${
+              className={`aspect-square rounded-xl text-5xl flex items-center justify-center transition-all shadow-lg cursor-pointer ${
                 flipped.includes(index) || matched.includes(index)
-                  ? "bg-primary/20 border-2 border-primary"
-                  : "bg-muted border-2 border-muted-foreground/20"
+                  ? matched.includes(index)
+                    ? "bg-green-500/30 border-2 border-green-500"
+                    : "bg-primary/20 border-2 border-primary"
+                  : "bg-gradient-to-br from-muted to-muted/50 border-2 border-muted-foreground/30 hover:border-primary/50"
               }`}
             >
               {flipped.includes(index) || matched.includes(index) ? emoji : "❓"}

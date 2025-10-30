@@ -84,20 +84,29 @@ export default function NumberGuess({ sessionId, currentUserId, session }: Numbe
   };
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center">
+    <Card className="max-w-md mx-auto shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
+        <CardTitle className="text-center text-2xl">
           {session.status === "completed" 
             ? session.winnerId === currentUserId 
-              ? "🎉 You Won!" 
+              ? "🎉 Victory!" 
               : "😔 Opponent Won"
             : isMyTurn 
-              ? "Your Turn - Guess the Number!" 
-              : "Opponent's Turn"}
+              ? "🎯 Your Turn" 
+              : "⏳ Opponent's Turn"}
         </CardTitle>
-        <CardDescription className="text-center">
-          Guess a number between 1 and 100
+        <CardDescription className="text-center text-lg font-medium mt-2">
+          Guess a number between <span className="text-primary font-bold">1</span> and <span className="text-primary font-bold">100</span>
         </CardDescription>
+        {session.status === "in_progress" && isMyTurn && (
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-center mt-2 text-sm text-green-500 font-semibold"
+          >
+            ● Make your guess!
+          </motion.div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {session.status === "in_progress" && isMyTurn && (

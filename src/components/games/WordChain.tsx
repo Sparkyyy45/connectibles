@@ -81,20 +81,33 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
   };
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center">
+    <Card className="max-w-md mx-auto shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
+        <CardTitle className="text-center text-2xl">
           {session.status === "completed" 
-            ? "Game Over"
+            ? "🏁 Game Over"
             : isMyTurn 
-              ? "Your Turn" 
-              : "Opponent's Turn"}
+              ? "📝 Your Turn" 
+              : "⏳ Opponent's Turn"}
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription className="text-center text-lg font-medium mt-2">
           {chain.length === 0 
             ? "Start with any word!" 
-            : `Next word must start with: ${getNextLetter()}`}
+            : (
+              <span>
+                Next word must start with: <span className="text-3xl font-bold text-primary">{getNextLetter()}</span>
+              </span>
+            )}
         </CardDescription>
+        {session.status === "in_progress" && isMyTurn && (
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-center mt-2 text-sm text-green-500 font-semibold"
+          >
+            ● Type your word!
+          </motion.div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {session.status === "in_progress" && isMyTurn && (
@@ -116,8 +129,10 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
               key={index}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className={`p-3 rounded-lg ${
-                entry.player === "You" ? "bg-primary/10" : "bg-muted"
+              className={`p-4 rounded-xl shadow-md ${
+                entry.player === "You" 
+                  ? "bg-gradient-to-r from-green-500/20 to-green-600/10 border-l-4 border-green-500" 
+                  : "bg-gradient-to-r from-blue-500/20 to-blue-600/10 border-l-4 border-blue-500"
               }`}
             >
               <div className="flex justify-between items-center">

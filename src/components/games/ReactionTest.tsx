@@ -72,11 +72,11 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
   };
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center">Reaction Test</CardTitle>
-        <CardDescription className="text-center">
-          Click as fast as you can when the screen turns green!
+    <Card className="max-w-md mx-auto shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
+        <CardTitle className="text-center text-2xl">⚡ Reaction Test</CardTitle>
+        <CardDescription className="text-center text-lg font-medium mt-2">
+          Click as fast as you can when the screen turns <span className="text-green-500 font-bold">GREEN</span>!
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -90,29 +90,47 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
             
             <motion.div
               onClick={handleClick}
-              className={`h-64 rounded-lg flex items-center justify-center text-2xl font-bold cursor-pointer transition-all ${
+              animate={{ 
+                scale: gameState === "go" ? [1, 1.05, 1] : 1,
+                boxShadow: gameState === "go" ? ["0 0 0 0 rgba(34, 197, 94, 0.7)", "0 0 0 20px rgba(34, 197, 94, 0)"] : "none"
+              }}
+              transition={{ 
+                duration: gameState === "go" ? 0.5 : 0.3,
+                repeat: gameState === "go" ? Infinity : 0
+              }}
+              className={`h-64 rounded-2xl flex items-center justify-center text-3xl font-bold cursor-pointer transition-all shadow-xl ${
                 gameState === "ready" 
-                  ? "bg-red-500 text-white" 
+                  ? "bg-gradient-to-br from-red-500 to-red-600 text-white" 
                   : gameState === "go" 
-                    ? "bg-green-500 text-white" 
-                    : "bg-muted"
+                    ? "bg-gradient-to-br from-green-500 to-green-600 text-white" 
+                    : "bg-gradient-to-br from-muted to-muted/50 text-muted-foreground"
               }`}
             >
-              {gameState === "ready" && "Wait..."}
-              {gameState === "go" && "CLICK NOW!"}
-              {gameState === "waiting" && "Ready?"}
+              {gameState === "ready" && "⏳ Wait..."}
+              {gameState === "go" && "🚀 CLICK NOW!"}
+              {gameState === "waiting" && "🎮 Ready?"}
             </motion.div>
           </>
         )}
 
         <div className="space-y-2">
           {results.map((result, index) => (
-            <div key={index} className="p-3 rounded-lg bg-muted">
-              <div className="flex justify-between">
-                <span className="font-medium">{result.player}</span>
-                <span className="text-primary font-bold">{result.time}ms</span>
+            <motion.div 
+              key={index} 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`p-4 rounded-xl shadow-md ${
+                result.player === "You"
+                  ? "bg-gradient-to-r from-green-500/20 to-green-600/10 border-l-4 border-green-500"
+                  : "bg-gradient-to-r from-blue-500/20 to-blue-600/10 border-l-4 border-blue-500"
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-lg">{result.player}</span>
+                <span className="text-primary font-bold text-2xl">{result.time}ms</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
