@@ -5,9 +5,10 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, ArrowLeft, MessageCircle, UserPlus, Hand } from "lucide-react";
+import { Loader2, ArrowLeft, MessageCircle, UserPlus, Hand, Flag } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -20,10 +21,13 @@ export default function UserProfile() {
   
   const profile = useQuery(api.profiles.getProfile, userId ? { userId: userId as Id<"users"> } : "skip");
   const connectionStatus = useQuery(api.connections.getConnectionStatus, userId ? { userId: userId as Id<"users"> } : "skip");
+  const hasReported = useQuery(api.reports.hasReported, userId ? { reportedUserId: userId as Id<"users"> } : "skip");
   const sendWave = useMutation(api.connections.sendWave);
   const sendConnectionRequest = useMutation(api.connections.sendConnectionRequest);
+  const reportUser = useMutation(api.reports.reportUser);
   
   const [actionLoading, setActionLoading] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -83,6 +87,27 @@ export default function UserProfile() {
     navigate("/messages");
   };
 
+  const handleReport = async () => {
+    if (!userId) return;
+    setActionLoading(true);
+    try {
+      const result = await reportUser({ reportedUserId: userId as Id<"users"> });
+      toast.success(`User reported. Total reports: ${result.reportCount}`);
+      setShowReportDialog(false);
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to report user";
+      if (errorMessage.includes("ALREADY_REPORTED")) {
+        toast.error("You have already reported this user");
+      } else if (errorMessage.includes("SELF_REPORT")) {
+        toast.error("You cannot report yourself");
+      } else {
+        toast.error(errorMessage);
+      }
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (authLoading || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -93,6 +118,24 @@ export default function UserProfile() {
 
   return (
     <DashboardLayout>
+      <AlertDialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Report User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to report this user? This action will be reviewed by moderators. 
+              Users with 10 or more reports will be automatically banned.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReport} disabled={actionLoading}>
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Report"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="max-w-3xl mx-auto p-6 space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,57 +172,52 @@ export default function UserProfile() {
                 <CardDescription className="text-base mt-2">{profile.bio}</CardDescription>
               )}
               
-              <div className="flex gap-3 justify-center mt-6">
+              <div className="flex gap-3 justify-center mt-6 flex-wrap">
+                <Button 
+                  onClick={handleWave} 
+                  disabled={actionLoading || connectionStatus === "waved"} 
+                  size="lg" 
+                  variant="outline" 
+                  className="gap-2"
+                >
+                  {actionLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <Hand className="h-5 w-5" />
+                      {connectionStatus === "waved" ? "Waved" : "Wave"}
+                    </>
+                  )}
+                </Button>
+
                 {connectionStatus === "connected" ? (
                   <Button onClick={handleMessage} size="lg" className="gap-2">
                     <MessageCircle className="h-5 w-5" />
                     Send Message
                   </Button>
-                ) : connectionStatus === "pending" ? (
-                  <Button disabled size="lg" variant="outline">
-                    Request Pending
-                  </Button>
-                ) : connectionStatus === "waved" ? (
-                  <>
-                    <Button disabled size="lg" variant="outline" className="gap-2">
-                      <Hand className="h-5 w-5" />
-                      Waved
-                    </Button>
-                    <Button onClick={handleConnect} disabled={actionLoading} size="lg" className="gap-2">
-                      {actionLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <UserPlus className="h-5 w-5" />
-                          Connect
-                        </>
-                      )}
-                    </Button>
-                  </>
                 ) : (
-                  <>
-                    <Button onClick={handleWave} disabled={actionLoading} size="lg" variant="outline" className="gap-2">
-                      {actionLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <Hand className="h-5 w-5" />
-                          Wave
-                        </>
-                      )}
-                    </Button>
-                    <Button onClick={handleConnect} disabled={actionLoading} size="lg" className="gap-2">
-                      {actionLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <UserPlus className="h-5 w-5" />
-                          Connect
-                        </>
-                      )}
-                    </Button>
-                  </>
+                  <Button onClick={handleConnect} disabled={actionLoading} size="lg" className="gap-2">
+                    {actionLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <UserPlus className="h-5 w-5" />
+                        {connectionStatus === "pending" ? "Request Pending" : "Connect"}
+                      </>
+                    )}
+                  </Button>
                 )}
+
+                <Button 
+                  onClick={() => setShowReportDialog(true)} 
+                  disabled={hasReported || actionLoading}
+                  size="lg" 
+                  variant="destructive" 
+                  className="gap-2"
+                >
+                  <Flag className="h-5 w-5" />
+                  {hasReported ? "Reported" : "Report"}
+                </Button>
               </div>
             </CardHeader>
           </Card>

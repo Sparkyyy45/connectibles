@@ -22,6 +22,7 @@ import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
 import type * as profiles from "../profiles.js";
+import type * as reports from "../reports.js";
 import type * as users from "../users.js";
 
 import type {
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   posts: typeof posts;
   profiles: typeof profiles;
+  reports: typeof reports;
   users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

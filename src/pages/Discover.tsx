@@ -158,9 +158,9 @@ export default function Discover() {
             <Button
               variant="outline"
               className="flex-1"
-              onClick={() => handleWave(match.user._id)}
+              onClick={() => navigate(`/profile/${match.user._id}`)}
             >
-              👋 Wave
+              View Profile
             </Button>
             <Button
               className="flex-1"

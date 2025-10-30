@@ -29,6 +29,7 @@ const schema = defineSchema(
       emailVerificationTime: v.optional(v.number()),
       isAnonymous: v.optional(v.boolean()),
       role: v.optional(roleValidator),
+      isBanned: v.optional(v.boolean()),
       
       // Connectibles specific fields
       bio: v.optional(v.string()),
@@ -59,6 +60,15 @@ const schema = defineSchema(
       relatedUserId: v.optional(v.id("users")),
       read: v.boolean(),
     }).index("by_user", ["userId"]),
+
+    // User reports for moderation
+    user_reports: defineTable({
+      reporterId: v.id("users"),
+      reportedUserId: v.id("users"),
+      reason: v.optional(v.string()),
+    })
+      .index("by_reported_user", ["reportedUserId"])
+      .index("by_reporter_and_reported", ["reporterId", "reportedUserId"]),
 
     // Chill posts - creative content sharing
     chill_posts: defineTable({
