@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { internal } from "./_generated/api";
 
 export const sendWave = mutation({
   args: { receiverId: v.id("users") },
@@ -31,6 +32,15 @@ export const sendWave = mutation({
       senderId: userId,
       receiverId: args.receiverId,
       status: "waved",
+    });
+
+    // Create notification for the receiver
+    const sender = await ctx.db.get(userId);
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      userId: args.receiverId,
+      type: "wave",
+      message: `${sender?.name || "Someone"} waved at you! 👋`,
+      relatedUserId: userId,
     });
 
     return requestId;
@@ -86,6 +96,16 @@ export const sendConnectionRequest = mutation({
       // If it's a wave, upgrade it to pending
       if (existingSent.status === "waved") {
         await ctx.db.patch(existingSent._id, { status: "pending" });
+        
+        // Create notification for the receiver about the connection request
+        const sender = await ctx.db.get(userId);
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+          userId: args.receiverId,
+          type: "connection_request",
+          message: `${sender?.name || "Someone"} sent you a connection request!`,
+          relatedUserId: userId,
+        });
+        
         return existingSent._id;
       }
       throw new Error("REQUEST_PENDING: Connection request already sent");
@@ -118,6 +138,21 @@ export const sendConnectionRequest = mutation({
         connections: [...(receiver.connections || []), args.receiverId],
       });
 
+      // Create notifications for both users about the connection
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+        userId: args.receiverId,
+        type: "connection_accepted",
+        message: `You're now connected with ${receiver?.name || "someone"}!`,
+        relatedUserId: userId,
+      });
+      
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+        userId: userId,
+        type: "connection_accepted",
+        message: `You're now connected with ${sender?.name || "someone"}!`,
+        relatedUserId: args.receiverId,
+      });
+
       return existingReceived._id;
     }
 
@@ -125,6 +160,15 @@ export const sendConnectionRequest = mutation({
       senderId: userId,
       receiverId: args.receiverId,
       status: "pending",
+    });
+
+    // Create notification for the receiver
+    const sender = await ctx.db.get(userId);
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      userId: args.receiverId,
+      type: "connection_request",
+      message: `${sender?.name || "Someone"} sent you a connection request!`,
+      relatedUserId: userId,
     });
 
     return requestId;
@@ -168,6 +212,14 @@ export const acceptConnectionRequest = mutation({
     });
     await ctx.db.patch(request.receiverId, {
       connections: [...(receiver.connections || []), request.senderId],
+    });
+
+    // Create notification for the sender that their request was accepted
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      userId: request.senderId,
+      type: "connection_accepted",
+      message: `${receiver?.name || "Someone"} accepted your connection request!`,
+      relatedUserId: userId,
     });
 
     return args.requestId;
