@@ -184,10 +184,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 min-h-screen">
-        <div className="h-full">
-          {children}
-        </div>
+      <main className="flex-1 ml-72 min-h-screen overflow-auto">
+        {children}
       </main>
     </div>
   );
