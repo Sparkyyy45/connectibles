@@ -102,22 +102,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </motion.div>
         </div>
 
-        {/* User Profile Section */}
-        <div className="p-7 border-b border-border/30">
-          <div className="flex items-center gap-4 p-3 rounded-2xl bg-gradient-to-br from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30 transition-all duration-300 mb-4">
-            <Avatar className="h-14 w-14 border-2 border-primary/30 shadow-xl ring-2 ring-primary/10">
-              <AvatarImage src={user?.image} alt={user?.name || "User"} />
-              <AvatarFallback className="bg-gradient-to-br from-primary via-purple-500 to-purple-600 text-white font-bold text-xl">
-                {user?.name?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-base truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
+        {/* Quick Actions Section */}
+        <div className="p-5 border-b border-border/30">
           <div className="space-y-2">
             <Button
               variant="ghost"
