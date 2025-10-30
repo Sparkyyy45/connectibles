@@ -142,13 +142,13 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-3xl mx-auto p-6 space-y-8">
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Manage your profile information and preferences
           </p>
         </motion.div>
@@ -160,19 +160,19 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Profile Picture</CardTitle>
-              <CardDescription>Choose an avatar that represents you</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Profile Picture</CardTitle>
+              <CardDescription className="text-sm">Choose an avatar that represents you</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center mb-4">
-                <Avatar className="h-24 w-24 border-4 border-primary/20">
+                <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-primary/20">
                   <AvatarImage src={selectedAvatar} alt="Profile" />
                   <AvatarFallback>
                     {name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="grid grid-cols-5 gap-3 max-h-[400px] overflow-y-auto">
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
                 {AVATAR_OPTIONS.map((avatar, index) => (
                   <motion.button
                     key={index}
@@ -185,12 +185,12 @@ export default function Profile() {
                         : "border-muted hover:border-primary/50"
                     }`}
                   >
-                    <Avatar className="h-16 w-16">
+                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                       <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
                     </Avatar>
                     {selectedAvatar === avatar && (
                       <div className="absolute -top-1 -right-1 bg-primary rounded-full p-1">
-                        <Check className="h-3 w-3 text-primary-foreground" />
+                        <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />
                       </div>
                     )}
                   </motion.button>
@@ -207,8 +207,8 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-              <CardDescription>Update your personal details</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Basic Information</CardTitle>
+              <CardDescription className="text-sm">Update your personal details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -217,6 +217,7 @@ export default function Profile() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
+                  className="text-base"
                 />
               </div>
               <div>
@@ -226,6 +227,7 @@ export default function Profile() {
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Tell us about yourself"
                   rows={4}
+                  className="text-base resize-none"
                 />
               </div>
               <div>
@@ -234,6 +236,7 @@ export default function Profile() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="City or college name"
+                  className="text-base"
                 />
               </div>
             </CardContent>
@@ -247,22 +250,23 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Interests</CardTitle>
-              <CardDescription>Add your passions and hobbies</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Interests</CardTitle>
+              <CardDescription className="text-sm">Add your passions and hobbies</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={newInterest}
                   onChange={(e) => setNewInterest(e.target.value)}
                   placeholder="Add an interest"
                   onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
+                  className="flex-1 text-base"
                 />
-                <Button onClick={handleAddInterest}>Add</Button>
+                <Button onClick={handleAddInterest} className="w-full sm:w-auto">Add</Button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {interests.map((interest) => (
-                  <Badge key={interest} variant="secondary" className="gap-1">
+                  <Badge key={interest} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
                     {interest}
                     <X
                       className="h-3 w-3 cursor-pointer"
@@ -284,22 +288,23 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Skills</CardTitle>
-              <CardDescription>Add your skills and expertise</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Skills</CardTitle>
+              <CardDescription className="text-sm">Add your skills and expertise</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                   placeholder="Add a skill"
                   onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
+                  className="flex-1 text-base"
                 />
-                <Button onClick={handleAddSkill}>Add</Button>
+                <Button onClick={handleAddSkill} className="w-full sm:w-auto">Add</Button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <Badge key={skill} variant="secondary" className="gap-1">
+                  <Badge key={skill} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
                     {skill}
                     <X
                       className="h-3 w-3 cursor-pointer"
@@ -319,8 +324,8 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Academic Information</CardTitle>
-              <CardDescription>Help others find you based on your academic profile</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Academic Information</CardTitle>
+              <CardDescription className="text-sm">Help others find you based on your academic profile</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -329,6 +334,7 @@ export default function Profile() {
                   value={yearOfStudy}
                   onChange={(e) => setYearOfStudy(e.target.value)}
                   placeholder="e.g., Freshman, Sophomore, Junior, Senior"
+                  className="text-base"
                 />
               </div>
               <div>
@@ -337,6 +343,7 @@ export default function Profile() {
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
                   placeholder="e.g., Engineering, Arts, Sciences"
+                  className="text-base"
                 />
               </div>
               <div>
@@ -345,6 +352,7 @@ export default function Profile() {
                   value={major}
                   onChange={(e) => setMajor(e.target.value)}
                   placeholder="e.g., Computer Science, Psychology"
+                  className="text-base"
                 />
               </div>
             </CardContent>
@@ -358,24 +366,25 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Connection Preferences</CardTitle>
-              <CardDescription>What are you looking for in connections?</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Connection Preferences</CardTitle>
+              <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Looking For</label>
-                <div className="flex gap-2 mb-2">
+                <div className="flex flex-col sm:flex-row gap-2 mb-2">
                   <Input
                     value={newLookingFor}
                     onChange={(e) => setNewLookingFor(e.target.value)}
                     placeholder="e.g., Study Partner, Project Collaborator, Friend"
                     onKeyDown={(e) => e.key === "Enter" && handleAddLookingFor()}
+                    className="flex-1 text-base"
                   />
-                  <Button onClick={handleAddLookingFor}>Add</Button>
+                  <Button onClick={handleAddLookingFor} className="w-full sm:w-auto">Add</Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {lookingFor.map((item) => (
-                    <Badge key={item} variant="secondary" className="gap-1">
+                    <Badge key={item} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
                       {item}
                       <X
                         className="h-3 w-3 cursor-pointer"
@@ -391,6 +400,7 @@ export default function Profile() {
                   value={availability}
                   onChange={(e) => setAvailability(e.target.value)}
                   placeholder="e.g., Weekends, Evenings, Flexible"
+                  className="text-base"
                 />
               </div>
             </CardContent>
@@ -401,11 +411,12 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
+          className="pb-6"
         >
-          <Button onClick={handleSave} disabled={saving} size="lg" className="w-full">
+          <Button onClick={handleSave} disabled={saving} size="lg" className="w-full text-base py-6">
             {saving ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Saving...
               </>
             ) : (
