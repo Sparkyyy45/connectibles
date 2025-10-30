@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Bell, Check, Trash2, UserPlus, Sparkles } from "lucide-react";
+import { Loader2, Bell, Check, Trash2, UserPlus, Sparkles, Flag } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -145,27 +145,48 @@ export default function Notifications() {
                       transition={{ delay: index * 0.05 }}
                       layout
                     >
-                      <Card className="border-primary/50 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-all duration-300 hover:border-primary overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Card className={`border-primary/50 overflow-hidden group ${
+                        notification.type === "report_warning" || notification.type === "account_banned"
+                          ? "border-destructive bg-gradient-to-br from-destructive/10 to-destructive/5"
+                          : "bg-gradient-to-br from-primary/5 to-transparent"
+                      } hover:shadow-xl transition-all duration-300 hover:border-primary`}>
+                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                          notification.type === "report_warning" || notification.type === "account_banned"
+                            ? "bg-gradient-to-r from-destructive/10 via-orange-500/10 to-transparent"
+                            : "bg-gradient-to-r from-primary/10 via-purple-500/10 to-transparent"
+                        }`} />
                         <CardContent className="p-6 relative">
                           <div className="flex items-start gap-4">
-                            {notification.relatedUser && (
+                            {notification.relatedUser && !(notification.type === "report_warning" || notification.type === "account_banned") && (
                               <Avatar className="h-12 w-12 border-2 border-primary shadow-lg">
                                 <AvatarFallback className="bg-gradient-to-br from-primary to-purple-500 text-primary-foreground font-semibold text-lg">
                                   {notification.relatedUser.name?.charAt(0).toUpperCase() || "U"}
                                 </AvatarFallback>
                               </Avatar>
                             )}
+                            {(notification.type === "report_warning" || notification.type === "account_banned") && (
+                              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-destructive to-orange-500 flex items-center justify-center shadow-lg">
+                                <Flag className="h-6 w-6 text-white" />
+                              </div>
+                            )}
                             <div className="flex-1 space-y-3">
-                              <p className="text-foreground leading-relaxed font-medium">
+                              <p className={`leading-relaxed font-medium ${
+                                notification.type === "report_warning" || notification.type === "account_banned"
+                                  ? "text-destructive"
+                                  : "text-foreground"
+                              }`}>
                                 {notification.message}
                               </p>
                               <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                <span className={`inline-block w-1.5 h-1.5 rounded-full animate-pulse ${
+                                  notification.type === "report_warning" || notification.type === "account_banned"
+                                    ? "bg-destructive"
+                                    : "bg-primary"
+                                }`} />
                                 {new Date(notification._creationTime).toLocaleString()}
                               </p>
                               <div className="flex flex-wrap gap-2 pt-2">
-                                {notification.relatedUserId && (
+                                {notification.relatedUserId && notification.type !== "report_warning" && notification.type !== "account_banned" && (
                                   <Button
                                     size="sm"
                                     onClick={() => handleConnect(notification.relatedUserId!, notification._id)}
