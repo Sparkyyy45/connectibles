@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Users, Heart, Flame } from "lucide-react";
+import { Loader2, Sparkles, Users, Heart, Flame, SkipForward } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function TruthDare() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -22,11 +23,13 @@ export default function TruthDare() {
   const createSession = useMutation(api.truthDare.createSession);
   const makeChoice = useMutation(api.truthDare.makeChoice);
   const completeRound = useMutation(api.truthDare.completeRound);
+  const skipRound = useMutation(api.truthDare.skipRound);
   const endSession = useMutation(api.truthDare.endSession);
 
   const [selectedSession, setSelectedSession] = useState<Id<"truth_dare_sessions"> | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<"truth" | "dare" | null>(null);
+  const [questionText, setQuestionText] = useState("");
+  const [showQuestionDialog, setShowQuestionDialog] = useState(false);
 
   const sessionData = useQuery(
     api.truthDare.getSession,
@@ -43,21 +46,36 @@ export default function TruthDare() {
     try {
       const sessionId = await createSession({ opponentId });
       setSelectedSession(sessionId);
-      setIsDialogOpen(false);
       toast.success("Game started! 🎮");
     } catch (error: any) {
       toast.error(error.message || "Failed to start game");
     }
   };
 
-  const handleChoice = async (choice: "truth" | "dare") => {
-    if (!selectedSession) return;
+  const handleChoiceClick = (choice: "truth" | "dare") => {
+    setSelectedChoice(choice);
+    setQuestionText("");
+    setShowQuestionDialog(true);
+  };
+
+  const handleSubmitQuestion = async () => {
+    if (!selectedSession || !selectedChoice || !questionText.trim()) {
+      toast.error("Please enter a question or dare");
+      return;
+    }
+
     try {
-      const question = await makeChoice({ sessionId: selectedSession, choice });
-      setCurrentQuestion(question);
-      toast.success(`${choice === "truth" ? "Truth" : "Dare"} selected!`);
+      await makeChoice({ 
+        sessionId: selectedSession, 
+        choice: selectedChoice,
+        question: questionText.trim()
+      });
+      toast.success(`${selectedChoice === "truth" ? "Truth" : "Dare"} sent!`);
+      setShowQuestionDialog(false);
+      setSelectedChoice(null);
+      setQuestionText("");
     } catch (error: any) {
-      toast.error(error.message || "Failed to make choice");
+      toast.error(error.message || "Failed to send question");
     }
   };
 
@@ -65,10 +83,19 @@ export default function TruthDare() {
     if (!selectedSession) return;
     try {
       await completeRound({ sessionId: selectedSession });
-      setCurrentQuestion(null);
       toast.success("Round completed! 🎉");
     } catch (error: any) {
       toast.error(error.message || "Failed to complete round");
+    }
+  };
+
+  const handleSkip = async () => {
+    if (!selectedSession) return;
+    try {
+      await skipRound({ sessionId: selectedSession });
+      toast.success("Skipped! Moving to next turn");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to skip");
     }
   };
 
@@ -77,7 +104,6 @@ export default function TruthDare() {
     try {
       await endSession({ sessionId: selectedSession });
       setSelectedSession(null);
-      setCurrentQuestion(null);
       toast.success("Game ended!");
     } catch (error: any) {
       toast.error(error.message || "Failed to end game");
@@ -95,9 +121,63 @@ export default function TruthDare() {
   const isMyTurn = sessionData?.currentTurn === user._id;
   const lastRound = sessionData?.rounds[sessionData.rounds.length - 1];
   const waitingForCompletion = lastRound && !lastRound.completed;
+  const isQuestionAsker = lastRound?.playerId === user._id;
 
   return (
     <DashboardLayout>
+      <Dialog open={showQuestionDialog} onOpenChange={setShowQuestionDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              {selectedChoice === "truth" ? (
+                <>
+                  <Heart className="h-6 w-6 text-blue-500" />
+                  Ask a Truth Question
+                </>
+              ) : (
+                <>
+                  <Flame className="h-6 w-6 text-red-500" />
+                  Give a Dare Challenge
+                </>
+              )}
+            </DialogTitle>
+            <DialogDescription>
+              Write your {selectedChoice === "truth" ? "question" : "dare"} for your opponent
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <Textarea
+              value={questionText}
+              onChange={(e) => setQuestionText(e.target.value)}
+              placeholder={selectedChoice === "truth" ? "What do you want to know?" : "What challenge do you dare them to do?"}
+              className="min-h-[150px] text-base resize-none"
+              maxLength={500}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                {questionText.length} / 500
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowQuestionDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmitQuestion}
+                  disabled={!questionText.trim()}
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Send
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-red-50 p-6">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
@@ -241,15 +321,15 @@ export default function TruthDare() {
               <Card className="border-2 border-purple-300">
                 <CardHeader>
                   <CardTitle className="text-center text-2xl">
-                    {isMyTurn ? "Your Turn! 🎯" : "Waiting for opponent..."}
+                    {isMyTurn && !waitingForCompletion ? "Your Turn! 🎯" : waitingForCompletion && !isQuestionAsker ? "Answer the challenge!" : "Waiting for opponent..."}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {!waitingForCompletion && isMyTurn && !currentQuestion && (
+                  {!waitingForCompletion && isMyTurn && (
                     <div className="flex gap-4 justify-center">
                       <Button
                         size="lg"
-                        onClick={() => handleChoice("truth")}
+                        onClick={() => handleChoiceClick("truth")}
                         className="h-32 w-48 text-2xl bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
                       >
                         <Heart className="h-8 w-8 mr-2" />
@@ -257,7 +337,7 @@ export default function TruthDare() {
                       </Button>
                       <Button
                         size="lg"
-                        onClick={() => handleChoice("dare")}
+                        onClick={() => handleChoiceClick("dare")}
                         className="h-32 w-48 text-2xl bg-gradient-to-br from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
                       >
                         <Flame className="h-8 w-8 mr-2" />
@@ -266,7 +346,7 @@ export default function TruthDare() {
                     </div>
                   )}
 
-                  {currentQuestion && (
+                  {waitingForCompletion && lastRound && (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -274,17 +354,35 @@ export default function TruthDare() {
                     >
                       <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300">
                         <CardContent className="p-8">
-                          <p className="text-xl text-center font-semibold">{currentQuestion}</p>
+                          <Badge className="mb-4" variant={lastRound.choice === "truth" ? "default" : "destructive"}>
+                            {lastRound.choice === "truth" ? "Truth" : "Dare"}
+                          </Badge>
+                          <p className="text-xl text-center font-semibold">{lastRound.question}</p>
                         </CardContent>
                       </Card>
-                      <Button onClick={handleComplete} size="lg" className="w-full">
-                        <Sparkles className="h-5 w-5 mr-2" />
-                        I Did It!
-                      </Button>
+                      {!isQuestionAsker && (
+                        <div className="flex gap-3">
+                          <Button onClick={handleComplete} size="lg" className="flex-1">
+                            <Sparkles className="h-5 w-5 mr-2" />
+                            I Did It!
+                          </Button>
+                          <Button onClick={handleSkip} size="lg" variant="outline" className="flex-1">
+                            <SkipForward className="h-5 w-5 mr-2" />
+                            Skip
+                          </Button>
+                        </div>
+                      )}
+                      {isQuestionAsker && (
+                        <div className="text-center py-4">
+                          <p className="text-muted-foreground">
+                            Waiting for opponent to respond...
+                          </p>
+                        </div>
+                      )}
                     </motion.div>
                   )}
 
-                  {!isMyTurn && (
+                  {!isMyTurn && !waitingForCompletion && (
                     <div className="text-center py-12">
                       <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-purple-500" />
                       <p className="text-lg text-muted-foreground">
