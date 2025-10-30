@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell, Palette, MessageSquare } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReactNode, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -79,9 +80,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* User Profile Section */}
         <div className="p-6 border-b border-border/50">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              {user?.name?.charAt(0).toUpperCase() || "U"}
-            </div>
+            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
+              <AvatarImage src={user?.image} alt={user?.name || "User"} />
+              <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white font-bold text-lg">
+                {user?.name?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-semibold truncate">{user?.name || "User"}</p>
               <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
