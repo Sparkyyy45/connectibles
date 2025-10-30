@@ -317,13 +317,56 @@ export default function TruthDare() {
                 </CardHeader>
               </Card>
 
-              {/* Current Turn */}
-              <Card className="border-2 border-purple-300">
+              {/* Current Turn Indicator */}
+              <Card className="border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50">
                 <CardHeader>
+                  <div className="flex items-center justify-center gap-4 mb-4">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className={`flex items-center gap-3 px-6 py-3 rounded-full ${
+                        isMyTurn && !waitingForCompletion
+                          ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                          : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700"
+                      }`}
+                    >
+                      <Avatar className="h-10 w-10 border-2 border-white">
+                        <AvatarImage src={isMyTurn ? user.image : (sessionData?.player1Id === user._id ? sessionData?.player2?.image : sessionData?.player1?.image)} />
+                        <AvatarFallback>
+                          {isMyTurn 
+                            ? user.name?.charAt(0).toUpperCase() || "U"
+                            : (sessionData?.player1Id === user._id ? sessionData?.player2?.name?.charAt(0).toUpperCase() : sessionData?.player1?.name?.charAt(0).toUpperCase()) || "U"
+                          }
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left">
+                        <p className="font-bold text-lg">
+                          {isMyTurn && !waitingForCompletion 
+                            ? "Your Turn!" 
+                            : waitingForCompletion && !isQuestionAsker 
+                            ? "Your Challenge!" 
+                            : `${sessionData?.player1Id === user._id ? sessionData?.player2?.name : sessionData?.player1?.name}'s Turn`
+                          }
+                        </p>
+                        <p className="text-xs opacity-90">
+                          {isMyTurn && !waitingForCompletion 
+                            ? "Choose Truth or Dare" 
+                            : waitingForCompletion && !isQuestionAsker 
+                            ? "Complete or Skip" 
+                            : "Waiting for their move..."
+                          }
+                        </p>
+                      </div>
+                      {isMyTurn && !waitingForCompletion && (
+                        <Sparkles className="h-6 w-6 animate-pulse" />
+                      )}
+                    </motion.div>
+                  </div>
                   <CardTitle className="text-center text-2xl">
-                    {isMyTurn && !waitingForCompletion ? "Your Turn! 🎯" : waitingForCompletion && !isQuestionAsker ? "Answer the challenge!" : "Waiting for opponent..."}
+                    {isMyTurn && !waitingForCompletion ? "🎯 Make Your Choice" : waitingForCompletion && !isQuestionAsker ? "💪 Time to Respond!" : "⏳ Opponent's Turn"}
                   </CardTitle>
                 </CardHeader>
+=======
                 <CardContent className="space-y-6">
                   {!waitingForCompletion && isMyTurn && (
                     <div className="flex gap-4 justify-center">
