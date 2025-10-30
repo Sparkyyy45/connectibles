@@ -121,9 +121,12 @@ export default function Chill() {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="lg" className="gap-2 shadow-lg hover:shadow-xl transition-all">
-                  <Plus className="h-5 w-5" />
-                  spill smtg
+                <Button 
+                  size="lg" 
+                  className="gap-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary via-purple-600 to-pink-600 hover:from-primary/90 hover:via-purple-600/90 hover:to-pink-600/90 text-white font-bold px-6 py-6 text-lg rounded-2xl hover:scale-105 active:scale-95"
+                >
+                  <Sparkles className="h-5 w-5 animate-pulse" />
+                  spill the tea ☕
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
