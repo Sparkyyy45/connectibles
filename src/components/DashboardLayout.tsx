@@ -21,6 +21,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const unreadCount = useQuery(api.notifications.getUnreadCount);
   const prevUnreadCount = useRef<number | undefined>(undefined);
+  const navScrollRef = useRef<HTMLDivElement>(null);
+
+  // Preserve scroll position
+  useEffect(() => {
+    const savedScrollPosition = sessionStorage.getItem('sidebar-scroll-position');
+    if (savedScrollPosition && navScrollRef.current) {
+      navScrollRef.current.scrollTop = parseInt(savedScrollPosition, 10);
+    }
+  }, []);
+
+  // Save scroll position before navigation
+  const handleNavigation = (path: string) => {
+    if (navScrollRef.current) {
+      sessionStorage.setItem('sidebar-scroll-position', navScrollRef.current.scrollTop.toString());
+    }
+    navigate(path);
+  };
 
   // Show toast when new notifications arrive
   useEffect(() => {
@@ -64,7 +81,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="p-7 border-b border-border/30">
           <motion.div
             className="flex items-center gap-4 cursor-pointer group"
-            onClick={() => navigate("/")}
+            onClick={() => handleNavigation("/")}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -102,7 +119,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-5 space-y-2.5 overflow-y-auto">
+        <nav ref={navScrollRef} className="flex-1 p-5 space-y-2.5 overflow-y-auto">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -121,7 +138,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       ? "bg-gradient-to-r from-primary via-purple-500 to-purple-600 text-primary-foreground shadow-xl shadow-primary/30 scale-[1.02]"
                       : "hover:bg-muted/60 hover:translate-x-2 hover:shadow-md"
                   )}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => handleNavigation(item.path)}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-all duration-300",
@@ -150,7 +167,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               variant="ghost"
               size="icon"
               className="h-14 w-14 relative hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
-              onClick={() => navigate("/notifications")}
+              onClick={() => handleNavigation("/notifications")}
             >
               <Bell className="h-6 w-6" />
               <AnimatePresence>
@@ -176,7 +193,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               variant="ghost"
               size="icon"
               className="h-14 w-14 hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
-              onClick={() => navigate("/profile")}
+              onClick={() => handleNavigation("/profile")}
             >
               <User className="h-6 w-6" />
             </Button>
