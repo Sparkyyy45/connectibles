@@ -26,6 +26,7 @@ export default function Games() {
 
   const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
   const [showConnectionSelect, setShowConnectionSelect] = useState(false);
+  const [viewingSession, setViewingSession] = useState<Id<"game_sessions"> | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -119,6 +120,60 @@ export default function Games() {
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
+    );
+  }
+
+  if (viewingSession) {
+    const session = activeSessions?.find(s => s._id === viewingSession);
+    if (!session) {
+      setViewingSession(null);
+      return null;
+    }
+
+    // Import game components dynamically
+    const GameComponent = (() => {
+      switch (session.gameType) {
+        case "tic_tac_toe":
+          return require("@/components/games/TicTacToe").default;
+        case "memory_match":
+          return require("@/components/games/MemoryMatch").default;
+        case "reaction_test":
+          return require("@/components/games/ReactionTest").default;
+        case "number_guess":
+          return require("@/components/games/NumberGuess").default;
+        case "word_chain":
+          return require("@/components/games/WordChain").default;
+        case "quick_draw":
+          return require("@/components/games/QuickDraw").default;
+        case "trivia_duel":
+          return require("@/components/games/TriviaDuel").default;
+        case "emoji_match":
+          return require("@/components/games/EmojiMatch").default;
+        default:
+          return null;
+      }
+    })();
+
+    return (
+      <DashboardLayout>
+        <div className="p-8 space-y-8">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" onClick={() => setViewingSession(null)}>
+              ← Back to Games
+            </Button>
+            <h1 className="text-3xl font-bold">
+              {session.gameType.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+            </h1>
+          </div>
+          {GameComponent && (
+            <GameComponent
+              sessionId={session._id}
+              currentUserId={user._id}
+              session={session}
+            />
+          )}
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -283,7 +338,8 @@ export default function Games() {
                   return (
                     <div
                       key={session._id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
+                      className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => setViewingSession(session._id)}
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
