@@ -14,7 +14,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const posts = useQuery(api.posts.getAllPosts);
   const matches = useQuery(api.matching.getMatches);
   const connections = useQuery(api.connections.getConnections);
   const events = useQuery(api.events.getAllEvents);
@@ -64,22 +63,13 @@ export default function Dashboard() {
       delay: 0.3
     },
     {
-      title: "Collaborations",
-      description: "Discover projects and find partners for your next big idea",
-      icon: Briefcase,
-      path: "/posts",
-      gradient: "from-amber-500 via-orange-500 to-red-600",
-      stat: `${posts?.length || 0} active posts`,
-      delay: 0.4
-    },
-    {
       title: "Messages",
       description: "Private conversations with your connections",
       icon: MessageCircle,
       path: "/messages",
       gradient: "from-emerald-500 via-teal-500 to-cyan-600",
       stat: "Direct messages",
-      delay: 0.5
+      delay: 0.4
     },
     {
       title: "Events",
@@ -88,7 +78,7 @@ export default function Dashboard() {
       path: "/events",
       gradient: "from-indigo-500 via-blue-500 to-purple-600",
       stat: "Discover events",
-      delay: 0.6
+      delay: 0.5
     }
   ];
 
@@ -146,7 +136,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="grid md:grid-cols-3 gap-6"
+            className="grid md:grid-cols-2 gap-6"
           >
             <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
               <CardHeader className="pb-3">
@@ -157,18 +147,6 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">People you're connected with</p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all">
-              <CardHeader className="pb-3">
-                <CardDescription className="text-sm font-medium">Active Collaborations</CardDescription>
-                <CardTitle className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-                  {posts?.length || 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Projects seeking partners</p>
               </CardContent>
             </Card>
 
