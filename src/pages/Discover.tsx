@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -95,6 +95,7 @@ export default function Discover() {
         <CardHeader>
           <div className="flex items-start gap-4">
             <Avatar className="h-12 w-12">
+              <AvatarImage src={match.user.image} alt={match.user.name || "User"} />
               <AvatarFallback>
                 {match.user.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
