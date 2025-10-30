@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell, Palette, MessageSquare, Gamepad2, Trophy, Heart } from "lucide-react";
+import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell, Lock, MessageSquare, Gamepad2, Trophy, Heart } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReactNode, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: Users, label: "Discover", path: "/discover" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
-    { icon: Palette, label: "Confessional", path: "/chill" },
+    { icon: Lock, label: "Confessional", path: "/chill" },
     { icon: MessageSquare, label: "Gossip", path: "/gossip" },
     { icon: Heart, label: "Truth/Dare", path: "/truth-dare" },
     { icon: Gamepad2, label: "Games", path: "/games" },
