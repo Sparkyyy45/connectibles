@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* User Profile Section */}
         <div className="p-7 border-b border-border/30">
-          <div className="flex items-center gap-4 p-3 rounded-2xl bg-gradient-to-br from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30 transition-all duration-300">
+          <div className="flex items-center gap-4 p-3 rounded-2xl bg-gradient-to-br from-muted/40 to-muted/20 hover:from-muted/50 hover:to-muted/30 transition-all duration-300 mb-4">
             <Avatar className="h-14 w-14 border-2 border-primary/30 shadow-xl ring-2 ring-primary/10">
               <AvatarImage src={user?.image} alt={user?.name || "User"} />
               <AvatarFallback className="bg-gradient-to-br from-primary via-purple-500 to-purple-600 text-white font-bold text-xl">
@@ -115,6 +115,58 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <p className="font-bold text-base truncate">{user?.name || "User"}</p>
               <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
             </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 h-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
+              onClick={() => handleNavigation("/notifications")}
+            >
+              <div className="p-2 rounded-lg bg-transparent group-hover:bg-muted transition-all">
+                <Bell className="h-5 w-5" />
+              </div>
+              <span className="flex-1 text-left font-semibold">Notifications</span>
+              <AnimatePresence>
+                {unreadCount !== undefined && unreadCount > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
+                    <Badge
+                      variant="destructive"
+                      className="h-6 min-w-6 flex items-center justify-center px-1.5 text-xs font-bold shadow-lg"
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 h-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
+              onClick={() => handleNavigation("/profile")}
+            >
+              <div className="p-2 rounded-lg bg-transparent group-hover:bg-muted transition-all">
+                <User className="h-5 w-5" />
+              </div>
+              <span className="flex-1 text-left font-semibold">Profile</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 h-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl"
+              onClick={() => signOut()}
+            >
+              <div className="p-2 rounded-lg hover:bg-destructive/10 transition-all">
+                <LogOut className="h-5 w-5" />
+              </div>
+              <span className="flex-1 text-left font-semibold">Sign Out</span>
+            </Button>
           </div>
         </div>
 
@@ -159,57 +211,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             );
           })}
         </nav>
-
-        {/* Bottom Actions */}
-        <div className="p-5 border-t border-border/30 bg-gradient-to-t from-muted/20 to-transparent">
-          <div className="flex items-center justify-around mb-4 gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-14 w-14 relative hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
-              onClick={() => handleNavigation("/notifications")}
-            >
-              <Bell className="h-6 w-6" />
-              <AnimatePresence>
-                {unreadCount !== undefined && unreadCount > 0 && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    className="absolute -top-1 -right-1"
-                  >
-                    <Badge
-                      variant="destructive"
-                      className="h-6 min-w-6 flex items-center justify-center px-1.5 text-xs font-bold shadow-lg"
-                    >
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </Badge>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-14 w-14 hover:bg-muted/60 transition-all duration-300 rounded-xl hover:scale-110 hover:shadow-lg"
-              onClick={() => handleNavigation("/profile")}
-            >
-              <User className="h-6 w-6" />
-            </Button>
-          </div>
-          
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-4 h-14 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl font-semibold hover:shadow-md"
-            onClick={() => signOut()}
-          >
-            <div className="p-2 rounded-lg hover:bg-destructive/10 transition-all">
-              <LogOut className="h-5 w-5" />
-            </div>
-            <span className="tracking-wide">Sign Out</span>
-          </Button>
-        </div>
       </motion.aside>
 
       {/* Main Content Area */}
