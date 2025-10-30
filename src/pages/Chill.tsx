@@ -14,13 +14,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 
-const DIARY_COLORS = [
-  "bg-gradient-to-br from-amber-50 to-yellow-100",
-  "bg-gradient-to-br from-rose-50 to-pink-100",
-  "bg-gradient-to-br from-sky-50 to-blue-100",
-  "bg-gradient-to-br from-emerald-50 to-green-100",
-  "bg-gradient-to-br from-violet-50 to-purple-100",
-  "bg-gradient-to-br from-orange-50 to-amber-100",
+const CONFESSIONAL_COLORS = [
+  "bg-gradient-to-br from-slate-100 to-gray-200",
+  "bg-gradient-to-br from-purple-100 to-indigo-200",
+  "bg-gradient-to-br from-blue-100 to-cyan-200",
+  "bg-gradient-to-br from-violet-100 to-purple-200",
+  "bg-gradient-to-br from-indigo-100 to-blue-200",
+  "bg-gradient-to-br from-gray-100 to-slate-200",
 ];
 
 export default function Chill() {
@@ -56,7 +56,7 @@ export default function Chill() {
     setIsSubmitting(true);
     try {
       await createSpill({ content });
-      toast.success("Spill posted! ✨");
+      toast.success("Confession posted anonymously! 🤫");
       setContent("");
       setIsDialogOpen(false);
     } catch (error: any) {
@@ -69,7 +69,7 @@ export default function Chill() {
   const handleDeleteSpill = async (postId: Id<"chill_posts">) => {
     try {
       await deleteSpill({ postId });
-      toast.success("Spill deleted");
+      toast.success("Confession deleted");
     } catch (error: any) {
       toast.error(error.message || "Failed to delete spill");
     }
@@ -101,7 +101,7 @@ export default function Chill() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-background via-purple-50/30 to-pink-50/30 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-indigo-900/30 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <motion.div
@@ -110,12 +110,12 @@ export default function Chill() {
             className="flex items-center justify-between"
           >
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
-                <Sparkles className="h-10 w-10 text-primary" />
-                Spillz
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-indigo-400 to-blue-400 bg-clip-text text-transparent flex items-center gap-3">
+                <Sparkles className="h-10 w-10 text-purple-400" />
+                The Confessional
               </h1>
-              <p className="text-muted-foreground text-lg mt-2">
-                spill your thoughts, vibes, and feels ✨
+              <p className="text-gray-300 text-lg mt-2">
+                share your secrets anonymously, judgment-free zone 🤫
               </p>
             </div>
 
@@ -123,25 +123,25 @@ export default function Chill() {
               <DialogTrigger asChild>
                 <Button 
                   size="lg" 
-                  className="gap-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary via-purple-600 to-pink-600 hover:from-primary/90 hover:via-purple-600/90 hover:to-pink-600/90 text-white font-bold px-6 py-6 text-lg rounded-2xl hover:scale-105 active:scale-95"
+                  className="gap-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-6 text-lg rounded-2xl hover:scale-105 active:scale-95"
                 >
                   <Sparkles className="h-5 w-5 animate-pulse" />
-                  spill the tea ☕
+                  confess anonymously 🤐
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg bg-slate-900 border-purple-500/30">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl">what's on your mind?</DialogTitle>
-                  <DialogDescription>
-                    share your thoughts in up to 1200 characters
+                  <DialogTitle className="text-2xl text-purple-300">what's weighing on you?</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    confess anonymously in up to 1200 characters - no judgment, just truth
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 mt-4">
                   <Textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="spill it all here..."
-                    className="min-h-[200px] text-base resize-none"
+                    placeholder="your secret is safe here..."
+                    className="min-h-[200px] text-base resize-none bg-slate-800 border-purple-500/30 text-gray-200 placeholder:text-gray-500"
                     maxLength={1200}
                   />
                   <div className="flex items-center justify-between">
@@ -152,14 +152,14 @@ export default function Chill() {
                       onClick={handleCreateSpill}
                       disabled={isSubmitting || !content.trim()}
                       size="lg"
-                      className="gap-2"
+                      className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                     >
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
                           <Sparkles className="h-4 w-4" />
-                          post spill
+                          confess
                         </>
                       )}
                     </Button>
@@ -173,7 +173,7 @@ export default function Chill() {
           <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {spills?.map((spill, index) => {
-                const colorClass = DIARY_COLORS[index % DIARY_COLORS.length];
+                const colorClass = CONFESSIONAL_COLORS[index % CONFESSIONAL_COLORS.length];
                 const isOwner = spill.authorId === user._id;
                 const upvoteCount = spill.upvotes?.length || 0;
                 const downvoteCount = spill.downvotes?.length || 0;
@@ -189,16 +189,14 @@ export default function Chill() {
                     transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid"
                   >
-                    <Card className={`${colorClass} border-2 border-gray-300/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden`}>
-                      {/* Diary page lines effect */}
-                      <div className="absolute inset-0 pointer-events-none opacity-20">
-                        {[...Array(12)].map((_, i) => (
-                          <div key={i} className="h-8 border-b border-gray-400/30" />
-                        ))}
+                    <Card className={`${colorClass} border-2 border-purple-300/30 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden`}>
+                      {/* Confessional booth effect */}
+                      <div className="absolute inset-0 pointer-events-none opacity-10">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent" />
                       </div>
                       
-                      {/* Red margin line */}
-                      <div className="absolute left-12 top-0 bottom-0 w-0.5 bg-red-300/40 pointer-events-none" />
+                      {/* Side accent line */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500/60 to-indigo-500/60 pointer-events-none" />
                       
                       <CardContent className="p-8 space-y-4 relative">
                         {/* Delete Button (only for owner) */}
@@ -216,7 +214,7 @@ export default function Chill() {
                         )}
 
                         {/* Content */}
-                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words text-base font-serif italic pl-4 pt-2">
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words text-base font-sans pl-4 pt-2">
                           {spill.content}
                         </p>
                       </CardContent>
@@ -265,12 +263,12 @@ export default function Chill() {
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <Sparkles className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-2xl font-semibold mb-2">no spillz yet</h3>
-              <p className="text-muted-foreground mb-6">be the first to share your thoughts!</p>
-              <Button onClick={() => setIsDialogOpen(true)} size="lg" className="gap-2">
+              <Sparkles className="h-16 w-16 mx-auto text-purple-400 mb-4" />
+              <h3 className="text-2xl font-semibold mb-2 text-gray-200">no confessions yet</h3>
+              <p className="text-gray-400 mb-6">be the first to share your secret!</p>
+              <Button onClick={() => setIsDialogOpen(true)} size="lg" className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600">
                 <Plus className="h-5 w-5" />
-                create first spill
+                make first confession
               </Button>
             </motion.div>
           )}
