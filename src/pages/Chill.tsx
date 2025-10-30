@@ -216,51 +216,39 @@ export default function Chill() {
                         <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words text-base font-serif italic pl-4 pt-2">
                           {spill.content}
                         </p>
-
-                        {/* Footer with votes and date */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-400/20">
-                          {/* Vote buttons */}
-                          <div className="flex items-center gap-1">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleUpvote(spill._id)}
-                              className={`h-9 w-9 p-0 rounded-full transition-all ${
-                                hasUpvoted 
-                                  ? "bg-green-200/60 hover:bg-green-300/60 text-green-700" 
-                                  : "hover:bg-gray-200/60 text-gray-600"
-                              }`}
-                            >
-                              <ChevronUp className="h-5 w-5" />
-                            </Button>
-                            <span className="text-sm font-semibold text-gray-700 min-w-[2rem] text-center">
-                              {upvoteCount - downvoteCount}
-                            </span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDownvote(spill._id)}
-                              className={`h-9 w-9 p-0 rounded-full transition-all ${
-                                hasDownvoted 
-                                  ? "bg-red-200/60 hover:bg-red-300/60 text-red-700" 
-                                  : "hover:bg-gray-200/60 text-gray-600"
-                              }`}
-                            >
-                              <ChevronDown className="h-5 w-5" />
-                            </Button>
-                          </div>
-
-                          {/* Timestamp */}
-                          <p className="text-xs text-gray-500 font-serif">
-                            {new Date(spill._creationTime).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}
-                          </p>
-                        </div>
                       </CardContent>
                     </Card>
+                    
+                    {/* Vote controls extension below the card */}
+                    <div className="flex items-center justify-center gap-1 mt-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-gray-200/50">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleUpvote(spill._id)}
+                        className={`h-8 w-8 p-0 rounded-full transition-all ${
+                          hasUpvoted 
+                            ? "bg-green-200/60 hover:bg-green-300/60 text-green-700" 
+                            : "hover:bg-gray-200/60 text-gray-600"
+                        }`}
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm font-semibold text-gray-700 min-w-[2.5rem] text-center">
+                        {upvoteCount - downvoteCount}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDownvote(spill._id)}
+                        className={`h-8 w-8 p-0 rounded-full transition-all ${
+                          hasDownvoted 
+                            ? "bg-red-200/60 hover:bg-red-300/60 text-red-700" 
+                            : "hover:bg-gray-200/60 text-gray-600"
+                        }`}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </motion.div>
                 );
               })}
