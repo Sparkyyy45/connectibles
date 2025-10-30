@@ -202,6 +202,26 @@ const schema = defineSchema(
     })
       .index("by_user", ["userId"])
       .index("by_user_and_game", ["userId", "gameType"]),
+
+    // Truth and Dare game sessions
+    truth_dare_sessions: defineTable({
+      player1Id: v.id("users"),
+      player2Id: v.id("users"),
+      status: v.union(
+        v.literal("active"),
+        v.literal("completed")
+      ),
+      currentTurn: v.id("users"),
+      rounds: v.array(v.object({
+        playerId: v.id("users"),
+        choice: v.union(v.literal("truth"), v.literal("dare")),
+        question: v.string(),
+        completed: v.boolean(),
+        timestamp: v.number(),
+      })),
+    })
+      .index("by_player1", ["player1Id"])
+      .index("by_player2", ["player2Id"]),
   },
   {
     schemaValidation: false,
