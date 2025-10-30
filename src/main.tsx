@@ -6,7 +6,6 @@ import Dashboard from "@/pages/Dashboard.tsx";
 import Profile from "@/pages/Profile.tsx";
 import UserProfile from "@/pages/UserProfile.tsx";
 import Discover from "@/pages/Discover.tsx";
-import Posts from "@/pages/Posts.tsx";
 import Events from "@/pages/Events.tsx";
 import Messages from "@/pages/Messages.tsx";
 import Notifications from "@/pages/Notifications.tsx";
@@ -65,7 +64,6 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/user/:userId" element={<UserProfile />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/chill" element={<Chill />} />
-            <Route path="/posts" element={<Posts />} />
             <Route path="/events" element={<Events />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/gossip" element={<Gossip />} />

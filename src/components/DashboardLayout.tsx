@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Home, Users, FileText, Calendar, MessageCircle, User, LogOut, Bell } from "lucide-react";
+import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell } from "lucide-react";
 import { ReactNode, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -40,7 +40,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { icon: Users, label: "Discover", path: "/discover" },
     { icon: Sparkles, label: "Canvas", path: "/chill" },
     { icon: MessageCircle, label: "Gossip", path: "/gossip" },
-    { icon: FileText, label: "Collaborations", path: "/posts" },
     { icon: Calendar, label: "Events", path: "/events" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
   ];
