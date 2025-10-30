@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell, Lock, MessageSquare, Gamepad2, Trophy, Heart } from "lucide-react";
+import { Sparkles, Home, Users, Calendar, MessageCircle, User, LogOut, Bell, Lock, MessageSquare, Gamepad2, Trophy, Heart, Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const unreadCount = useQuery(api.notifications.getUnreadCount);
   const prevUnreadCount = useRef<number | undefined>(undefined);
   const navScrollRef = useRef<HTMLDivElement>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Preserve scroll position
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       sessionStorage.setItem('sidebar-scroll-position', navScrollRef.current.scrollTop.toString());
     }
     navigate(path);
+    setIsMobileMenuOpen(false); // Close mobile menu on navigation
   };
 
   // Show toast when new notifications arrive
@@ -71,11 +73,44 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-primary/5 flex">
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 lg:hidden h-12 w-12 rounded-xl bg-card/95 backdrop-blur-xl border border-border/40 shadow-lg"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </Button>
+
+      {/* Overlay for mobile */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Vertical Sidebar */}
       <motion.aside
         initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-80 bg-gradient-to-b from-card/95 via-card/90 to-card/95 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col fixed h-screen z-50"
+        animate={{ 
+          x: isMobileMenuOpen ? 0 : -100, 
+          opacity: isMobileMenuOpen ? 1 : 0 
+        }}
+        className={cn(
+          "w-80 bg-gradient-to-b from-card/95 via-card/90 to-card/95 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col fixed h-screen z-50",
+          "lg:opacity-100 lg:translate-x-0"
+        )}
+        style={{ 
+          transform: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'translateX(0)' : undefined,
+          opacity: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 1 : undefined
+        }}
       >
         {/* Logo Section */}
         <div className="p-7 border-b border-border/30">
@@ -195,7 +230,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-80 min-h-screen overflow-auto">
+      <main className="flex-1 lg:ml-80 min-h-screen overflow-auto">
         {children}
       </main>
     </div>
