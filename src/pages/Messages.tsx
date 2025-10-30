@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Send, UserCheck } from "lucide-react";
+import { Loader2, Send, UserCheck, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -87,182 +87,233 @@ export default function Messages() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Messages</h1>
-          <p className="text-muted-foreground">
-            Chat with your connections
-          </p>
-        </motion.div>
-
-        {/* Connection Requests */}
-        {connectionRequests && connectionRequests.length > 0 && (
+      <div className="h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
+        {/* Header */}
+        <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            className="max-w-7xl mx-auto"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Connection Requests</CardTitle>
-                <CardDescription>People who want to connect with you</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {connectionRequests.map((request) => (
-                  <div key={request._id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={request.sender?.image} alt={request.sender?.name || "User"} />
-                        <AvatarFallback>
-                          {request.sender?.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{request.sender?.name || "Anonymous"}</p>
-                        <p className="text-sm text-muted-foreground">{request.sender?.bio}</p>
-                      </div>
-                    </div>
-                    <Button onClick={() => handleAcceptRequest(request._id)}>
-                      <UserCheck className="h-4 w-4 mr-2" />
-                      Accept
-                    </Button>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
+                <MessageCircle className="h-6 w-6 text-primary" />
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                Messages
+              </h1>
+            </div>
+            <p className="text-muted-foreground ml-14">
+              Chat with your connections in real-time
+            </p>
           </motion.div>
-        )}
+        </div>
 
-        {/* Messages Interface */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Connections List */}
-            <Card className="md:col-span-1">
-              <CardHeader>
-                <CardTitle>Connections</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[500px]">
-                  {connections?.map((connection) => (
-                    <div
-                      key={connection?._id}
-                      className={`p-4 cursor-pointer hover:bg-muted transition-colors border-b ${
-                        selectedConnection === connection?._id ? "bg-muted" : ""
-                      }`}
-                      onClick={() => setSelectedConnection(connection?._id || null)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={connection?.image} alt={connection?.name || "User"} />
-                          <AvatarFallback>
-                            {connection?.name?.charAt(0).toUpperCase() || "U"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{connection?.name || "Anonymous"}</p>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {connection?.bio || "No bio"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-
-            {/* Chat Area */}
-            <Card className="md:col-span-2">
-              {selectedConnection ? (
-                <>
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
-                        <AvatarFallback>
-                          {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <CardTitle>{selectedUser?.name || "Anonymous"}</CardTitle>
-                        <CardDescription>{selectedUser?.location}</CardDescription>
-                      </div>
-                    </div>
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden">
+          <div className="max-w-7xl mx-auto h-full p-6 space-y-6">
+            {/* Connection Requests */}
+            {connectionRequests && connectionRequests.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Card className="border-2 border-primary/30 shadow-lg bg-gradient-to-br from-primary/5 to-purple-500/5">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2">
+                      <UserCheck className="h-5 w-5 text-primary" />
+                      Connection Requests
+                    </CardTitle>
+                    <CardDescription>People who want to connect with you</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <ScrollArea className="h-[350px] pr-4">
-                      <div className="space-y-4">
-                        {conversation?.map((msg) => (
-                          <div
-                            key={msg._id}
-                            className={`flex ${
-                              msg.senderId === user._id ? "justify-end" : "justify-start"
-                            }`}
-                          >
-                            <div
-                              className={`max-w-[70%] rounded-lg p-3 ${
-                                msg.senderId === user._id
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-muted"
-                              }`}
-                            >
-                              <p className="text-sm">{msg.message}</p>
-                              <p className="text-xs opacity-70 mt-1">
-                                {new Date(msg._creationTime).toLocaleTimeString()}
-                              </p>
-                            </div>
+                  <CardContent className="space-y-3">
+                    {connectionRequests.map((request) => (
+                      <motion.div
+                        key={request._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex items-center justify-between p-4 rounded-xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-12 w-12 border-2 border-primary/20">
+                            <AvatarImage src={request.sender?.image} alt={request.sender?.name || "User"} />
+                            <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
+                              {request.sender?.name?.charAt(0).toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-semibold">{request.sender?.name || "Anonymous"}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-1">{request.sender?.bio || "No bio"}</p>
                           </div>
+                        </div>
+                        <Button 
+                          onClick={() => handleAcceptRequest(request._id)}
+                          className="gap-2 shadow-md hover:shadow-lg transition-all"
+                        >
+                          <UserCheck className="h-4 w-4" />
+                          Accept
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Messages Interface */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="h-[calc(100vh-280px)]"
+            >
+              <div className="grid md:grid-cols-[320px_1fr] gap-6 h-full">
+                {/* Connections List */}
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col">
+                  <CardHeader className="pb-3 border-b border-border/50">
+                    <CardTitle className="text-lg">Your Connections</CardTitle>
+                    <CardDescription className="text-xs">
+                      {connections?.length || 0} connection{connections?.length !== 1 ? 's' : ''}
+                    </CardDescription>
+                  </CardHeader>
+                  <ScrollArea className="flex-1">
+                    {connections && connections.length > 0 ? (
+                      <div className="p-2">
+                        {connections.map((connection) => (
+                          <motion.div
+                            key={connection?._id}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`p-3 mb-2 rounded-xl cursor-pointer transition-all ${
+                              selectedConnection === connection?._id
+                                ? "bg-gradient-to-r from-primary to-purple-600 text-primary-foreground shadow-md"
+                                : "hover:bg-muted/50"
+                            }`}
+                            onClick={() => setSelectedConnection(connection?._id || null)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-11 w-11 border-2 border-white/20">
+                                <AvatarImage src={connection?.image} alt={connection?.name || "User"} />
+                                <AvatarFallback className={selectedConnection === connection?._id ? "bg-white/20" : ""}>
+                                  {connection?.name?.charAt(0).toUpperCase() || "U"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold truncate">{connection?.name || "Anonymous"}</p>
+                                <p className={`text-xs truncate ${selectedConnection === connection?._id ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                                  {connection?.bio || "No bio"}
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
                         ))}
                       </div>
-                    </ScrollArea>
-                    <div className="flex gap-2">
-                      <Input
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Type a message..."
-                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                      />
-                      <Button onClick={handleSendMessage} disabled={sending || !message.trim()}>
-                        {sending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Send className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </>
-              ) : (
-                <CardContent className="h-[500px] flex items-center justify-center">
-                  <p className="text-muted-foreground">Select a connection to start chatting</p>
-                </CardContent>
-              )}
-            </Card>
-          </div>
-        </motion.div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                        <MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                        <p className="text-sm text-muted-foreground mb-4">No connections yet</p>
+                        <Button onClick={() => navigate("/discover")} size="sm">
+                          Discover People
+                        </Button>
+                      </div>
+                    )}
+                  </ScrollArea>
+                </Card>
 
-        {connections?.length === 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>No Connections Yet</CardTitle>
-              <CardDescription>
-                Start by discovering matches and sending connection requests!
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate("/discover")}>
-                Discover Matches
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+                {/* Chat Area */}
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col">
+                  {selectedConnection ? (
+                    <>
+                      <CardHeader className="pb-4 border-b border-border/50">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-12 w-12 border-2 border-primary/20">
+                            <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
+                            <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
+                              {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <CardTitle className="text-xl">{selectedUser?.name || "Anonymous"}</CardTitle>
+                            <CardDescription className="text-xs">{selectedUser?.location || "Unknown location"}</CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col p-0">
+                        <ScrollArea className="flex-1 p-6">
+                          <div className="space-y-4">
+                            {conversation && conversation.length > 0 ? (
+                              conversation.map((msg) => (
+                                <motion.div
+                                  key={msg._id}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className={`flex ${
+                                    msg.senderId === user._id ? "justify-end" : "justify-start"
+                                  }`}
+                                >
+                                  <div
+                                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
+                                      msg.senderId === user._id
+                                        ? "bg-gradient-to-br from-primary to-purple-600 text-primary-foreground"
+                                        : "bg-muted"
+                                    }`}
+                                  >
+                                    <p className="text-sm leading-relaxed break-words">{msg.message}</p>
+                                    <p className={`text-xs mt-1.5 ${msg.senderId === user._id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                                      {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                  </div>
+                                </motion.div>
+                              ))
+                            ) : (
+                              <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                                <MessageCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
+                                <p className="text-muted-foreground">No messages yet</p>
+                                <p className="text-sm text-muted-foreground/70">Start the conversation!</p>
+                              </div>
+                            )}
+                          </div>
+                        </ScrollArea>
+                        <div className="p-4 border-t border-border/50 bg-muted/20">
+                          <div className="flex gap-3">
+                            <Input
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                              placeholder="Type your message..."
+                              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
+                              className="flex-1 bg-background border-border/50 focus:border-primary transition-all"
+                            />
+                            <Button 
+                              onClick={handleSendMessage} 
+                              disabled={sending || !message.trim()}
+                              size="icon"
+                              className="h-10 w-10 shadow-md hover:shadow-lg transition-all"
+                            >
+                              {sending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </>
+                  ) : (
+                    <CardContent className="flex-1 flex items-center justify-center">
+                      <div className="text-center">
+                        <MessageCircle className="h-20 w-20 text-muted-foreground/30 mx-auto mb-4" />
+                        <p className="text-lg font-medium text-muted-foreground mb-2">Select a connection</p>
+                        <p className="text-sm text-muted-foreground/70">Choose someone from your connections to start chatting</p>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
