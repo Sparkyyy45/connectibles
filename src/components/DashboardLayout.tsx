@@ -77,10 +77,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden h-12 w-12 rounded-xl bg-card/95 backdrop-blur-xl border border-border/40 shadow-lg"
+        className="fixed top-4 left-4 z-50 lg:hidden h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/90 to-purple-600/90 backdrop-blur-xl border-2 border-white/20 shadow-2xl hover:scale-105 active:scale-95 transition-all"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        {isMobileMenuOpen ? <X className="h-7 w-7 text-white" /> : <Menu className="h-7 w-7 text-white" />}
       </Button>
 
       {/* Overlay for mobile */}
@@ -98,14 +98,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Vertical Sidebar */}
       <motion.aside
-        initial={{ x: -100, opacity: 0 }}
+        initial={false}
         animate={{ 
           x: isMobileMenuOpen ? 0 : -100, 
           opacity: isMobileMenuOpen ? 1 : 0 
         }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
         className={cn(
-          "w-80 bg-gradient-to-b from-card/95 via-card/90 to-card/95 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col fixed h-screen z-50",
-          "lg:opacity-100 lg:translate-x-0"
+          "w-[85vw] max-w-sm bg-gradient-to-b from-card/98 via-card/95 to-card/98 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_64px_rgba(0,0,0,0.2)] flex flex-col fixed h-screen z-50",
+          "lg:w-80 lg:opacity-100 lg:translate-x-0"
         )}
         style={{ 
           transform: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'translateX(0)' : undefined,
@@ -138,15 +139,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Quick Actions Section */}
-        <div className="p-5 border-b border-border/30">
+        <div className="p-4 lg:p-5 border-b border-border/30">
           <div className="flex items-center justify-around gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl relative"
+              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl relative touch-manipulation"
               onClick={() => handleNavigation("/notifications")}
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-6 w-6 lg:h-5 lg:w-5" />
               <AnimatePresence>
                 {unreadCount !== undefined && unreadCount > 0 && (
                   <motion.div
@@ -157,7 +158,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   >
                     <Badge
                       variant="destructive"
-                      className="h-5 min-w-5 flex items-center justify-center px-1 text-xs font-bold shadow-lg"
+                      className="h-6 min-w-6 lg:h-5 lg:min-w-5 flex items-center justify-center px-1.5 text-xs font-bold shadow-lg"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
@@ -169,25 +170,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl"
+              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl touch-manipulation"
               onClick={() => handleNavigation("/profile")}
             >
-              <User className="h-5 w-5" />
+              <User className="h-6 w-6 lg:h-5 lg:w-5" />
             </Button>
 
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl"
+              className="h-14 w-14 lg:h-12 lg:w-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl touch-manipulation"
               onClick={() => signOut()}
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-6 w-6 lg:h-5 lg:w-5" />
             </Button>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav ref={navScrollRef} className="flex-1 p-5 space-y-2.5 overflow-y-auto">
+        <nav ref={navScrollRef} className="flex-1 p-4 lg:p-5 space-y-2 lg:space-y-2.5 overflow-y-auto">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -201,24 +202,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Button
                   variant={active ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start gap-4 h-14 text-base font-semibold transition-all duration-300 rounded-xl",
+                    "w-full justify-start gap-4 h-16 lg:h-14 text-lg lg:text-base font-semibold transition-all duration-300 rounded-xl touch-manipulation",
                     active
                       ? "bg-gradient-to-r from-primary via-purple-500 to-purple-600 text-primary-foreground shadow-xl shadow-primary/30 scale-[1.02]"
-                      : "hover:bg-muted/60 hover:translate-x-2 hover:shadow-md"
+                      : "hover:bg-muted/60 hover:translate-x-2 hover:shadow-md active:scale-95"
                   )}
                   onClick={() => handleNavigation(item.path)}
                 >
                   <div className={cn(
-                    "p-2 rounded-lg transition-all duration-300",
+                    "p-2.5 lg:p-2 rounded-lg transition-all duration-300",
                     active ? "bg-white/20" : "bg-transparent group-hover:bg-muted"
                   )}>
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-6 w-6 lg:h-5 lg:w-5" />
                   </div>
                   <span className="tracking-wide">{item.label}</span>
                   {active && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className="ml-auto h-2.5 w-2.5 rounded-full bg-white shadow-lg"
+                      className="ml-auto h-3 w-3 lg:h-2.5 lg:w-2.5 rounded-full bg-white shadow-lg"
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
