@@ -105,8 +105,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
         className={cn(
-          "w-[85vw] max-w-sm bg-gradient-to-b from-card/98 via-card/95 to-card/98 backdrop-blur-2xl border-r border-border/40 shadow-[0_8px_64px_rgba(0,0,0,0.2)] flex flex-col fixed h-screen z-50",
-          "lg:w-80 lg:opacity-100 lg:translate-x-0"
+          "w-[85vw] max-w-sm bg-gradient-to-br from-white via-purple-50/30 to-blue-50/20 backdrop-blur-2xl border-r-2 border-purple-200/50 shadow-[0_8px_64px_rgba(139,92,246,0.15)] flex flex-col fixed h-screen z-50",
+          "lg:w-80 lg:opacity-100 lg:translate-x-0 lg:bg-gradient-to-b lg:from-card/98 lg:via-card/95 lg:to-card/98 lg:border-border/40"
         )}
         style={{ 
           transform: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'translateX(0)' : undefined,
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         }}
       >
         {/* Logo Section */}
-        <div className="p-7 border-b border-border/30">
+        <div className="p-6 lg:p-7 border-b border-purple-200/40 lg:border-border/30 bg-white/60 lg:bg-transparent">
           <motion.div
             className="flex items-center gap-4 cursor-pointer group"
             onClick={() => handleNavigation("/")}
@@ -139,15 +139,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Quick Actions Section */}
-        <div className="p-4 lg:p-5 border-b border-border/30">
+        <div className="p-5 lg:p-5 border-b border-purple-200/40 lg:border-border/30 bg-gradient-to-r from-purple-50/50 to-blue-50/50 lg:bg-transparent">
           <div className="flex items-center justify-around gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl relative touch-manipulation"
+              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-purple-100 lg:hover:bg-muted/60 transition-all duration-300 rounded-xl relative touch-manipulation shadow-sm hover:shadow-md"
               onClick={() => handleNavigation("/notifications")}
             >
-              <Bell className="h-6 w-6 lg:h-5 lg:w-5" />
+              <Bell className="h-6 w-6 lg:h-5 lg:w-5 text-purple-600 lg:text-foreground" />
               <AnimatePresence>
                 {unreadCount !== undefined && unreadCount > 0 && (
                   <motion.div
@@ -170,16 +170,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-muted/60 transition-all duration-300 rounded-xl touch-manipulation"
+              className="h-14 w-14 lg:h-12 lg:w-12 hover:bg-purple-100 lg:hover:bg-muted/60 transition-all duration-300 rounded-xl touch-manipulation shadow-sm hover:shadow-md"
               onClick={() => handleNavigation("/profile")}
             >
-              <User className="h-6 w-6 lg:h-5 lg:w-5" />
+              <User className="h-6 w-6 lg:h-5 lg:w-5 text-purple-600 lg:text-foreground" />
             </Button>
 
             <Button
               variant="ghost"
               size="icon"
-              className="h-14 w-14 lg:h-12 lg:w-12 text-destructive hover:bg-destructive/15 hover:text-destructive transition-all duration-300 rounded-xl touch-manipulation"
+              className="h-14 w-14 lg:h-12 lg:w-12 text-red-500 hover:bg-red-50 lg:hover:bg-destructive/15 hover:text-red-600 lg:hover:text-destructive transition-all duration-300 rounded-xl touch-manipulation shadow-sm hover:shadow-md"
               onClick={() => signOut()}
             >
               <LogOut className="h-6 w-6 lg:h-5 lg:w-5" />
@@ -188,7 +188,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Navigation Items */}
-        <nav ref={navScrollRef} className="flex-1 p-4 lg:p-5 space-y-2 lg:space-y-2.5 overflow-y-auto">
+        <nav ref={navScrollRef} className="flex-1 p-5 lg:p-5 space-y-3 lg:space-y-2.5 overflow-y-auto bg-gradient-to-b from-transparent via-white/20 to-transparent lg:bg-transparent">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -202,18 +202,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Button
                   variant={active ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start gap-4 h-16 lg:h-14 text-lg lg:text-base font-semibold transition-all duration-300 rounded-xl touch-manipulation",
+                    "w-full justify-start gap-4 h-16 lg:h-14 text-lg lg:text-base font-semibold transition-all duration-300 rounded-2xl touch-manipulation shadow-sm",
                     active
-                      ? "bg-gradient-to-r from-primary via-purple-500 to-purple-600 text-primary-foreground shadow-xl shadow-primary/30 scale-[1.02]"
-                      : "hover:bg-muted/60 hover:translate-x-2 hover:shadow-md active:scale-95"
+                      ? "bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 text-white shadow-xl shadow-purple-500/30 scale-[1.02] border-2 border-purple-300/50"
+                      : "hover:bg-purple-50 lg:hover:bg-muted/60 hover:translate-x-2 hover:shadow-lg active:scale-95 text-slate-700 lg:text-foreground border-2 border-transparent hover:border-purple-200/50"
                   )}
                   onClick={() => handleNavigation(item.path)}
                 >
                   <div className={cn(
-                    "p-2.5 lg:p-2 rounded-lg transition-all duration-300",
-                    active ? "bg-white/20" : "bg-transparent group-hover:bg-muted"
+                    "p-2.5 lg:p-2 rounded-xl transition-all duration-300",
+                    active ? "bg-white/25 shadow-inner" : "bg-purple-100/50 lg:bg-transparent group-hover:bg-purple-100 lg:group-hover:bg-muted"
                   )}>
-                    <Icon className="h-6 w-6 lg:h-5 lg:w-5" />
+                    <Icon className={cn(
+                      "h-6 w-6 lg:h-5 lg:w-5",
+                      active ? "text-white" : "text-purple-600 lg:text-foreground"
+                    )} />
                   </div>
                   <span className="tracking-wide">{item.label}</span>
                   {active && (
