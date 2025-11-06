@@ -98,16 +98,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </AnimatePresence>
 
       {/* Vertical Sidebar - Enhanced mobile experience */}
-      <motion.aside
-        initial={false}
-        animate={{ 
-          x: isMobileMenuOpen ? 0 : '-100%', 
-          opacity: isMobileMenuOpen ? 1 : 0 
-        }}
-        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      <aside
         className={cn(
-          "w-[85vw] max-w-sm bg-gradient-to-br from-white via-purple-50/40 to-blue-50/30 backdrop-blur-2xl border-r-2 border-purple-200/60 shadow-[0_8px_64px_rgba(139,92,246,0.2)] flex flex-col fixed h-screen z-50 overflow-hidden",
-          "lg:static lg:w-80 lg:translate-x-0 lg:opacity-100 lg:bg-gradient-to-b lg:from-card/98 lg:via-card/95 lg:to-card/98 lg:border-border/40"
+          "w-[85vw] max-w-sm bg-gradient-to-br from-white via-purple-50/40 to-blue-50/30 backdrop-blur-2xl border-r-2 border-purple-200/60 shadow-[0_8px_64px_rgba(139,92,246,0.2)] flex flex-col fixed h-screen z-50 overflow-hidden transition-transform duration-300",
+          "lg:static lg:w-80 lg:translate-x-0 lg:bg-gradient-to-b lg:from-card/98 lg:via-card/95 lg:to-card/98 lg:border-border/40",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Logo Section */}
@@ -236,7 +231,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             );
           })}
         </nav>
-      </motion.aside>
+      </aside>
 
       {/* Main Content Area - Enhanced mobile spacing */}
       <main className="flex-1 min-h-screen overflow-auto pt-20 lg:pt-0">
