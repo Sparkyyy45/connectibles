@@ -202,16 +202,19 @@ export default function Chill() {
                     transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid"
                   >
-                    <Card className={`${colorClass} border border-purple-200/40 shadow-md hover:shadow-xl transition-all duration-300 relative overflow-hidden rounded-2xl`}>
-                      {/* Subtle gradient overlay */}
-                      <div className="absolute inset-0 pointer-events-none opacity-5">
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500" />
+                    <Card className={`${colorClass} border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm`}>
+                      {/* Enhanced gradient overlay */}
+                      <div className="absolute inset-0 pointer-events-none opacity-10">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400" />
                       </div>
                       
-                      {/* Side accent line */}
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-blue-500 pointer-events-none" />
+                      {/* Side accent line - thicker and more prominent */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-purple-500 via-blue-500 to-purple-600 pointer-events-none shadow-sm" />
                       
-                      <CardContent className="p-6 md:p-8 space-y-4 relative">
+                      {/* Top accent line */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent pointer-events-none" />
+                      
+                      <CardContent className="p-7 md:p-9 space-y-4 relative">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
                           <div className="absolute top-2 right-2">
@@ -227,7 +230,7 @@ export default function Chill() {
                         )}
 
                         {/* Content */}
-                        <p className="text-slate-700 leading-relaxed whitespace-pre-wrap break-words text-sm md:text-base font-medium pl-3 pt-1">
+                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-sm md:text-base font-medium pl-4 pt-2 tracking-wide">
                           {spill.content}
                         </p>
                       </CardContent>
