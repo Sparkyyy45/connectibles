@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag } from "lucide-react";
+import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -114,9 +114,11 @@ export default function Discover() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
+      whileHover={{ y: -8, transition: { duration: 0.2 } }}
     >
-      <Card>
-        <CardHeader>
+      <Card className="border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden h-full">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-blue-50/30 pointer-events-none" />
+        <CardHeader className="relative">
           <div className="flex items-start gap-4">
             <Avatar 
               className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
@@ -132,29 +134,40 @@ export default function Discover() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <CardTitle className="text-lg">{match.user.name || "Anonymous"}</CardTitle>
-              <CardDescription>
-                {match.score !== undefined && `${match.score} match score`}
+              <CardTitle className="text-xl font-bold text-slate-900">{match.user.name || "Anonymous"}</CardTitle>
+              <CardDescription className="text-sm text-slate-600 font-medium mt-1">
+                {match.score !== undefined && (
+                  <span className="inline-flex items-center gap-1">
+                    <Sparkles className="h-3.5 w-3.5 text-purple-500" />
+                    {match.score}% match
+                  </span>
+                )}
                 {match.mutualConnectionsCount > 0 && (
-                  <span className="ml-2">• {match.mutualConnectionsCount} mutual</span>
+                  <span className="ml-2 text-purple-600">• {match.mutualConnectionsCount} mutual</span>
                 )}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 relative">
           {match.user.bio && (
-            <p className="text-sm text-muted-foreground">{match.user.bio}</p>
+            <p className="text-sm text-slate-700 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-200/50">{match.user.bio}</p>
           )}
           {match.user.location && (
-            <p className="text-sm text-muted-foreground">📍 {match.user.location}</p>
+            <p className="text-sm text-slate-600 font-medium flex items-center gap-2">
+              <span className="text-lg">📍</span>
+              {match.user.location}
+            </p>
           )}
           {match.sharedInterests && match.sharedInterests.length > 0 && (
-            <div>
-              <p className="text-sm font-medium mb-2">Shared Interests:</p>
+            <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-200/40">
+              <p className="text-sm font-bold mb-3 text-purple-900 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-purple-600" />
+                Shared Interests
+              </p>
               <div className="flex flex-wrap gap-2">
                 {match.sharedInterests.map((interest: string) => (
-                  <Badge key={interest} variant="secondary">
+                  <Badge key={interest} className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200/50 hover:from-purple-200 hover:to-blue-200 transition-all">
                     {interest}
                   </Badge>
                 ))}
@@ -162,11 +175,14 @@ export default function Discover() {
             </div>
           )}
           {match.sharedSkills && match.sharedSkills.length > 0 && (
-            <div>
-              <p className="text-sm font-medium mb-2">Shared Skills:</p>
+            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200/40">
+              <p className="text-sm font-bold mb-3 text-blue-900 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-blue-600" />
+                Shared Skills
+              </p>
               <div className="flex flex-wrap gap-2">
                 {match.sharedSkills.map((skill: string) => (
-                  <Badge key={skill} variant="outline">
+                  <Badge key={skill} className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200/50 hover:from-blue-200 hover:to-cyan-200 transition-all">
                     {skill}
                   </Badge>
                 ))}
@@ -174,11 +190,11 @@ export default function Discover() {
             </div>
           )}
           {match.user.interests && match.user.interests.length > 0 && !match.sharedInterests && (
-            <div>
-              <p className="text-sm font-medium mb-2">Interests:</p>
+            <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200/40">
+              <p className="text-sm font-bold mb-3 text-slate-900">Interests</p>
               <div className="flex flex-wrap gap-2">
                 {match.user.interests.slice(0, 5).map((interest: string) => (
-                  <Badge key={interest} variant="secondary">
+                  <Badge key={interest} variant="secondary" className="bg-slate-100 text-slate-700 border border-slate-200/50">
                     {interest}
                   </Badge>
                 ))}
@@ -186,10 +202,10 @@ export default function Discover() {
             </div>
           )}
           <Button
-            className="w-full"
+            className="w-full gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all h-12 text-base font-semibold rounded-xl"
             onClick={() => handleConnect(match.user._id)}
           >
-            <UserPlus className="h-4 w-4 mr-2" />
+            <UserPlus className="h-5 w-5" />
             Connect
           </Button>
         </CardContent>
@@ -274,41 +290,67 @@ export default function Discover() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold tracking-tight">Discover Matches</h1>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center space-y-4"
+          >
+            <div className="flex items-center justify-center gap-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
+                <Sparkles className="h-8 w-8 text-purple-600" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+                Discover Matches
+              </h1>
+            </div>
+            <p className="text-slate-600 text-base md:text-lg font-medium">
+              Connect with people who share your interests ✨
+            </p>
             {profileCompletion !== undefined && (
-              <Badge variant={profileCompletion === 100 ? "default" : "secondary"} className="text-sm">
+              <Badge 
+                variant={profileCompletion === 100 ? "default" : "secondary"} 
+                className="text-sm px-4 py-1.5 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200/50"
+              >
                 Profile {profileCompletion}% Complete
               </Badge>
             )}
-          </div>
-          <p className="text-muted-foreground">
-            Connect with people who share your interests
-          </p>
-        </motion.div>
+          </motion.div>
 
-        {needsProfile ? (
-          <Card className="border-primary">
-            <CardHeader>
-              <CardTitle>Complete Your Profile First</CardTitle>
-              <CardDescription>
-                Add your interests to start discovering matches
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate("/profile")}>
-                Set Up Profile
-              </Button>
-            </CardContent>
-          </Card>
+          {needsProfile ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden">
+                <CardHeader className="text-center space-y-3 pb-4">
+                  <div className="flex justify-center">
+                    <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100">
+                      <UserPlus className="h-12 w-12 text-purple-600" />
+                    </div>
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
+                  <CardDescription className="text-base text-slate-600">
+                    Add your interests to start discovering amazing matches
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center pb-8">
+                  <Button 
+                    onClick={() => navigate("/profile")}
+                    size="lg"
+                    className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all px-8 py-6 text-base font-semibold"
+                  >
+                    <Sparkles className="h-5 w-5" />
+                    Set Up Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200/50 p-1.5 rounded-2xl shadow-md">
               <TabsTrigger value="matches" className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 Best Matches
@@ -328,10 +370,15 @@ export default function Discover() {
                 {matches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {matches?.length === 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>No Matches Yet</CardTitle>
-                    <CardDescription>
+                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
+                  <CardHeader className="text-center py-16">
+                    <div className="flex justify-center mb-4">
+                      <div className="p-6 rounded-full bg-purple-100/50">
+                        <Sparkles className="h-16 w-16 text-purple-400" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Matches Yet</CardTitle>
+                    <CardDescription className="text-base text-slate-600">
                       We couldn't find anyone with shared interests yet. Try the Explore tab!
                     </CardDescription>
                   </CardHeader>
@@ -340,19 +387,24 @@ export default function Discover() {
             </TabsContent>
 
             <TabsContent value="explore" className="mt-6">
-              <div className="mb-4">
-                <p className="text-sm text-muted-foreground">
-                  Discover random users outside your typical matches. Refresh the page for new suggestions!
+              <div className="mb-6 p-4 bg-blue-50/50 rounded-2xl border border-blue-200/40">
+                <p className="text-sm text-slate-700 font-medium text-center">
+                  🎲 Discover random users outside your typical matches. Refresh the page for new suggestions!
                 </p>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {exploreMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {exploreMatches?.length === 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>No Users to Explore</CardTitle>
-                    <CardDescription>
+                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
+                  <CardHeader className="text-center py-16">
+                    <div className="flex justify-center mb-4">
+                      <div className="p-6 rounded-full bg-blue-100/50">
+                        <Shuffle className="h-16 w-16 text-blue-400" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Users to Explore</CardTitle>
+                    <CardDescription className="text-base text-slate-600">
                       Check back later for more users to discover!
                     </CardDescription>
                   </CardHeader>
@@ -361,19 +413,24 @@ export default function Discover() {
             </TabsContent>
 
             <TabsContent value="reverse" className="mt-6">
-              <div className="mb-4">
-                <p className="text-sm text-muted-foreground">
-                  These users share interests with you and might be interested in connecting!
+              <div className="mb-6 p-4 bg-purple-50/50 rounded-2xl border border-purple-200/40">
+                <p className="text-sm text-slate-700 font-medium text-center">
+                  💫 These users share interests with you and might be interested in connecting!
                 </p>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {reverseMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {reverseMatches?.length === 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>No Reverse Matches Yet</CardTitle>
-                    <CardDescription>
+                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
+                  <CardHeader className="text-center py-16">
+                    <div className="flex justify-center mb-4">
+                      <div className="p-6 rounded-full bg-purple-100/50">
+                        <TrendingUp className="h-16 w-16 text-purple-400" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Reverse Matches Yet</CardTitle>
+                    <CardDescription className="text-base text-slate-600">
                       No one seems to match with your profile yet. Keep your profile updated!
                     </CardDescription>
                   </CardHeader>
@@ -382,6 +439,7 @@ export default function Discover() {
             </TabsContent>
           </Tabs>
         )}
+        </div>
       </div>
     </DashboardLayout>
   );
