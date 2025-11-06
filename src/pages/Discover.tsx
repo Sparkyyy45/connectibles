@@ -216,7 +216,7 @@ export default function Discover() {
   return (
     <DashboardLayout>
       <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="sm:max-w-md overflow-hidden border-2 border-primary/20">
+        <DialogContent className="sm:max-w-md overflow-hidden border-2 border-primary/20 mx-4">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/5 to-transparent pointer-events-none" />
           <DialogHeader className="relative">
             <div className="flex flex-col items-center gap-4 py-4">
@@ -295,17 +295,17 @@ export default function Discover() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-4"
+            className="text-center space-y-3 md:space-y-4 px-2"
           >
-            <div className="flex items-center justify-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
-                <Sparkles className="h-8 w-8 text-purple-600" />
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
+              <div className="p-2.5 md:p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
+                <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
                 Discover Matches
               </h1>
             </div>
-            <p className="text-slate-600 text-base md:text-lg font-medium">
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium px-4 md:px-0">
               Connect with people who share your interests ✨
             </p>
             {profileCompletion !== undefined && (
@@ -324,49 +324,51 @@ export default function Discover() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden">
-                <CardHeader className="text-center space-y-3 pb-4">
+              <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden mx-2 md:mx-0">
+                <CardHeader className="text-center space-y-3 pb-4 px-4 md:px-6">
                   <div className="flex justify-center">
-                    <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100">
-                      <UserPlus className="h-12 w-12 text-purple-600" />
+                    <div className="p-3 md:p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100">
+                      <UserPlus className="h-10 w-10 md:h-12 md:w-12 text-purple-600" />
                     </div>
                   </div>
-                  <CardTitle className="text-2xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
-                  <CardDescription className="text-base text-slate-600">
+                  <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
+                  <CardDescription className="text-sm md:text-base text-slate-600">
                     Add your interests to start discovering amazing matches
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center pb-8">
+                <CardContent className="flex justify-center pb-6 md:pb-8 px-4 md:px-6">
                   <Button 
                     onClick={() => navigate("/profile")}
                     size="lg"
-                    className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all px-8 py-6 text-base font-semibold"
+                    className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all px-6 md:px-8 py-5 md:py-6 text-sm md:text-base font-semibold w-full sm:w-auto"
                   >
-                    <Sparkles className="h-5 w-5" />
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
                     Set Up Profile
                   </Button>
                 </CardContent>
               </Card>
             </motion.div>
         ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200/50 p-1.5 rounded-2xl shadow-md">
-              <TabsTrigger value="matches" className="gap-2">
-                <Sparkles className="h-4 w-4" />
-                Best Matches
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full px-2 md:px-0">
+            <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200/50 p-1 md:p-1.5 rounded-2xl shadow-md">
+              <TabsTrigger value="matches" className="gap-1 md:gap-2 text-xs sm:text-sm">
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Best Matches</span>
+                <span className="sm:hidden">Matches</span>
               </TabsTrigger>
-              <TabsTrigger value="explore" className="gap-2">
-                <Shuffle className="h-4 w-4" />
-                Explore
+              <TabsTrigger value="explore" className="gap-1 md:gap-2 text-xs sm:text-sm">
+                <Shuffle className="h-3 w-3 md:h-4 md:w-4" />
+                <span>Explore</span>
               </TabsTrigger>
-              <TabsTrigger value="reverse" className="gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Interested in You
+              <TabsTrigger value="reverse" className="gap-1 md:gap-2 text-xs sm:text-sm">
+                <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Interested in You</span>
+                <span className="sm:hidden">For You</span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="matches" className="mt-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="matches" className="mt-4 md:mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
                 {matches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {matches?.length === 0 && (
@@ -386,13 +388,13 @@ export default function Discover() {
               )}
             </TabsContent>
 
-            <TabsContent value="explore" className="mt-6">
-              <div className="mb-6 p-4 bg-blue-50/50 rounded-2xl border border-blue-200/40">
-                <p className="text-sm text-slate-700 font-medium text-center">
+            <TabsContent value="explore" className="mt-4 md:mt-6">
+              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-blue-50/50 rounded-2xl border border-blue-200/40 mx-2 md:mx-0">
+                <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
                   🎲 Discover random users outside your typical matches. Refresh the page for new suggestions!
                 </p>
               </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
                 {exploreMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {exploreMatches?.length === 0 && (
@@ -412,13 +414,13 @@ export default function Discover() {
               )}
             </TabsContent>
 
-            <TabsContent value="reverse" className="mt-6">
-              <div className="mb-6 p-4 bg-purple-50/50 rounded-2xl border border-purple-200/40">
-                <p className="text-sm text-slate-700 font-medium text-center">
+            <TabsContent value="reverse" className="mt-4 md:mt-6">
+              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-purple-50/50 rounded-2xl border border-purple-200/40 mx-2 md:mx-0">
+                <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
                   💫 These users share interests with you and might be interested in connecting!
                 </p>
               </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
                 {reverseMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {reverseMatches?.length === 0 && (
