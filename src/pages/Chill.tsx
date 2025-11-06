@@ -136,29 +136,42 @@ export default function Chill() {
                     Share anonymously in up to 1200 characters - no judgment, just truth
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <Textarea
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Your secret is safe here..."
-                    className="min-h-[200px] text-base resize-none bg-slate-50 border-purple-200/50 text-slate-900 placeholder:text-slate-400 focus:border-purple-400"
-                    maxLength={1200}
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${content.length > 1100 ? "text-red-600" : "text-slate-600"}`}>
-                      {content.length} / 1200
-                    </span>
+                <div className="space-y-5 mt-6">
+                  <div className="relative">
+                    <Textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder="Your secret is safe here..."
+                      className="min-h-[220px] text-base resize-none bg-white border-2 border-purple-200/60 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 rounded-xl shadow-sm transition-all duration-200 p-4"
+                      maxLength={1200}
+                    />
+                    <div className="absolute bottom-3 right-3 pointer-events-none">
+                      <div className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                        content.length > 1100 
+                          ? "bg-red-100 text-red-700" 
+                          : content.length > 0 
+                          ? "bg-purple-100 text-purple-700" 
+                          : "bg-slate-100 text-slate-500"
+                      }`}>
+                        {content.length} / 1200
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-3 pt-2">
                     <Button
                       onClick={handleCreateSpill}
                       disabled={isSubmitting || !content.trim()}
                       size="lg"
-                      className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all"
+                      className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed px-8 py-6 text-base font-semibold rounded-xl"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Posting...
+                        </>
                       ) : (
                         <>
-                          <Sparkles className="h-4 w-4" />
+                          <Sparkles className="h-5 w-5" />
                           Post Confession
                         </>
                       )}
