@@ -107,14 +107,18 @@ export default function Chill() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+            className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left"
           >
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent flex items-center gap-3">
-                <Sparkles className="h-8 w-8 md:h-10 md:w-10 text-purple-600" />
-                The Confessional
-              </h1>
-              <p className="text-slate-600 text-base md:text-lg mt-2 font-medium">
+            <div className="flex-1">
+              <div className="flex items-center justify-center md:justify-start gap-4 mb-3">
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
+                  <Sparkles className="h-8 w-8 text-purple-600" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+                  The Confessional
+                </h1>
+              </div>
+              <p className="text-slate-600 text-base md:text-lg font-medium">
                 Share your secrets anonymously, judgment-free zone 🤫
               </p>
             </div>
@@ -183,7 +187,7 @@ export default function Chill() {
           </motion.div>
 
           {/* Confessions Grid */}
-          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-5 space-y-5">
+          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {spills?.map((spill, index) => {
                 const colorClass = CONFESSIONAL_COLORS[index % CONFESSIONAL_COLORS.length];
@@ -200,9 +204,9 @@ export default function Chill() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: -20 }}
                     transition={{ delay: index * 0.03 }}
-                    className="break-inside-avoid"
+                    className="break-inside-avoid mb-6"
                   >
-                    <Card className={`${colorClass} border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm`}>
+                    <Card className={`${colorClass} border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm group`}>
                       {/* Enhanced gradient overlay */}
                       <div className="absolute inset-0 pointer-events-none opacity-10">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400" />
@@ -214,30 +218,30 @@ export default function Chill() {
                       {/* Top accent line */}
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent pointer-events-none" />
                       
-                      <CardContent className="p-7 md:p-9 space-y-4 relative">
+                      <CardContent className="p-8 md:p-10 relative">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
-                          <div className="absolute top-2 right-2">
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteSpill(spill._id)}
-                              className="h-8 w-8 p-0 hover:bg-slate-200/60 rounded-full transition-colors"
+                              className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-full transition-all shadow-sm"
                             >
-                              <Trash2 className="h-4 w-4 text-slate-600" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         )}
 
                         {/* Content */}
-                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-sm md:text-base font-medium pl-4 pt-2 tracking-wide">
+                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-medium pl-5 pr-2 tracking-wide">
                           {spill.content}
                         </p>
                       </CardContent>
                     </Card>
                     
                     {/* Vote controls extension below the card */}
-                    <div className="flex items-center justify-center gap-2 mt-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm border border-purple-200/40">
+                    <div className="flex items-center justify-center gap-3 mt-4 bg-white/95 backdrop-blur-sm rounded-full px-5 py-2.5 shadow-md border border-purple-200/50 hover:shadow-lg transition-shadow">
                       <Button
                         size="sm"
                         variant="ghost"
