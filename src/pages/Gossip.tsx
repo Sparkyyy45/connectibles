@@ -110,36 +110,36 @@ export default function Gossip() {
                           transition={{ delay: index * 0.01 }}
                           className={`flex gap-4 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
                         >
-                          <Avatar className="h-11 w-11 flex-shrink-0 ring-2 ring-purple-200/50 shadow-sm">
+                          <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-purple-300/60 shadow-md">
                             <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
                             <AvatarFallback className="bg-gradient-to-br from-purple-100 to-blue-100 text-slate-700 font-semibold text-base">
                               {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>
                           </Avatar>
-                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[72%] group`}>
-                            <div className="flex items-center gap-2 mb-2">
-                              <p className={`text-sm font-bold text-slate-700 ${isOwner ? "order-2" : "order-1"}`}>
+                            <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[75%] group`}>
+                            <div className="flex items-center gap-2.5 mb-2.5">
+                              <p className={`text-sm font-bold text-slate-800 ${isOwner ? "order-2" : "order-1"}`}>
                                 {isOwner ? "You" : msg.sender?.name || "Anonymous"}
                               </p>
                               {isOwner && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 rounded-full order-1"
+                                  className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:border-red-200 rounded-full order-1 shadow-sm"
                                   onClick={() => handleDelete(msg._id)}
                                 >
-                                  <Trash2 className="h-4 w-4 text-slate-500 hover:text-red-600 transition-colors" />
+                                  <Trash2 className="h-4 w-4 text-slate-600 hover:text-red-600 transition-colors" />
                                 </Button>
                               )}
                             </div>
                             <div
-                              className={`rounded-2xl px-5 py-3.5 shadow-md ${
+                              className={`rounded-2xl px-6 py-4 shadow-lg transition-all duration-200 ${
                                 isOwner
-                                  ? "bg-gradient-to-br from-purple-600 to-blue-600 text-white"
-                                  : "bg-white border-2 border-purple-200/40 text-slate-700"
+                                  ? "bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 text-white shadow-purple-500/30"
+                                  : "bg-white border-2 border-purple-200/50 text-slate-800 hover:border-purple-300/60 hover:shadow-xl"
                               }`}
                             >
-                              <p className="text-[15px] leading-relaxed break-words">{msg.message}</p>
+                              <p className="text-base leading-relaxed break-words font-medium">{msg.message}</p>
                             </div>
                           </div>
                         </motion.div>
