@@ -107,12 +107,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         className={cn(
           "w-[85vw] max-w-sm bg-gradient-to-br from-white via-purple-50/40 to-blue-50/30 backdrop-blur-2xl border-r-2 border-purple-200/60 shadow-[0_8px_64px_rgba(139,92,246,0.2)] flex flex-col fixed h-screen z-50 overflow-hidden",
-          "lg:w-80 lg:opacity-100 lg:translate-x-0 lg:bg-gradient-to-b lg:from-card/98 lg:via-card/95 lg:to-card/98 lg:border-border/40"
+          "lg:static lg:w-80 lg:translate-x-0 lg:opacity-100 lg:bg-gradient-to-b lg:from-card/98 lg:via-card/95 lg:to-card/98 lg:border-border/40"
         )}
-        style={{ 
-          transform: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'translateX(0)' : undefined,
-          opacity: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 1 : undefined
-        }}
       >
         {/* Logo Section */}
         <div className="p-6 lg:p-7 border-b border-purple-200/40 lg:border-border/30 bg-white/60 lg:bg-transparent">
@@ -243,7 +239,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </motion.aside>
 
       {/* Main Content Area - Enhanced mobile spacing */}
-      <main className="flex-1 lg:ml-80 min-h-screen overflow-auto pt-20 lg:pt-0">
+      <main className="flex-1 min-h-screen overflow-auto pt-20 lg:pt-0">
         {children}
       </main>
     </div>
