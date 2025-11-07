@@ -295,26 +295,36 @@ export default function Discover() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-3 md:space-y-4 px-2"
+            className="text-center space-y-4 md:space-y-5 px-2"
           >
-            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
-              <div className="p-2.5 md:p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
-                <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
-              </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <motion.div 
+                className="p-3 md:p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-200/50 shadow-lg"
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Sparkles className="h-7 w-7 md:h-9 md:w-9 text-purple-600" />
+              </motion.div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
                 Discover Matches
               </h1>
             </div>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium px-4 md:px-0">
+            <p className="text-slate-600 text-base sm:text-lg md:text-xl font-medium px-4 md:px-0 max-w-2xl mx-auto">
               Connect with people who share your interests ✨
             </p>
             {profileCompletion !== undefined && (
-              <Badge 
-                variant={profileCompletion === 100 ? "default" : "secondary"} 
-                className="text-sm px-4 py-1.5 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200/50"
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
               >
-                Profile {profileCompletion}% Complete
-              </Badge>
+                <Badge 
+                  variant={profileCompletion === 100 ? "default" : "secondary"} 
+                  className="text-sm px-5 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-2 border-purple-200/50 shadow-md font-semibold"
+                >
+                  Profile {profileCompletion}% Complete
+                </Badge>
+              </motion.div>
             )}
           </motion.div>
 
@@ -324,44 +334,65 @@ export default function Discover() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden mx-2 md:mx-0">
-                <CardHeader className="text-center space-y-3 pb-4 px-4 md:px-6">
-                  <div className="flex justify-center">
-                    <div className="p-3 md:p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100">
-                      <UserPlus className="h-10 w-10 md:h-12 md:w-12 text-purple-600" />
+              <Card className="border-2 border-purple-200/60 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden mx-2 md:mx-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-blue-50/50 pointer-events-none" />
+                <CardHeader className="text-center space-y-4 pb-6 px-4 md:px-6 relative">
+                  <motion.div 
+                    className="flex justify-center"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                  >
+                    <div className="p-4 md:p-5 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-200/50 shadow-lg">
+                      <UserPlus className="h-12 w-12 md:h-14 md:w-14 text-purple-600" />
                     </div>
-                  </div>
-                  <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
-                  <CardDescription className="text-sm md:text-base text-slate-600">
+                  </motion.div>
+                  <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
+                  <CardDescription className="text-base md:text-lg text-slate-600 max-w-md mx-auto">
                     Add your interests to start discovering amazing matches
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center pb-6 md:pb-8 px-4 md:px-6">
-                  <Button 
-                    onClick={() => navigate("/profile")}
-                    size="lg"
-                    className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all px-6 md:px-8 py-5 md:py-6 text-sm md:text-base font-semibold w-full sm:w-auto"
+                <CardContent className="flex justify-center pb-8 md:pb-10 px-4 md:px-6 relative">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full sm:w-auto"
                   >
-                    <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
-                    Set Up Profile
-                  </Button>
+                    <Button 
+                      onClick={() => navigate("/profile")}
+                      size="lg"
+                      className="gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-xl hover:shadow-2xl transition-all px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold w-full sm:w-auto rounded-2xl"
+                    >
+                      <Sparkles className="h-5 w-5 md:h-6 md:w-6" />
+                      Set Up Profile
+                    </Button>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full px-2 md:px-0">
-            <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm border-2 border-purple-200/50 p-1 md:p-1.5 rounded-2xl shadow-md">
-              <TabsTrigger value="matches" className="gap-1 md:gap-2 text-xs sm:text-sm">
-                <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
+            <TabsList className="grid w-full grid-cols-3 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-1.5 md:p-2 rounded-2xl shadow-lg">
+              <TabsTrigger 
+                value="matches" 
+                className="gap-2 text-xs sm:text-sm md:text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
+              >
+                <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Best Matches</span>
                 <span className="sm:hidden">Matches</span>
               </TabsTrigger>
-              <TabsTrigger value="explore" className="gap-1 md:gap-2 text-xs sm:text-sm">
-                <Shuffle className="h-3 w-3 md:h-4 md:w-4" />
+              <TabsTrigger 
+                value="explore" 
+                className="gap-2 text-xs sm:text-sm md:text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
+              >
+                <Shuffle className="h-4 w-4 md:h-5 md:w-5" />
                 <span>Explore</span>
               </TabsTrigger>
-              <TabsTrigger value="reverse" className="gap-1 md:gap-2 text-xs sm:text-sm">
-                <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
+              <TabsTrigger 
+                value="reverse" 
+                className="gap-2 text-xs sm:text-sm md:text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
+              >
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Interested in You</span>
                 <span className="sm:hidden">For You</span>
               </TabsTrigger>
