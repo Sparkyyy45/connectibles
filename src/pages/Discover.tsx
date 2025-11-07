@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag, Heart } from "lucide-react";
+import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag, Heart, Users } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -136,14 +136,11 @@ export default function Discover() {
             <div className="flex-1">
               <CardTitle className="text-xl font-bold text-slate-900">{match.user.name || "Anonymous"}</CardTitle>
               <CardDescription className="text-sm text-slate-600 font-medium mt-1">
-                {match.score !== undefined && (
-                  <span className="inline-flex items-center gap-1">
-                    <Sparkles className="h-3.5 w-3.5 text-purple-500" />
-                    {match.score}% match
-                  </span>
-                )}
                 {match.mutualConnectionsCount > 0 && (
-                  <span className="ml-2 text-purple-600">• {match.mutualConnectionsCount} mutual</span>
+                  <span className="inline-flex items-center gap-1 text-purple-600">
+                    <Users className="h-3.5 w-3.5" />
+                    {match.mutualConnectionsCount} mutual connection{match.mutualConnectionsCount > 1 ? 's' : ''}
+                  </span>
                 )}
               </CardDescription>
             </div>
