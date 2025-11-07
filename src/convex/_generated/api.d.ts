@@ -12,6 +12,7 @@ import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
 import type * as chill from "../chill.js";
 import type * as connections from "../connections.js";
+import type * as crons from "../crons.js";
 import type * as events from "../events.js";
 import type * as gameStats from "../gameStats.js";
 import type * as games from "../games.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   chill: typeof chill;
   connections: typeof connections;
+  crons: typeof crons;
   events: typeof events;
   gameStats: typeof gameStats;
   games: typeof games;
