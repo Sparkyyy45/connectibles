@@ -13,6 +13,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import Footer from "@/components/Footer";
 
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
@@ -330,6 +331,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <Footer />
     </div>
   );
 }

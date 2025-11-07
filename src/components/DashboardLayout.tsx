@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Footer from "@/components/Footer";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -234,8 +235,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main Content Area - Enhanced mobile spacing */}
-      <main className="flex-1 min-h-screen overflow-auto pt-20 lg:pt-0">
-        {children}
+      <main className="flex-1 min-h-screen overflow-auto pt-20 lg:pt-0 flex flex-col">
+        <div className="flex-1">
+          {children}
+        </div>
+        <Footer />
       </main>
     </div>
   );
