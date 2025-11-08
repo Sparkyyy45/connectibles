@@ -9,9 +9,9 @@ import { Loader2, Gamepad2, Users, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
+import OnlineAvatar from "@/components/OnlineAvatar";
 
 type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "word_chain" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
 
@@ -209,12 +209,12 @@ export default function Games() {
                 <Card className="hover:shadow-lg transition-all">
                   <CardHeader>
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={connection.image} alt={connection.name || "User"} />
-                        <AvatarFallback>
-                          {connection.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
+                      <OnlineAvatar
+                        userId={connection._id}
+                        image={connection.image}
+                        name={connection.name}
+                        className="h-12 w-12"
+                      />
                       <div>
                         <CardTitle className="text-lg">{connection.name || "Anonymous"}</CardTitle>
                         <CardDescription>{connection.email}</CardDescription>
@@ -295,12 +295,12 @@ export default function Games() {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={invitation.sender?.image} />
-                        <AvatarFallback>
-                          {invitation.sender?.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
+                      <OnlineAvatar
+                        userId={invitation.senderId}
+                        image={invitation.sender?.image}
+                        name={invitation.sender?.name}
+                        className="h-10 w-10"
+                      />
                       <div>
                         <p className="font-medium">
                           {invitation.sender?.name || "Someone"} invited you to play
@@ -342,12 +342,12 @@ export default function Games() {
                       onClick={() => setViewingSession(session._id)}
                     >
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={opponent?.image} />
-                          <AvatarFallback>
-                            {opponent?.name?.charAt(0).toUpperCase() || "U"}
-                          </AvatarFallback>
-                        </Avatar>
+                        <OnlineAvatar
+                          userId={opponent?._id!}
+                          image={opponent?.image}
+                          name={opponent?.name}
+                          className="h-10 w-10"
+                        />
                         <div>
                           <p className="font-medium">
                             Playing with {opponent?.name || "Someone"}

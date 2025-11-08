@@ -50,6 +50,9 @@ const schema = defineSchema(
       favoriteSubject: v.optional(v.string()),
       weekendActivity: v.optional(v.string()),
       superpower: v.optional(v.string()),
+      
+      // Online status tracking
+      lastActive: v.optional(v.number()),
     }).index("email", ["email"]),
 
     // Notifications

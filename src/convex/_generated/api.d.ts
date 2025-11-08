@@ -22,6 +22,7 @@ import type * as matching from "../matching.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
+import type * as presence from "../presence.js";
 import type * as profiles from "../profiles.js";
 import type * as reports from "../reports.js";
 import type * as truthDare from "../truthDare.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   notifications: typeof notifications;
   posts: typeof posts;
+  presence: typeof presence;
   profiles: typeof profiles;
   reports: typeof reports;
   truthDare: typeof truthDare;

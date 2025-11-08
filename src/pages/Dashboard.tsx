@@ -6,11 +6,11 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Users, Calendar, Sparkles, MessageSquare, Lock, MessageCircle, Bell, ArrowRight, Gamepad2, Trophy, Heart, TrendingUp, Zap, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Progress } from "@/components/ui/progress";
+import OnlineAvatar from "@/components/OnlineAvatar";
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -300,10 +300,12 @@ export default function Dashboard() {
                       className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-all cursor-pointer"
                       onClick={() => navigate("/discover")}
                     >
-                      <Avatar className="h-12 w-12 border-2 border-primary/30">
-                        <AvatarImage src={match.user.image} />
-                        <AvatarFallback>{match.user.name?.charAt(0) || "U"}</AvatarFallback>
-                      </Avatar>
+                      <OnlineAvatar
+                        userId={match.user._id}
+                        image={match.user.image}
+                        name={match.user.name}
+                        className="h-12 w-12 border-2 border-primary/30"
+                      />
                       <div className="flex-1">
                         <p className="font-semibold">{match.user.name || "Anonymous"}</p>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">

@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/Footer";
+import { usePresence } from "@/hooks/use-presence";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -24,6 +25,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const prevUnreadCount = useRef<number | undefined>(undefined);
   const navScrollRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Track user presence
+  usePresence();
 
   // Preserve scroll position
   useEffect(() => {
