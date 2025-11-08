@@ -128,17 +128,17 @@ export default function Landing() {
             </div>
           </motion.div>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 h-full">
             <button
               onClick={() => scrollToSection("features")}
-              className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group"
+              className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group flex items-center h-full"
             >
               Features
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
             </button>
             <button
               onClick={() => scrollToSection("cta")}
-              className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group"
+              className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group flex items-center h-full"
             >
               Get Started
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
