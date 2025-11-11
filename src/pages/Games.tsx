@@ -12,6 +12,14 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
 import OnlineAvatar from "@/components/OnlineAvatar";
+import TicTacToe from "@/components/games/TicTacToe";
+import MemoryMatch from "@/components/games/MemoryMatch";
+import ReactionTest from "@/components/games/ReactionTest";
+import NumberGuess from "@/components/games/NumberGuess";
+import WordChain from "@/components/games/WordChain";
+import QuickDraw from "@/components/games/QuickDraw";
+import TriviaDuel from "@/components/games/TriviaDuel";
+import EmojiMatch from "@/components/games/EmojiMatch";
 
 type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "word_chain" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
 
@@ -130,25 +138,25 @@ export default function Games() {
       return null;
     }
 
-    // Import game components dynamically
+    // Map game type to component
     const GameComponent = (() => {
       switch (session.gameType) {
         case "tic_tac_toe":
-          return require("@/components/games/TicTacToe").default;
+          return TicTacToe;
         case "memory_match":
-          return require("@/components/games/MemoryMatch").default;
+          return MemoryMatch;
         case "reaction_test":
-          return require("@/components/games/ReactionTest").default;
+          return ReactionTest;
         case "number_guess":
-          return require("@/components/games/NumberGuess").default;
+          return NumberGuess;
         case "word_chain":
-          return require("@/components/games/WordChain").default;
+          return WordChain;
         case "quick_draw":
-          return require("@/components/games/QuickDraw").default;
+          return QuickDraw;
         case "trivia_duel":
-          return require("@/components/games/TriviaDuel").default;
+          return TriviaDuel;
         case "emoji_match":
-          return require("@/components/games/EmojiMatch").default;
+          return EmojiMatch;
         default:
           return null;
       }
