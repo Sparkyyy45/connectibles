@@ -72,8 +72,11 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
           winnerId,
         });
         
-        toast.success(winner === "draw" ? "Game ended in a draw!" : 
-          winner === playerSymbol ? "You won!" : "You lost!");
+        if (winner === "draw") {
+          toast.success("Game ended in a draw! 🤝");
+        } else if (winner === playerSymbol) {
+          toast.success("You won! 🎉");
+        }
       } else {
         await updateGameState({
           sessionId,
@@ -86,35 +89,32 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
     }
   };
 
+  // Don't show game board if completed - parent will show winner screen
+  if (session.status === "completed") {
+    return null;
+  }
+
   return (
     <Card className="max-w-md mx-auto shadow-xl">
       <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
         <CardTitle className="text-center text-2xl">
-          {session.status === "completed" 
-            ? session.winnerId === currentUserId 
-              ? "🎉 Victory!" 
-              : session.winnerId 
-                ? "😔 Defeat" 
-                : "🤝 Draw"
-            : isMyTurn 
-              ? `Your Turn (${playerSymbol})` 
-              : `Opponent's Turn (${opponentSymbol})`}
+          {isMyTurn 
+            ? `Your Turn (${playerSymbol})` 
+            : `Opponent's Turn (${opponentSymbol})`}
         </CardTitle>
-        {session.status === "in_progress" && (
-          <div className="text-center mt-2">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="inline-block"
-            >
-              {isMyTurn ? (
-                <span className="text-green-500 font-semibold">● Your Move</span>
-              ) : (
-                <span className="text-yellow-500 font-semibold">● Waiting...</span>
-              )}
-            </motion.div>
-          </div>
-        )}
+        <div className="text-center mt-2">
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            className="inline-block"
+          >
+            {isMyTurn ? (
+              <span className="text-green-500 font-semibold">● Your Move</span>
+            ) : (
+              <span className="text-yellow-500 font-semibold">● Waiting...</span>
+            )}
+          </motion.div>
+        </div>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="grid grid-cols-3 gap-3 aspect-square">
@@ -127,7 +127,7 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => handleCellClick(index)}
-              disabled={!isMyTurn || !!cell || session.status !== "in_progress"}
+              disabled={!isMyTurn || !!cell}
               className={`aspect-square rounded-xl border-2 text-5xl font-bold transition-all shadow-md ${
                 cell 
                   ? cell === playerSymbol

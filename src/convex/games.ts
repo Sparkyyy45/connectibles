@@ -174,6 +174,10 @@ export const updateGameState = mutation({
       throw new Error("Not a player in this session");
     }
 
+    if (session.status === "completed") {
+      throw new Error("Game already completed");
+    }
+
     const updates: any = {
       gameState: args.gameState,
     };
@@ -186,6 +190,24 @@ export const updateGameState = mutation({
       await ctx.scheduler.runAfter(0, internal.gameStats.updateGameStats, {
         sessionId: args.sessionId,
       });
+
+      // Notify both players
+      const winner = await ctx.db.get(args.winnerId);
+      const loserId = session.player1Id === args.winnerId ? session.player2Id : session.player1Id;
+      
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+        userId: args.winnerId,
+        type: "game_won",
+        message: `You won the ${session.gameType.replace("_", " ")} game! 🎉`,
+        relatedUserId: loserId,
+      });
+
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+        userId: loserId,
+        type: "game_lost",
+        message: `You lost the ${session.gameType.replace("_", " ")} game. Better luck next time!`,
+        relatedUserId: args.winnerId,
+      });
     } else {
       // Switch turn
       updates.currentTurn =
@@ -195,6 +217,28 @@ export const updateGameState = mutation({
     }
 
     await ctx.db.patch(args.sessionId, updates);
+    return args.sessionId;
+  },
+});
+
+// Leave game session (only if completed)
+export const leaveGameSession = mutation({
+  args: { sessionId: v.id("game_sessions") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const session = await ctx.db.get(args.sessionId);
+    if (!session) throw new Error("Session not found");
+
+    if (session.player1Id !== userId && session.player2Id !== userId) {
+      throw new Error("Not a player in this session");
+    }
+
+    if (session.status !== "completed") {
+      throw new Error("Cannot leave an active game. Finish the game first!");
+    }
+
     return args.sessionId;
   },
 });

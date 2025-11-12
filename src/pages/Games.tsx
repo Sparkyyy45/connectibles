@@ -138,6 +138,15 @@ export default function Games() {
       return null;
     }
 
+    // Prevent leaving if game is still in progress
+    const handleBackClick = () => {
+      if (session.status === "in_progress") {
+        toast.error("You cannot leave an active game! Finish the game first.");
+        return;
+      }
+      setViewingSession(null);
+    };
+
     // Map game type to component
     const GameComponent = (() => {
       switch (session.gameType) {
@@ -162,17 +171,78 @@ export default function Games() {
       }
     })();
 
+    const opponent = session.player1Id === user._id ? session.player2 : session.player1;
+    const isWinner = session.winnerId === user._id;
+    const isCompleted = session.status === "completed";
+
     return (
       <DashboardLayout>
         <div className="p-8 space-y-8">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={() => setViewingSession(null)}>
-              ← Back to Games
-            </Button>
-            <h1 className="text-3xl font-bold">
-              {session.gameType.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
-            </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                onClick={handleBackClick}
+                disabled={session.status === "in_progress"}
+              >
+                ← {session.status === "in_progress" ? "Game in Progress" : "Back to Games"}
+              </Button>
+              <h1 className="text-3xl font-bold">
+                {session.gameType.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+              </h1>
+            </div>
+            {session.status === "in_progress" && (
+              <Badge variant="destructive" className="text-lg px-4 py-2">
+                🔒 Game Locked
+              </Badge>
+            )}
           </div>
+
+          {/* Winner Display */}
+          {isCompleted && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-6"
+            >
+              <Card className={`border-4 ${isWinner ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"}`}>
+                <CardHeader className="text-center">
+                  <CardTitle className="text-4xl mb-4">
+                    {isWinner ? "🎉 Victory!" : "😔 Defeat"}
+                  </CardTitle>
+                  <CardDescription className="text-xl">
+                    {isWinner 
+                      ? `You defeated ${opponent?.name || "your opponent"}!` 
+                      : `${opponent?.name || "Your opponent"} won this round!`
+                    }
+                  </CardDescription>
+                  <div className="flex items-center justify-center gap-4 mt-6">
+                    <OnlineAvatar
+                      userId={user._id}
+                      image={user.image}
+                      name={user.name}
+                      className="h-16 w-16 border-4 border-white"
+                    />
+                    <span className="text-3xl">{isWinner ? ">" : "<"}</span>
+                    <OnlineAvatar
+                      userId={opponent?._id!}
+                      image={opponent?.image}
+                      name={opponent?.name}
+                      className="h-16 w-16 border-4 border-white"
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => setViewingSession(null)} 
+                    className="mt-6"
+                    size="lg"
+                  >
+                    Return to Games
+                  </Button>
+                </CardHeader>
+              </Card>
+            </motion.div>
+          )}
+
           {GameComponent && (
             <GameComponent
               sessionId={session._id}
