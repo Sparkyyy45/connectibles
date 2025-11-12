@@ -62,9 +62,15 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
     
     try {
       if (winner) {
-        const winnerId = winner === "draw" ? undefined : 
-          (winner === playerSymbol ? currentUserId : 
-            (session.player1Id === currentUserId ? session.player2Id : session.player1Id));
+        let winnerId: Id<"users"> | undefined;
+        
+        if (winner === "draw") {
+          winnerId = undefined;
+        } else if (winner === playerSymbol) {
+          winnerId = currentUserId;
+        } else {
+          winnerId = session.player1Id === currentUserId ? session.player2Id : session.player1Id;
+        }
         
         await updateGameState({
           sessionId,
@@ -85,7 +91,9 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to update game");
-      setBoard(board);
+      // Revert to previous board state on error
+      const prevState = session.gameState ? JSON.parse(session.gameState) : { board: Array(9).fill(null) };
+      setBoard(prevState.board || Array(9).fill(null));
     }
   };
 
