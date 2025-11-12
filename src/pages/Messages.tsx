@@ -166,11 +166,11 @@ export default function Messages() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="h-[calc(100vh-280px)]"
+              className="h-[calc(100vh-280px)] md:h-[calc(100vh-280px)]"
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-6 h-full">
+              <div className="grid md:grid-cols-[320px_1fr] gap-6 h-full flex-col md:flex-row">
                 {/* Connections List */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col">
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[200px] md:h-auto">
                   <CardHeader className="pb-3 border-b border-border/50">
                     <CardTitle className="text-lg">Your Connections</CardTitle>
                     <CardDescription className="text-xs">
@@ -222,7 +222,7 @@ export default function Messages() {
                 </Card>
 
                 {/* Chat Area */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col">
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col min-h-0">
                   {selectedConnection ? (
                     <>
                       <CardHeader className="pb-4 border-b border-border/50">
@@ -239,8 +239,8 @@ export default function Messages() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0">
-                        <ScrollArea className="flex-1 p-6">
+                      <CardContent className="flex-1 flex flex-col p-0 min-h-0 overflow-hidden">
+                        <ScrollArea className="flex-1 p-4 md:p-6 overflow-y-auto">
                           <div className="space-y-4">
                             {conversation && conversation.length > 0 ? (
                               conversation.map((msg) => (
@@ -275,8 +275,8 @@ export default function Messages() {
                             )}
                           </div>
                         </ScrollArea>
-                        <div className="p-4 border-t border-border/50 bg-muted/20">
-                          <div className="flex gap-3">
+                        <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0">
+                          <div className="flex gap-2 md:gap-3">
                             <Input
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
@@ -288,7 +288,7 @@ export default function Messages() {
                               onClick={handleSendMessage} 
                               disabled={sending || !message.trim()}
                               size="icon"
-                              className="h-10 w-10 shadow-md hover:shadow-lg transition-all"
+                              className="h-10 w-10 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0"
                             >
                               {sending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
