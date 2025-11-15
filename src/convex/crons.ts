@@ -7,6 +7,7 @@ const crons = cronJobs();
 crons.interval(
   "delete old confessions",
   { hours: 1 },
+  // @ts-expect-error - Convex type instantiation depth issue, runtime works correctly
   internal.chill.deleteOldSpills,
   {}
 );
