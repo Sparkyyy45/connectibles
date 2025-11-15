@@ -327,10 +327,11 @@ export default function Messages() {
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="hover:bg-muted/50 rounded-lg">
-                                <MoreVertical className="h-5 w-5 text-muted-foreground" />
+                              <Button variant="outline" size="icon" className="hover:bg-muted border-2 border-border/50 rounded-lg shadow-sm">
+                                <MoreVertical className="h-5 w-5 text-foreground" />
                               </Button>
                             </DropdownMenuTrigger>
+=======
                             <DropdownMenuContent align="end" className="w-48 rounded-xl border border-border/50 shadow-lg">
                               {isBlocked ? (
                                 <DropdownMenuItem 
