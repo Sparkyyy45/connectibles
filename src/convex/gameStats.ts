@@ -103,12 +103,7 @@ export const getGameLeaderboard = query({
   args: {
     gameType: v.union(
       v.literal("tic_tac_toe"),
-      v.literal("memory_match"),
-      v.literal("reaction_test"),
-      v.literal("quick_draw"),
-      v.literal("trivia_duel"),
-      v.literal("number_guess"),
-      v.literal("emoji_match")
+      v.literal("reaction_test")
     ),
     limit: v.optional(v.number()),
   },

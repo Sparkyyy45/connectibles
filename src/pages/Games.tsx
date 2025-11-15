@@ -12,14 +12,9 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
 import TicTacToe from "@/components/games/TicTacToe";
-import MemoryMatch from "@/components/games/MemoryMatch";
 import ReactionTest from "@/components/games/ReactionTest";
-import NumberGuess from "@/components/games/NumberGuess";
-import QuickDraw from "@/components/games/QuickDraw";
-import TriviaDuel from "@/components/games/TriviaDuel";
-import EmojiMatch from "@/components/games/EmojiMatch";
 
-type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
+type GameType = "tic_tac_toe" | "reaction_test";
 
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -43,40 +38,10 @@ export default function Games() {
       icon: "🎯",
     },
     {
-      type: "memory_match" as GameType,
-      name: "Memory Match",
-      description: "Find matching pairs",
-      icon: "🧠",
-    },
-    {
       type: "reaction_test" as GameType,
       name: "Reaction Test",
       description: "Test your reflexes",
       icon: "⚡",
-    },
-    {
-      type: "quick_draw" as GameType,
-      name: "Quick Draw",
-      description: "Draw the prompt quickly",
-      icon: "🎨",
-    },
-    {
-      type: "trivia_duel" as GameType,
-      name: "Trivia Challenge",
-      description: "Test your knowledge",
-      icon: "🧩",
-    },
-    {
-      type: "number_guess" as GameType,
-      name: "Number Guess",
-      description: "Guess the secret number",
-      icon: "🔢",
-    },
-    {
-      type: "emoji_match" as GameType,
-      name: "Emoji Match",
-      description: "Match emoji expressions",
-      icon: "😊",
     },
   ];
 
@@ -110,18 +75,8 @@ export default function Games() {
       switch (session.gameType) {
         case "tic_tac_toe":
           return TicTacToe;
-        case "memory_match":
-          return MemoryMatch;
         case "reaction_test":
           return ReactionTest;
-        case "number_guess":
-          return NumberGuess;
-        case "quick_draw":
-          return QuickDraw;
-        case "trivia_duel":
-          return TriviaDuel;
-        case "emoji_match":
-          return EmojiMatch;
         default:
           return null;
       }

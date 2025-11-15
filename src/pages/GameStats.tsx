@@ -33,12 +33,7 @@ export default function GameStats() {
 
   const gameNames: Record<string, string> = {
     tic_tac_toe: "Tic Tac Toe",
-    memory_match: "Memory Match",
     reaction_test: "Reaction Test",
-    quick_draw: "Quick Draw",
-    trivia_duel: "Trivia Duel",
-    number_guess: "Number Guess",
-    emoji_match: "Emoji Match",
   };
 
   return (
