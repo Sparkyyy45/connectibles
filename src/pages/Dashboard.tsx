@@ -18,6 +18,7 @@ export default function Dashboard() {
   const matches = useQuery(api.matching.getMatches);
   const connections = useQuery(api.connections.getConnections);
   const events = useQuery(api.events.getAllEvents);
+  const profileCompletion = useQuery(api.profiles.getProfileCompletion);
   const recentPosts = useQuery(api.posts.getAllPosts);
   const connectionRequests = useQuery(api.connections.getConnectionRequests);
 
@@ -40,7 +41,6 @@ export default function Dashboard() {
   const topMatches = matches?.slice(0, 3) || [];
   const recentCollaborations = recentPosts?.slice(0, 3) || [];
   const pendingRequests = connectionRequests?.length || 0;
-  const hasLowActivity = (connections?.length || 0) < 3 && (matches?.length || 0) > 5;
 
   const navigationSections = [
     {
@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
+      <div className="p-8 space-y-12 max-w-7xl mx-auto">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -141,33 +141,33 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Engagement Boost Card */}
-        {!needsProfile && hasLowActivity && (
+        {/* Profile Completion Card */}
+        {!needsProfile && profileCompletion !== undefined && profileCompletion < 100 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
           >
-            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 animate-pulse" />
-              <CardHeader className="relative">
+            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm">
+              <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-2xl flex items-center gap-3">
-                      <Zap className="h-6 w-6 text-primary animate-bounce" />
-                      Your Perfect Matches Are Waiting! 🎯
+                      <TrendingUp className="h-6 w-6 text-primary" />
+                      Profile Completion
                     </CardTitle>
                     <CardDescription className="text-base mt-2">
-                      You have {matches?.length || 0} amazing people ready to connect with you. Don't let them slip away—start building meaningful connections today!
+                      Complete your profile to unlock better matches
                     </CardDescription>
                   </div>
-                  <div className="text-5xl">✨</div>
+                  <div className="text-4xl font-bold text-primary">{profileCompletion}%</div>
                 </div>
               </CardHeader>
-              <CardContent className="relative">
-                <Button onClick={() => navigate("/discover")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+              <CardContent className="space-y-4">
+                <Progress value={profileCompletion} className="h-3" />
+                <Button onClick={() => navigate("/profile")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all">
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Discover Your Matches
+                  Complete Profile
                 </Button>
               </CardContent>
             </Card>

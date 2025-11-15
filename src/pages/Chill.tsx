@@ -15,12 +15,12 @@ import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 
 const CONFESSIONAL_COLORS = [
-  "bg-gradient-to-br from-amber-50 via-orange-50 to-red-50",
-  "bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-50",
-  "bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-100",
-  "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100",
-  "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-50",
-  "bg-gradient-to-br from-indigo-100 via-blue-50 to-cyan-50",
+  "bg-gradient-to-br from-slate-100 to-gray-200",
+  "bg-gradient-to-br from-purple-100 to-indigo-200",
+  "bg-gradient-to-br from-blue-100 to-cyan-200",
+  "bg-gradient-to-br from-violet-100 to-purple-200",
+  "bg-gradient-to-br from-indigo-100 to-blue-200",
+  "bg-gradient-to-br from-gray-100 to-slate-200",
 ];
 
 export default function Chill() {
@@ -101,7 +101,7 @@ export default function Chill() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-4 md:p-6 overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <motion.div
@@ -206,89 +206,65 @@ export default function Chill() {
                     transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid mb-6"
                   >
-                    <Card className={`${colorClass} border-none shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-500 relative overflow-hidden rounded-[2rem] backdrop-blur-sm group transform hover:-rotate-1 hover:scale-[1.02]`}>
-                      {/* Artistic paper texture overlay */}
-                      <div className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-multiply">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,0,0,0.1)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(0,0,0,0.08)_0%,transparent_50%)]" />
+                    <Card className={`${colorClass} border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm group`}>
+                      {/* Enhanced gradient overlay */}
+                      <div className="absolute inset-0 pointer-events-none opacity-10">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400" />
                       </div>
                       
-                      {/* Torn paper edge effect - top */}
-                      <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-black/5 to-transparent pointer-events-none" 
-                           style={{
-                             clipPath: "polygon(0 0, 5% 100%, 10% 0, 15% 100%, 20% 0, 25% 100%, 30% 0, 35% 100%, 40% 0, 45% 100%, 50% 0, 55% 100%, 60% 0, 65% 100%, 70% 0, 75% 100%, 80% 0, 85% 100%, 90% 0, 95% 100%, 100% 0, 100% 100%, 0 100%)"
-                           }} 
-                      />
+                      {/* Side accent line - thicker and more prominent */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-purple-500 via-blue-500 to-purple-600 pointer-events-none shadow-sm" />
                       
-                      {/* Corner fold effect */}
-                      <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-20">
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-400 to-transparent transform rotate-45 translate-x-8 -translate-y-8" />
-                      </div>
+                      {/* Top accent line */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent pointer-events-none" />
                       
-                      {/* Decorative corner stamps */}
-                      <div className="absolute top-4 left-4 w-8 h-8 rounded-full border-2 border-current opacity-10 pointer-events-none" />
-                      <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full border-2 border-current opacity-10 pointer-events-none" />
-                      
-                      {/* Side accent line - like a margin line */}
-                      <div className="absolute left-6 top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-current to-transparent pointer-events-none opacity-20" />
-                      
-                      <CardContent className="p-10 md:p-12 relative pl-14 md:pl-16">
+                      <CardContent className="p-8 md:p-10 relative">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
-                          <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteSpill(spill._id)}
-                              className="h-9 w-9 p-0 hover:bg-red-100/80 hover:text-red-700 rounded-full transition-all shadow-lg hover:shadow-xl backdrop-blur-sm"
+                              className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-full transition-all shadow-sm"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         )}
 
-                        {/* Handwritten-style quote marks */}
-                        <div className="absolute top-8 left-8 text-6xl font-serif text-current opacity-10 leading-none select-none">"</div>
-                        <div className="absolute bottom-8 right-8 text-6xl font-serif text-current opacity-10 leading-none select-none">"</div>
-
-                        {/* Content - handwritten style */}
-                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-normal tracking-wide relative z-10" 
-                           style={{ 
-                             fontFamily: "'Segoe Print', 'Comic Sans MS', cursive",
-                             textShadow: "0 1px 2px rgba(0,0,0,0.05)"
-                           }}>
+                        {/* Content */}
+                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-medium pl-5 pr-2 tracking-wide">
                           {spill.content}
                         </p>
                       </CardContent>
                     </Card>
                     
-                    {/* Vote controls extension below the card - wax seal inspired */}
-                    <div className="flex items-center justify-center gap-4 mt-5 bg-gradient-to-br from-white via-slate-50 to-white backdrop-blur-sm rounded-full px-7 py-3.5 shadow-xl border-2 border-slate-300/40 hover:shadow-2xl transition-all relative">
-                      {/* Decorative dots */}
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300/50" />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300/50" />
+                    {/* Vote controls extension below the card */}
+                    <div className="flex items-center justify-center gap-3 mt-4 bg-white/95 backdrop-blur-sm rounded-full px-5 py-2.5 shadow-md border border-purple-200/50 hover:shadow-lg transition-shadow">
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => handleUpvote(spill._id)}
-                        className={`h-10 w-10 p-0 rounded-full transition-all shadow-sm hover:shadow-md ${
+                        className={`h-9 w-9 p-0 rounded-full transition-all ${
                           hasUpvoted 
-                            ? "bg-gradient-to-br from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-700 border-2 border-green-300" 
-                            : "hover:bg-slate-100 text-slate-600 border-2 border-transparent hover:border-slate-200"
+                            ? "bg-green-100 hover:bg-green-200 text-green-700" 
+                            : "hover:bg-slate-100 text-slate-600"
                         }`}
                       >
                         <ChevronUp className="h-5 w-5" />
                       </Button>
-                      <span className="text-base font-bold text-slate-800 min-w-[3rem] text-center">
+                      <span className="text-sm font-bold text-slate-700 min-w-[2.5rem] text-center">
                         {upvoteCount - downvoteCount}
                       </span>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => handleDownvote(spill._id)}
-                        className={`h-10 w-10 p-0 rounded-full transition-all shadow-sm hover:shadow-md ${
+                        className={`h-9 w-9 p-0 rounded-full transition-all ${
                           hasDownvoted 
-                            ? "bg-gradient-to-br from-red-100 to-rose-100 hover:from-red-200 hover:to-rose-200 text-red-700 border-2 border-red-300" 
-                            : "hover:bg-slate-100 text-slate-600 border-2 border-transparent hover:border-slate-200"
+                            ? "bg-red-100 hover:bg-red-200 text-red-700" 
+                            : "hover:bg-slate-100 text-slate-600"
                         }`}
                       >
                         <ChevronDown className="h-5 w-5" />

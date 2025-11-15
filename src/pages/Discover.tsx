@@ -135,14 +135,14 @@ export default function Discover() {
             </Avatar>
             <div className="flex-1">
               <CardTitle className="text-xl font-bold text-slate-900">{match.user.name || "Anonymous"}</CardTitle>
-              {match.mutualConnectionsCount > 0 && (
-                <CardDescription className="text-sm text-slate-600 font-medium mt-1">
+              <CardDescription className="text-sm text-slate-600 font-medium mt-1">
+                {match.mutualConnectionsCount > 0 && (
                   <span className="inline-flex items-center gap-1 text-purple-600">
                     <Users className="h-3.5 w-3.5" />
                     {match.mutualConnectionsCount} mutual connection{match.mutualConnectionsCount > 1 ? 's' : ''}
                   </span>
-                </CardDescription>
-              )}
+                )}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>

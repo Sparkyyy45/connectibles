@@ -20,7 +20,6 @@ export default function Notifications() {
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
   const deleteNotification = useMutation(api.notifications.deleteNotification);
-  const deleteAllNotifications = useMutation(api.notifications.deleteAllNotifications);
   const sendRequest = useMutation(api.connections.sendConnectionRequest);
 
   useEffect(() => {
@@ -67,17 +66,6 @@ export default function Notifications() {
     }
   };
 
-  const handleClearAll = async () => {
-    try {
-      const count = await deleteAllNotifications();
-      if (count > 0) {
-        toast.success(`Cleared ${count} notification${count > 1 ? "s" : ""}`);
-      }
-    } catch (error) {
-      toast.error("Failed to clear notifications");
-    }
-  };
-
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
@@ -91,8 +79,8 @@ export default function Notifications() {
 
   return (
     <DashboardLayout>
-      <div className="bg-gradient-to-br from-background via-background to-primary/5 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8 min-h-[calc(100vh-180px)]">
+      <div className="bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="max-w-4xl mx-auto p-6 space-y-8 min-h-[calc(100vh-180px)]">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -117,30 +105,17 @@ export default function Notifications() {
                 Stay updated with new connections and activity
               </p>
             </div>
-            <div className="flex gap-2">
-              {unreadNotifications.length > 0 && (
-                <Button 
-                  onClick={handleMarkAllAsRead} 
-                  variant="outline" 
-                  size="lg"
-                  className="shadow-sm hover:shadow-md transition-all hover:border-primary"
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Mark All Read
-                </Button>
-              )}
-              {notifications && notifications.length > 0 && (
-                <Button 
-                  onClick={handleClearAll} 
-                  variant="outline" 
-                  size="lg"
-                  className="shadow-sm hover:shadow-md transition-all hover:border-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Clear All
-                </Button>
-              )}
-            </div>
+            {unreadNotifications.length > 0 && (
+              <Button 
+                onClick={handleMarkAllAsRead} 
+                variant="outline" 
+                size="lg"
+                className="shadow-sm hover:shadow-md transition-all hover:border-primary"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Mark All Read
+              </Button>
+            )}
           </motion.div>
 
           {/* Unread Notifications Section */}

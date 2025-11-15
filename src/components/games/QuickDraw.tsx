@@ -91,14 +91,13 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
     const newDrawings = [...drawings, { player: playerName, dataUrl }];
     setDrawings(newDrawings);
 
-    // Game completes when both players have submitted
     const winnerId = newDrawings.length === 2 ? undefined : undefined;
 
     try {
       await updateGameState({
         sessionId,
         gameState: JSON.stringify({ prompt, drawings: newDrawings }),
-        winnerId: newDrawings.length === 2 ? undefined : undefined,
+        winnerId: newDrawings.length === 2 ? session.player1Id : undefined,
       });
       toast.success("Drawing submitted!");
       clearCanvas();
@@ -110,9 +109,7 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-center">
-          {session.status === "completed" ? "🎨 Both Drawings Complete!" : "Quick Draw"}
-        </CardTitle>
+        <CardTitle className="text-center">Quick Draw</CardTitle>
         <CardDescription className="text-center text-lg font-semibold">
           Draw: {prompt}
         </CardDescription>
@@ -162,12 +159,6 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
         {session.status === "completed" && (
           <div className="text-center text-xl font-bold">
             Both drawings submitted! 🎨
-          </div>
-        )}
-        
-        {session.status === "in_progress" && !isMyTurn && drawings.filter(d => d.player === "You").length === 0 && (
-          <div className="text-center text-muted-foreground">
-            Waiting for your turn to draw...
           </div>
         )}
       </CardContent>

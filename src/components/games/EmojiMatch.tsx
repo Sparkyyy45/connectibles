@@ -87,12 +87,11 @@ export default function EmojiMatch({ sessionId, currentUserId, session }: EmojiM
     }
   };
 
-  // Ensure correct answer is always included in options
-  const correctEmoji = EMOJI_PAIRS[currentEmoji];
-  const otherOptions = EMOJI_PAIRS.filter((_, idx) => idx !== currentEmoji)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-  const shuffledOptions = [correctEmoji, ...otherOptions].sort(() => Math.random() - 0.5);
+  const shuffledOptions = [...EMOJI_PAIRS].sort(() => Math.random() - 0.5).slice(0, 4);
+  if (!shuffledOptions.find(o => o.name === EMOJI_PAIRS[currentEmoji]?.name)) {
+    shuffledOptions[0] = EMOJI_PAIRS[currentEmoji];
+    shuffledOptions.sort(() => Math.random() - 0.5);
+  }
 
   return (
     <Card className="max-w-md mx-auto">

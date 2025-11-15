@@ -41,12 +41,11 @@ export const sendGameInvitation = mutation({
 
     // Create notification
     const sender = await ctx.db.get(userId);
-    await ctx.db.insert("notifications", {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: args.receiverId,
       type: "game_invitation",
       message: `${sender?.name || "Someone"} invited you to play ${args.gameType.replace("_", " ")}!`,
       relatedUserId: userId,
-      read: false,
     });
 
     return invitationId;
@@ -87,12 +86,11 @@ export const acceptGameInvitation = mutation({
 
     // Notify sender
     const receiver = await ctx.db.get(userId);
-    await ctx.db.insert("notifications", {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: invitation.senderId,
       type: "game_accepted",
       message: `${receiver?.name || "Someone"} accepted your game invitation!`,
       relatedUserId: userId,
-      read: false,
     });
 
     return sessionId;
@@ -188,26 +186,27 @@ export const updateGameState = mutation({
       updates.winnerId = args.winnerId;
       updates.status = "completed";
       
-      // Game statistics will be updated through a separate process
+      // Update game statistics
+      await ctx.scheduler.runAfter(0, internal.gameStats.updateGameStats, {
+        sessionId: args.sessionId,
+      });
 
       // Notify both players
       const winner = await ctx.db.get(args.winnerId);
       const loserId = session.player1Id === args.winnerId ? session.player2Id : session.player1Id;
       
-      await ctx.db.insert("notifications", {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.winnerId,
         type: "game_won",
         message: `You won the ${session.gameType.replace("_", " ")} game! 🎉`,
         relatedUserId: loserId,
-        read: false,
       });
 
-      await ctx.db.insert("notifications", {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: loserId,
         type: "game_lost",
         message: `You lost the ${session.gameType.replace("_", " ")} game. Better luck next time!`,
         relatedUserId: args.winnerId,
-        read: false,
       });
     } else {
       // Switch turn

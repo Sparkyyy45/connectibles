@@ -238,9 +238,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
       </aside>
 
-      {/* Main Content Area - Enhanced mobile spacing and scrollability */}
-      <main className="flex-1 min-h-screen overflow-y-auto overflow-x-hidden pt-16 lg:pt-0 flex flex-col">
-        <div className="flex-1 w-full">
+      {/* Main Content Area - Enhanced mobile spacing */}
+      <main className="flex-1 min-h-screen overflow-auto pt-16 lg:pt-0 flex flex-col">
+        <div className="flex-1">
           {children}
         </div>
         <Footer />
