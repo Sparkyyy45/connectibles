@@ -414,25 +414,27 @@ export default function Messages() {
                                 )}
                               </div>
                             </ScrollArea>
-                            <div className="p-4 md:p-5 border-t border-border/30 bg-gradient-to-br from-muted/20 to-muted/10 flex-shrink-0">
-                              <div className="flex gap-2 md:gap-3">
-                                <Input
-                                  value={message}
-                                  onChange={(e) => setMessage(e.target.value)}
-                                  placeholder="Type your message..."
-                                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                                  className="flex-1 bg-background border-border/40 focus:border-primary transition-all rounded-xl h-11 px-4"
-                                />
+                            <div className="p-4 md:p-6 border-t border-border/20 bg-gradient-to-br from-slate-50/80 via-white/50 to-purple-50/30 backdrop-blur-sm flex-shrink-0">
+                              <div className="flex gap-3">
+                                <div className="relative flex-1">
+                                  <Input
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Type your message..."
+                                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
+                                    className="w-full bg-white/90 border-2 border-slate-200/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-2xl h-12 px-5 text-base placeholder:text-slate-400 shadow-sm hover:shadow-md focus:shadow-lg"
+                                  />
+                                </div>
                                 <Button 
                                   onClick={handleSendMessage} 
                                   disabled={sending || !message.trim()}
                                   size="icon"
-                                  className="h-11 w-11 shadow-lg hover:shadow-xl transition-all flex-shrink-0 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                                  className="h-12 w-12 shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex-shrink-0 rounded-2xl bg-gradient-to-br from-primary via-purple-600 to-purple-700 hover:from-primary/90 hover:via-purple-600/90 hover:to-purple-700/90 border-2 border-primary/20"
                                 >
                                   {sending ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-5 w-5 animate-spin" />
                                   ) : (
-                                    <Send className="h-4 w-4" />
+                                    <Send className="h-5 w-5" />
                                   )}
                                 </Button>
                               </div>
