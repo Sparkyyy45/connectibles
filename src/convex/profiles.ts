@@ -16,6 +16,10 @@ export const updateProfile = mutation({
     major: v.optional(v.string()),
     lookingFor: v.optional(v.array(v.string())),
     availability: v.optional(v.string()),
+    studySpot: v.optional(v.string()),
+    favoriteSubject: v.optional(v.string()),
+    weekendActivity: v.optional(v.string()),
+    superpower: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -33,6 +37,10 @@ export const updateProfile = mutation({
       major: args.major,
       lookingFor: args.lookingFor,
       availability: args.availability,
+      studySpot: args.studySpot,
+      favoriteSubject: args.favoriteSubject,
+      weekendActivity: args.weekendActivity,
+      superpower: args.superpower,
     });
 
     return userId;

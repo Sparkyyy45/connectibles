@@ -124,6 +124,10 @@ export default function Profile() {
         major,
         lookingFor,
         availability,
+        studySpot,
+        favoriteSubject,
+        weekendActivity,
+        superpower,
       });
       toast.success("Profile updated successfully!");
       setIsEditMode(false);
@@ -508,6 +512,73 @@ export default function Profile() {
                   />
                 ) : (
                   <p className="text-base p-3 bg-muted/50 rounded-md">{availability || "Not set"}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl sm:text-2xl">Personality Prompts</CardTitle>
+              <CardDescription className="text-sm">Share more about yourself</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Favorite Study Spot</label>
+                {isEditMode ? (
+                  <Input
+                    value={studySpot}
+                    onChange={(e) => setStudySpot(e.target.value)}
+                    placeholder="e.g., Library, Coffee Shop, My Room"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{studySpot || "Not set"}</p>
+                )}
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Favorite Subject</label>
+                {isEditMode ? (
+                  <Input
+                    value={favoriteSubject}
+                    onChange={(e) => setFavoriteSubject(e.target.value)}
+                    placeholder="e.g., Mathematics, Literature, Physics"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{favoriteSubject || "Not set"}</p>
+                )}
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Weekend Activity</label>
+                {isEditMode ? (
+                  <Input
+                    value={weekendActivity}
+                    onChange={(e) => setWeekendActivity(e.target.value)}
+                    placeholder="e.g., Hiking, Gaming, Reading"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{weekendActivity || "Not set"}</p>
+                )}
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">If I had a superpower, it would be...</label>
+                {isEditMode ? (
+                  <Input
+                    value={superpower}
+                    onChange={(e) => setSuperpower(e.target.value)}
+                    placeholder="e.g., Time travel, Teleportation, Mind reading"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{superpower || "Not set"}</p>
                 )}
               </div>
             </CardContent>
