@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, X, Check } from "lucide-react";
+import { Loader2, X, Check, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -41,6 +41,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const updateProfile = useMutation(api.profiles.updateProfile);
 
+  const [isEditMode, setIsEditMode] = useState(false);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
@@ -125,11 +126,33 @@ export default function Profile() {
         availability,
       });
       toast.success("Profile updated successfully!");
+      setIsEditMode(false);
     } catch (error) {
       toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setName(user.name || "");
+      setBio(user.bio || "");
+      setLocation(user.location || "");
+      setInterests(user.interests || []);
+      setSkills(user.skills || []);
+      setSelectedAvatar(user.image || AVATAR_OPTIONS[0]);
+      setYearOfStudy(user.yearOfStudy || "");
+      setDepartment(user.department || "");
+      setMajor(user.major || "");
+      setLookingFor(user.lookingFor || []);
+      setAvailability(user.availability || "");
+      setStudySpot(user.studySpot || "");
+      setFavoriteSubject(user.favoriteSubject || "");
+      setWeekendActivity(user.weekendActivity || "");
+      setSuperpower(user.superpower || "");
+    }
+    setIsEditMode(false);
   };
 
   if (isLoading || !user) {
@@ -146,11 +169,39 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Manage your profile information and preferences
-          </p>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              {isEditMode ? "Edit your profile information" : "View your profile information"}
+            </p>
+          </div>
+          {!isEditMode ? (
+            <Button onClick={() => setIsEditMode(true)} size="lg" className="gap-2">
+              <Edit2 className="h-4 w-4" />
+              Edit Profile
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button onClick={handleCancel} variant="outline" size="lg">
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={saving} size="lg" className="gap-2">
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Save
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -161,7 +212,9 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Profile Picture</CardTitle>
-              <CardDescription className="text-sm">Choose an avatar that represents you</CardDescription>
+              <CardDescription className="text-sm">
+                {isEditMode ? "Choose an avatar that represents you" : "Your current avatar"}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center mb-4">
@@ -172,30 +225,32 @@ export default function Profile() {
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
-                {AVATAR_OPTIONS.map((avatar, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedAvatar(avatar)}
-                    className={`relative rounded-full border-2 transition-all ${
-                      selectedAvatar === avatar
-                        ? "border-primary ring-2 ring-primary/20"
-                        : "border-muted hover:border-primary/50"
-                    }`}
-                  >
-                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
-                      <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
-                    </Avatar>
-                    {selectedAvatar === avatar && (
-                      <div className="absolute -top-1 -right-1 bg-primary rounded-full p-1">
-                        <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />
-                      </div>
-                    )}
-                  </motion.button>
-                ))}
-              </div>
+              {isEditMode && (
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
+                  {AVATAR_OPTIONS.map((avatar, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedAvatar(avatar)}
+                      className={`relative rounded-full border-2 transition-all ${
+                        selectedAvatar === avatar
+                          ? "border-primary ring-2 ring-primary/20"
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                    >
+                      <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
+                        <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
+                      </Avatar>
+                      {selectedAvatar === avatar && (
+                        <div className="absolute -top-1 -right-1 bg-primary rounded-full p-1">
+                          <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -208,36 +263,48 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Basic Information</CardTitle>
-              <CardDescription className="text-sm">Update your personal details</CardDescription>
+              <CardDescription className="text-sm">Your personal details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Name</label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{name || "Not set"}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Bio</label>
-                <Textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell us about yourself"
-                  rows={4}
-                  className="text-base resize-none"
-                />
+                {isEditMode ? (
+                  <Textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Tell us about yourself"
+                    rows={4}
+                    className="text-base resize-none"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md whitespace-pre-wrap">{bio || "Not set"}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Location</label>
-                <Input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City or college name"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="City or college name"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{location || "Not set"}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -251,31 +318,39 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Interests</CardTitle>
-              <CardDescription className="text-sm">Add your passions and hobbies</CardDescription>
+              <CardDescription className="text-sm">Your passions and hobbies</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  value={newInterest}
-                  onChange={(e) => setNewInterest(e.target.value)}
-                  placeholder="Add an interest"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
-                  className="flex-1 text-base"
-                />
-                <Button onClick={handleAddInterest} className="w-full sm:w-auto">Add</Button>
-              </div>
+              {isEditMode && (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    value={newInterest}
+                    onChange={(e) => setNewInterest(e.target.value)}
+                    placeholder="Add an interest"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
+                    className="flex-1 text-base"
+                  />
+                  <Button onClick={handleAddInterest} className="w-full sm:w-auto">Add</Button>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
-                {interests.map((interest) => (
-                  <Badge key={interest} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
-                    {interest}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() =>
-                        setInterests(interests.filter((i) => i !== interest))
-                      }
-                    />
-                  </Badge>
-                ))}
+                {interests.length > 0 ? (
+                  interests.map((interest) => (
+                    <Badge key={interest} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
+                      {interest}
+                      {isEditMode && (
+                        <X
+                          className="h-3 w-3 cursor-pointer"
+                          onClick={() =>
+                            setInterests(interests.filter((i) => i !== interest))
+                          }
+                        />
+                      )}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No interests added yet</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -289,29 +364,37 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Skills</CardTitle>
-              <CardDescription className="text-sm">Add your skills and expertise</CardDescription>
+              <CardDescription className="text-sm">Your skills and expertise</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Add a skill"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
-                  className="flex-1 text-base"
-                />
-                <Button onClick={handleAddSkill} className="w-full sm:w-auto">Add</Button>
-              </div>
+              {isEditMode && (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    placeholder="Add a skill"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
+                    className="flex-1 text-base"
+                  />
+                  <Button onClick={handleAddSkill} className="w-full sm:w-auto">Add</Button>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
-                {skills.map((skill) => (
-                  <Badge key={skill} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
-                    {skill}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                    />
-                  </Badge>
-                ))}
+                {skills.length > 0 ? (
+                  skills.map((skill) => (
+                    <Badge key={skill} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
+                      {skill}
+                      {isEditMode && (
+                        <X
+                          className="h-3 w-3 cursor-pointer"
+                          onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                        />
+                      )}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No skills added yet</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -325,35 +408,47 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Academic Information</CardTitle>
-              <CardDescription className="text-sm">Help others find you based on your academic profile</CardDescription>
+              <CardDescription className="text-sm">Your academic profile</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Year of Study</label>
-                <Input
-                  value={yearOfStudy}
-                  onChange={(e) => setYearOfStudy(e.target.value)}
-                  placeholder="e.g., Freshman, Sophomore, Junior, Senior"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={yearOfStudy}
+                    onChange={(e) => setYearOfStudy(e.target.value)}
+                    placeholder="e.g., Freshman, Sophomore, Junior, Senior"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{yearOfStudy || "Not set"}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Department</label>
-                <Input
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="e.g., Engineering, Arts, Sciences"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    placeholder="e.g., Engineering, Arts, Sciences"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{department || "Not set"}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Major</label>
-                <Input
-                  value={major}
-                  onChange={(e) => setMajor(e.target.value)}
-                  placeholder="e.g., Computer Science, Psychology"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                    placeholder="e.g., Computer Science, Psychology"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{major || "Not set"}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -367,62 +462,56 @@ export default function Profile() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Connection Preferences</CardTitle>
-              <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
+              <CardDescription className="text-sm">What you're looking for in connections</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Looking For</label>
-                <div className="flex flex-col sm:flex-row gap-2 mb-2">
-                  <Input
-                    value={newLookingFor}
-                    onChange={(e) => setNewLookingFor(e.target.value)}
-                    placeholder="e.g., Study Partner, Project Collaborator, Friend"
-                    onKeyDown={(e) => e.key === "Enter" && handleAddLookingFor()}
-                    className="flex-1 text-base"
-                  />
-                  <Button onClick={handleAddLookingFor} className="w-full sm:w-auto">Add</Button>
-                </div>
+                {isEditMode && (
+                  <div className="flex flex-col sm:flex-row gap-2 mb-2">
+                    <Input
+                      value={newLookingFor}
+                      onChange={(e) => setNewLookingFor(e.target.value)}
+                      placeholder="e.g., Study Partner, Project Collaborator, Friend"
+                      onKeyDown={(e) => e.key === "Enter" && handleAddLookingFor()}
+                      className="flex-1 text-base"
+                    />
+                    <Button onClick={handleAddLookingFor} className="w-full sm:w-auto">Add</Button>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2">
-                  {lookingFor.map((item) => (
-                    <Badge key={item} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
-                      {item}
-                      <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => setLookingFor(lookingFor.filter((i) => i !== item))}
-                      />
-                    </Badge>
-                  ))}
+                  {lookingFor.length > 0 ? (
+                    lookingFor.map((item) => (
+                      <Badge key={item} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
+                        {item}
+                        {isEditMode && (
+                          <X
+                            className="h-3 w-3 cursor-pointer"
+                            onClick={() => setLookingFor(lookingFor.filter((i) => i !== item))}
+                          />
+                        )}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Not specified</p>
+                  )}
                 </div>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Availability</label>
-                <Input
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
-                  placeholder="e.g., Weekends, Evenings, Flexible"
-                  className="text-base"
-                />
+                {isEditMode ? (
+                  <Input
+                    value={availability}
+                    onChange={(e) => setAvailability(e.target.value)}
+                    placeholder="e.g., Weekends, Evenings, Flexible"
+                    className="text-base"
+                  />
+                ) : (
+                  <p className="text-base p-3 bg-muted/50 rounded-md">{availability || "Not set"}</p>
+                )}
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="pb-6"
-        >
-          <Button onClick={handleSave} disabled={saving} size="lg" className="w-full text-base py-6">
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Profile"
-            )}
-          </Button>
         </motion.div>
       </div>
     </DashboardLayout>
