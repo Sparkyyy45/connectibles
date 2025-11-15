@@ -32,10 +32,11 @@ export const createSpill = mutation({
       content: args.content.trim(),
     });
 
-    // Notify all connections about the new spill
+    // Notify all connections about the new spill (limit to first 50 to avoid performance issues)
     const author = await ctx.db.get(userId);
     if (author?.connections && author.connections.length > 0) {
-      for (const connectionId of author.connections) {
+      const connectionsToNotify = author.connections.slice(0, 50);
+      for (const connectionId of connectionsToNotify) {
         await ctx.db.insert("notifications", {
           userId: connectionId,
           type: "new_spill",

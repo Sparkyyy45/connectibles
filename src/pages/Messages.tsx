@@ -150,16 +150,32 @@ export default function Messages() {
   return (
     <DashboardLayout>
       <AlertDialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Block User</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to block this user? They won't be able to message you, and you won't see their messages.
+        <AlertDialogContent className="border-2 border-destructive/30 bg-gradient-to-br from-background via-background to-destructive/5 shadow-2xl">
+          <AlertDialogHeader className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-gradient-to-br from-destructive/20 to-orange-500/20">
+                <Ban className="h-6 w-6 text-destructive" />
+              </div>
+              <AlertDialogTitle className="text-2xl font-bold">Block User</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-base leading-relaxed">
+              Are you sure you want to block this user? They won't be able to message you, and you won't see their messages. You can unblock them later from the chat menu.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setUserToBlock(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBlockUser}>Block</AlertDialogAction>
+          <AlertDialogFooter className="gap-2 sm:gap-2">
+            <AlertDialogCancel 
+              onClick={() => setUserToBlock(null)}
+              className="shadow-sm hover:shadow-md transition-all"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBlockUser}
+              className="bg-gradient-to-r from-destructive to-orange-600 hover:from-destructive/90 hover:to-orange-600/90 shadow-md hover:shadow-lg transition-all"
+            >
+              <Ban className="h-4 w-4 mr-2" />
+              Block User
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
