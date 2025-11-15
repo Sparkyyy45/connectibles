@@ -156,6 +156,67 @@ export default function Discover() {
               {match.user.location}
             </p>
           )}
+          
+          {/* Match Compatibility Breakdown - Only show for matches tab with score */}
+          {match.score !== undefined && match.score > 0 && (
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200/50 space-y-2">
+              <p className="text-sm font-bold text-purple-900 flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-purple-600" />
+                Why You Match
+              </p>
+              <div className="space-y-1.5 text-xs">
+                {match.personalityMatch && (
+                  <div className="flex items-center gap-2 text-purple-700">
+                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <span>Compatible personalities</span>
+                  </div>
+                )}
+                {match.sharedInterests && match.sharedInterests.length > 0 && (
+                  <div className="flex items-center gap-2 text-purple-700">
+                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <span>{match.sharedInterests.length} shared interest{match.sharedInterests.length > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {match.sharedValues && match.sharedValues.length > 0 && (
+                  <div className="flex items-center gap-2 text-purple-700">
+                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <span>{match.sharedValues.length} shared value{match.sharedValues.length > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {match.academicMatch && (
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span>Similar academic background</span>
+                  </div>
+                )}
+                {match.sharedCareerGoals && match.sharedCareerGoals.length > 0 && (
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span>{match.sharedCareerGoals.length} shared career goal{match.sharedCareerGoals.length > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {match.sharedLearningGoals && match.sharedLearningGoals.length > 0 && (
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span>{match.sharedLearningGoals.length} shared learning goal{match.sharedLearningGoals.length > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {match.complementaryMatch && match.complementaryMatch.length > 0 && (
+                  <div className="flex items-center gap-2 text-green-700">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>Can help with your challenges</span>
+                  </div>
+                )}
+                {match.sameLocation && (
+                  <div className="flex items-center gap-2 text-green-700">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>Same location</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {match.sharedInterests && match.sharedInterests.length > 0 && (
             <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-200/40">
               <p className="text-sm font-bold mb-3 text-purple-900 flex items-center gap-2">
