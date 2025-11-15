@@ -105,7 +105,6 @@ export const getGameLeaderboard = query({
       v.literal("tic_tac_toe"),
       v.literal("memory_match"),
       v.literal("reaction_test"),
-      v.literal("word_chain"),
       v.literal("quick_draw"),
       v.literal("trivia_duel"),
       v.literal("number_guess"),

@@ -35,7 +35,6 @@ export default function GameStats() {
     tic_tac_toe: "Tic Tac Toe",
     memory_match: "Memory Match",
     reaction_test: "Reaction Test",
-    word_chain: "Word Chain",
     quick_draw: "Quick Draw",
     trivia_duel: "Trivia Duel",
     number_guess: "Number Guess",

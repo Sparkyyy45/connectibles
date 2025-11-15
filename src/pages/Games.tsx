@@ -15,12 +15,11 @@ import TicTacToe from "@/components/games/TicTacToe";
 import MemoryMatch from "@/components/games/MemoryMatch";
 import ReactionTest from "@/components/games/ReactionTest";
 import NumberGuess from "@/components/games/NumberGuess";
-import WordChain from "@/components/games/WordChain";
 import QuickDraw from "@/components/games/QuickDraw";
 import TriviaDuel from "@/components/games/TriviaDuel";
 import EmojiMatch from "@/components/games/EmojiMatch";
 
-type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "word_chain" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
+type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "quick_draw" | "trivia_duel" | "number_guess" | "emoji_match";
 
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -54,12 +53,6 @@ export default function Games() {
       name: "Reaction Test",
       description: "Test your reflexes",
       icon: "⚡",
-    },
-    {
-      type: "word_chain" as GameType,
-      name: "Word Chain",
-      description: "Build words from last letter",
-      icon: "📝",
     },
     {
       type: "quick_draw" as GameType,
@@ -123,8 +116,6 @@ export default function Games() {
           return ReactionTest;
         case "number_guess":
           return NumberGuess;
-        case "word_chain":
-          return WordChain;
         case "quick_draw":
           return QuickDraw;
         case "trivia_duel":
