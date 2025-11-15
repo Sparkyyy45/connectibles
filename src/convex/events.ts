@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { internal } from "./_generated/api";
 
 export const createEvent = mutation({
   args: {
@@ -28,12 +29,11 @@ export const createEvent = mutation({
     const creator = await ctx.db.get(userId);
     if (creator?.connections && creator.connections.length > 0) {
       for (const connectionId of creator.connections) {
-        await ctx.db.insert("notifications", {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: connectionId,
           type: "new_event",
           message: `${creator.name || "Someone"} created a new event: ${args.title}`,
           relatedUserId: userId,
-          read: false,
         });
       }
     }
@@ -81,12 +81,11 @@ export const toggleInterest = mutation({
       
       // Notify event creator when someone shows interest
       const user = await ctx.db.get(userId);
-      await ctx.db.insert("notifications", {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: event.creatorId,
         type: "event_interest",
         message: `${user?.name || "Someone"} is interested in your event: ${event.title}`,
         relatedUserId: userId,
-        read: false,
       });
     }
 

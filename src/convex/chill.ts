@@ -37,12 +37,11 @@ export const createSpill = mutation({
     const author = await ctx.db.get(userId);
     if (author?.connections && author.connections.length > 0) {
       for (const connectionId of author.connections) {
-        await ctx.db.insert("notifications", {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: connectionId,
           type: "new_spill",
           message: `${author.name || "Someone"} just posted a new spill! ✨`,
           relatedUserId: userId,
-          read: false,
         });
       }
     }
