@@ -15,12 +15,12 @@ import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 
 const CONFESSIONAL_COLORS = [
-  "bg-gradient-to-br from-slate-50 to-gray-100",
-  "bg-gradient-to-br from-purple-50 to-indigo-100",
-  "bg-gradient-to-br from-blue-50 to-cyan-100",
-  "bg-gradient-to-br from-violet-50 to-purple-100",
-  "bg-gradient-to-br from-indigo-50 to-blue-100",
-  "bg-gradient-to-br from-pink-50 to-rose-100",
+  "bg-gradient-to-br from-amber-50 via-orange-50 to-red-50",
+  "bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-50",
+  "bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-100",
+  "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100",
+  "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-50",
+  "bg-gradient-to-br from-indigo-100 via-blue-50 to-cyan-50",
 ];
 
 export default function Chill() {
@@ -206,39 +206,66 @@ export default function Chill() {
                     transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid mb-6"
                   >
-                    <Card className={`${colorClass} border-2 border-slate-200/60 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm group`}>
-                      {/* Subtle gradient overlay */}
-                      <div className="absolute inset-0 pointer-events-none opacity-5">
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400" />
+                    <Card className={`${colorClass} border-none shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-500 relative overflow-hidden rounded-[2rem] backdrop-blur-sm group transform hover:-rotate-1 hover:scale-[1.02]`}>
+                      {/* Artistic paper texture overlay */}
+                      <div className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-multiply">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,0,0,0.1)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(0,0,0,0.08)_0%,transparent_50%)]" />
                       </div>
                       
-                      {/* Side accent line */}
-                      <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-purple-500 via-blue-500 to-purple-600 pointer-events-none opacity-80" />
+                      {/* Torn paper edge effect - top */}
+                      <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-black/5 to-transparent pointer-events-none" 
+                           style={{
+                             clipPath: "polygon(0 0, 5% 100%, 10% 0, 15% 100%, 20% 0, 25% 100%, 30% 0, 35% 100%, 40% 0, 45% 100%, 50% 0, 55% 100%, 60% 0, 65% 100%, 70% 0, 75% 100%, 80% 0, 85% 100%, 90% 0, 95% 100%, 100% 0, 100% 100%, 0 100%)"
+                           }} 
+                      />
                       
-                      <CardContent className="p-8 md:p-10 relative">
+                      {/* Corner fold effect */}
+                      <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-20">
+                        <div className="absolute inset-0 bg-gradient-to-br from-slate-400 to-transparent transform rotate-45 translate-x-8 -translate-y-8" />
+                      </div>
+                      
+                      {/* Decorative corner stamps */}
+                      <div className="absolute top-4 left-4 w-8 h-8 rounded-full border-2 border-current opacity-10 pointer-events-none" />
+                      <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full border-2 border-current opacity-10 pointer-events-none" />
+                      
+                      {/* Side accent line - like a margin line */}
+                      <div className="absolute left-6 top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-current to-transparent pointer-events-none opacity-20" />
+                      
+                      <CardContent className="p-10 md:p-12 relative pl-14 md:pl-16">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
-                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteSpill(spill._id)}
-                              className="h-10 w-10 p-0 hover:bg-red-50 hover:text-red-600 rounded-full transition-all shadow-md hover:shadow-lg"
+                              className="h-9 w-9 p-0 hover:bg-red-100/80 hover:text-red-700 rounded-full transition-all shadow-lg hover:shadow-xl backdrop-blur-sm"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         )}
 
-                        {/* Content */}
-                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-medium tracking-wide">
+                        {/* Handwritten-style quote marks */}
+                        <div className="absolute top-8 left-8 text-6xl font-serif text-current opacity-10 leading-none select-none">"</div>
+                        <div className="absolute bottom-8 right-8 text-6xl font-serif text-current opacity-10 leading-none select-none">"</div>
+
+                        {/* Content - handwritten style */}
+                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-normal tracking-wide relative z-10" 
+                           style={{ 
+                             fontFamily: "'Segoe Print', 'Comic Sans MS', cursive",
+                             textShadow: "0 1px 2px rgba(0,0,0,0.05)"
+                           }}>
                           {spill.content}
                         </p>
                       </CardContent>
                     </Card>
                     
-                    {/* Vote controls extension below the card */}
-                    <div className="flex items-center justify-center gap-4 mt-4 bg-white/98 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border-2 border-slate-200/60 hover:shadow-xl transition-all">
+                    {/* Vote controls extension below the card - wax seal inspired */}
+                    <div className="flex items-center justify-center gap-4 mt-5 bg-gradient-to-br from-white via-slate-50 to-white backdrop-blur-sm rounded-full px-7 py-3.5 shadow-xl border-2 border-slate-300/40 hover:shadow-2xl transition-all relative">
+                      {/* Decorative dots */}
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300/50" />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300/50" />
                       <Button
                         size="sm"
                         variant="ghost"
