@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-12 max-w-7xl mx-auto">
+      <div className="p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
