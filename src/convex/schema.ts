@@ -221,6 +221,7 @@ const schema = defineSchema(
         question: v.string(),
         completed: v.boolean(),
         timestamp: v.number(),
+        answer: v.optional(v.string()),
       })),
     })
       .index("by_player1", ["player1Id"])
