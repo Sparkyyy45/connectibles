@@ -176,6 +176,13 @@ export default function Games() {
     const isWinner = session.winnerId === user._id;
     const isCompleted = session.status === "completed";
 
+    // Safety check: if opponent data is missing, go back to games list
+    if (!opponent) {
+      setViewingSession(null);
+      toast.error("Unable to load game session. Please try again.");
+      return null;
+    }
+
     return (
       <DashboardLayout>
         <div className="p-8 space-y-8">
@@ -213,8 +220,8 @@ export default function Games() {
                   </CardTitle>
                   <CardDescription className="text-xl">
                     {isWinner 
-                      ? `You defeated ${opponent?.name || "your opponent"}!` 
-                      : `${opponent?.name || "Your opponent"} won this round!`
+                      ? `You defeated ${opponent.name || "your opponent"}!` 
+                      : `${opponent.name || "Your opponent"} won this round!`
                     }
                   </CardDescription>
                   <div className="flex items-center justify-center gap-4 mt-6">
@@ -226,9 +233,9 @@ export default function Games() {
                     />
                     <span className="text-3xl">{isWinner ? ">" : "<"}</span>
                     <OnlineAvatar
-                      userId={opponent?._id!}
-                      image={opponent?.image}
-                      name={opponent?.name}
+                      userId={opponent._id}
+                      image={opponent.image}
+                      name={opponent.name}
                       className="h-16 w-16 border-4 border-white"
                     />
                   </div>
@@ -414,6 +421,10 @@ export default function Games() {
                 {activeSessions.map((session) => {
                   const opponent =
                     session.player1Id === user._id ? session.player2 : session.player1;
+                  
+                  // Skip rendering if opponent data is missing
+                  if (!opponent) return null;
+
                   return (
                     <div
                       key={session._id}
@@ -422,14 +433,14 @@ export default function Games() {
                     >
                       <div className="flex items-center gap-3">
                         <OnlineAvatar
-                          userId={opponent?._id!}
-                          image={opponent?.image}
-                          name={opponent?.name}
+                          userId={opponent._id}
+                          image={opponent.image}
+                          name={opponent.name}
                           className="h-10 w-10"
                         />
                         <div>
                           <p className="font-medium">
-                            Playing with {opponent?.name || "Someone"}
+                            Playing with {opponent.name || "Someone"}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {session.gameType.replace("_", " ")}
