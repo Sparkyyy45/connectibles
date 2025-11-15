@@ -91,57 +91,59 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to update game");
-      // Revert to previous board state on error
       const prevState = session.gameState ? JSON.parse(session.gameState) : { board: Array(9).fill(null) };
       setBoard(prevState.board || Array(9).fill(null));
     }
   };
 
-  // Don't show game board if completed - parent will show winner screen
-  if (session.status === "completed") {
-    return null;
-  }
-
   return (
     <Card className="max-w-md mx-auto shadow-xl">
       <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
         <CardTitle className="text-center text-2xl">
-          {isMyTurn 
-            ? `Your Turn (${playerSymbol})` 
-            : `Opponent's Turn (${opponentSymbol})`}
+          {session.status === "completed"
+            ? session.winnerId === currentUserId
+              ? "🎉 You Won!"
+              : session.winnerId
+                ? "😔 You Lost"
+                : "🤝 It's a Draw!"
+            : isMyTurn 
+              ? `Your Turn (${playerSymbol})` 
+              : `Opponent's Turn (${opponentSymbol})`}
         </CardTitle>
-        <div className="text-center mt-2">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-            className="inline-block"
-          >
-            {isMyTurn ? (
-              <span className="text-green-500 font-semibold">● Your Move</span>
-            ) : (
-              <span className="text-yellow-500 font-semibold">● Waiting...</span>
-            )}
-          </motion.div>
-        </div>
+        {session.status === "in_progress" && (
+          <div className="text-center mt-2">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="inline-block"
+            >
+              {isMyTurn ? (
+                <span className="text-green-500 font-semibold">● Your Move</span>
+              ) : (
+                <span className="text-yellow-500 font-semibold">● Waiting...</span>
+              )}
+            </motion.div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="pt-6">
         <div className="grid grid-cols-3 gap-3 aspect-square">
           {board.map((cell, index) => (
             <motion.button
               key={index}
-              whileHover={!cell && isMyTurn ? { scale: 1.08 } : {}}
-              whileTap={!cell && isMyTurn ? { scale: 0.92 } : {}}
+              whileHover={!cell && isMyTurn && session.status === "in_progress" ? { scale: 1.08 } : {}}
+              whileTap={!cell && isMyTurn && session.status === "in_progress" ? { scale: 0.92 } : {}}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => handleCellClick(index)}
-              disabled={!isMyTurn || !!cell}
+              disabled={!isMyTurn || !!cell || session.status !== "in_progress"}
               className={`aspect-square rounded-xl border-2 text-5xl font-bold transition-all shadow-md ${
                 cell 
                   ? cell === playerSymbol
                     ? "bg-green-500/20 border-green-500 text-green-600"
                     : "bg-red-500/20 border-red-500 text-red-600"
-                  : isMyTurn 
+                  : isMyTurn && session.status === "in_progress"
                     ? "hover:bg-primary/10 hover:border-primary border-muted-foreground/30 cursor-pointer" 
                     : "border-muted-foreground/10 cursor-not-allowed bg-muted/30"
               }`}

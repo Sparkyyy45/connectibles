@@ -44,7 +44,6 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
       return;
     }
 
-    // Check if word starts with last letter of previous word
     if (chain.length > 0) {
       const lastWord = chain[chain.length - 1].word;
       const lastLetter = lastWord[lastWord.length - 1];
@@ -54,7 +53,6 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
       }
     }
 
-    // Check if word was already used
     if (chain.some(entry => entry.word === trimmedWord)) {
       toast.error("This word was already used!");
       return;
@@ -64,11 +62,23 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
     setChain(newChain);
     setWord("");
 
+    // End game after 20 words total
+    const winnerId = newChain.length >= 20 
+      ? (newChain.filter(e => e.player === "You").length > newChain.filter(e => e.player === "Opponent").length 
+          ? currentUserId 
+          : session.player1Id === currentUserId ? session.player2Id : session.player1Id)
+      : undefined;
+
     try {
       await updateGameState({
         sessionId,
         gameState: JSON.stringify({ chain: newChain }),
+        winnerId,
       });
+      
+      if (winnerId) {
+        toast.success("Game complete! Winner determined by word count.");
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to submit word");
     }
@@ -85,19 +95,21 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
       <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
         <CardTitle className="text-center text-2xl">
           {session.status === "completed" 
-            ? "🏁 Game Over"
+            ? session.winnerId === currentUserId ? "🎉 You Won!" : "😔 You Lost"
             : isMyTurn 
               ? "📝 Your Turn" 
               : "⏳ Opponent's Turn"}
         </CardTitle>
         <CardDescription className="text-center text-lg font-medium mt-2">
-          {chain.length === 0 
-            ? "Start with any word!" 
-            : (
-              <span>
-                Next word must start with: <span className="text-3xl font-bold text-primary">{getNextLetter()}</span>
-              </span>
-            )}
+          {session.status === "completed" 
+            ? `Game ended after ${chain.length} words`
+            : chain.length === 0 
+              ? "Start with any word!" 
+              : (
+                <span>
+                  Next word must start with: <span className="text-3xl font-bold text-primary">{getNextLetter()}</span>
+                </span>
+              )}
         </CardDescription>
         {session.status === "in_progress" && isMyTurn && (
           <motion.div
@@ -145,7 +157,7 @@ export default function WordChain({ sessionId, currentUserId, session }: WordCha
 
         {chain.length === 0 && (
           <div className="text-center text-sm text-muted-foreground">
-            Build a chain of words where each word starts with the last letter of the previous word!
+            Build a chain of words where each word starts with the last letter of the previous word! Game ends after 20 words.
           </div>
         )}
       </CardContent>
