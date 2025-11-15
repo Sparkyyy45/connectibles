@@ -44,6 +44,7 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
 
   const handleCardClick = async (index: number) => {
     if (flipped.length >= 2 || matched.includes(index) || flipped.includes(index)) return;
+    if (session.status !== "in_progress") return;
 
     const newFlipped = [...flipped, index];
     setFlipped(newFlipped);

@@ -41,6 +41,8 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
 
   const handleClick = async () => {
     if (gameState === "go" && startTime) {
+      if (session.status !== "in_progress") return;
+
       const time = Date.now() - startTime;
       setReactionTime(time);
       setGameState("waiting");

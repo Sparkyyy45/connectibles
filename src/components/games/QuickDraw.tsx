@@ -79,6 +79,8 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
   };
 
   const submitDrawing = async () => {
+    if (session.status !== "in_progress") return;
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
     
