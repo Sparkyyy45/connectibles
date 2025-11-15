@@ -96,61 +96,6 @@ export const getSession = query({
   },
 });
 
-export const answerTruth = mutation({
-  args: {
-    sessionId: v.id("truth_dare_sessions"),
-    answer: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    const session = await ctx.db.get(args.sessionId);
-    if (!session) throw new Error("Session not found");
-
-    const lastRound = session.rounds[session.rounds.length - 1];
-    if (!lastRound || lastRound.completed) {
-      throw new Error("No round to answer");
-    }
-
-    if (lastRound.choice !== "truth") {
-      throw new Error("This is not a truth question");
-    }
-
-    // Only the person who received the question can answer
-    const questionReceiver = lastRound.playerId === session.player1Id 
-      ? session.player2Id 
-      : session.player1Id;
-
-    if (userId !== questionReceiver) {
-      throw new Error("Only the person answering can respond");
-    }
-
-    if (!args.answer.trim()) {
-      throw new Error("Answer cannot be empty");
-    }
-
-    const updatedRounds = [...session.rounds];
-    updatedRounds[updatedRounds.length - 1] = { 
-      ...lastRound, 
-      completed: true,
-      answer: args.answer.trim()
-    };
-
-    const nextTurn =
-      session.currentTurn === session.player1Id
-        ? session.player2Id
-        : session.player1Id;
-
-    await ctx.db.patch(args.sessionId, {
-      rounds: updatedRounds,
-      currentTurn: nextTurn,
-    });
-
-    return args.sessionId;
-  },
-});
-
 export const makeChoice = mutation({
   args: {
     sessionId: v.id("truth_dare_sessions"),
@@ -212,11 +157,7 @@ export const skipRound = mutation({
     }
 
     const updatedRounds = [...session.rounds];
-    updatedRounds[updatedRounds.length - 1] = { 
-      ...lastRound, 
-      completed: true,
-      answer: "(Skipped)"
-    };
+    updatedRounds[updatedRounds.length - 1] = { ...lastRound, completed: true };
 
     const nextTurn =
       session.currentTurn === session.player1Id

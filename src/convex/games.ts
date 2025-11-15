@@ -41,12 +41,11 @@ export const sendGameInvitation = mutation({
 
     // Create notification
     const sender = await ctx.db.get(userId);
-    await ctx.db.insert("notifications", {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: args.receiverId,
       type: "game_invitation",
       message: `${sender?.name || "Someone"} invited you to play ${args.gameType.replace("_", " ")}!`,
       relatedUserId: userId,
-      read: false,
     });
 
     return invitationId;
@@ -87,12 +86,11 @@ export const acceptGameInvitation = mutation({
 
     // Notify sender
     const receiver = await ctx.db.get(userId);
-    await ctx.db.insert("notifications", {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: invitation.senderId,
       type: "game_accepted",
       message: `${receiver?.name || "Someone"} accepted your game invitation!`,
       relatedUserId: userId,
-      read: false,
     });
 
     return sessionId;

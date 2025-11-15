@@ -239,8 +239,8 @@ export default function Messages() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0 min-h-0">
-                        <ScrollArea className="flex-1 p-4 md:p-6">
+                      <CardContent className="flex-1 flex flex-col p-0 min-h-0 overflow-hidden">
+                        <ScrollArea className="flex-1 p-4 md:p-6 overflow-y-auto">
                           <div className="space-y-4">
                             {conversation && conversation.length > 0 ? (
                               conversation.map((msg) => (
