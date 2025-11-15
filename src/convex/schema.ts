@@ -37,6 +37,7 @@ const schema = defineSchema(
       skills: v.optional(v.array(v.string())),
       location: v.optional(v.string()),
       connections: v.optional(v.array(v.id("users"))),
+      blockedUsers: v.optional(v.array(v.id("users"))),
       
       // Enhanced profile fields for better matching
       yearOfStudy: v.optional(v.string()),
