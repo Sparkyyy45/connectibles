@@ -41,7 +41,8 @@ export const sendGameInvitation = mutation({
 
     // Create notification
     const sender = await ctx.db.get(userId);
-    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+    const notificationFn: any = (internal as any).notifications.createNotification;
+    await ctx.scheduler.runAfter(0, notificationFn, {
       userId: args.receiverId,
       type: "game_invitation",
       message: `${sender?.name || "Someone"} invited you to play ${args.gameType.replace("_", " ")}!`,
@@ -86,7 +87,8 @@ export const acceptGameInvitation = mutation({
 
     // Notify sender
     const receiver = await ctx.db.get(userId);
-    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+    const notificationFn: any = (internal as any).notifications.createNotification;
+    await ctx.scheduler.runAfter(0, notificationFn, {
       userId: invitation.senderId,
       type: "game_accepted",
       message: `${receiver?.name || "Someone"} accepted your game invitation!`,
@@ -187,7 +189,8 @@ export const updateGameState = mutation({
       updates.status = "completed";
       
       // Update game statistics
-      await ctx.scheduler.runAfter(0, internal.gameStats.updateGameStats, {
+      const gameStatsFn: any = (internal as any).gameStats.updateGameStats;
+      await ctx.scheduler.runAfter(0, gameStatsFn, {
         sessionId: args.sessionId,
       });
 
@@ -195,14 +198,15 @@ export const updateGameState = mutation({
       const winner = await ctx.db.get(args.winnerId);
       const loserId = session.player1Id === args.winnerId ? session.player2Id : session.player1Id;
       
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      const notificationFn: any = (internal as any).notifications.createNotification;
+      await ctx.scheduler.runAfter(0, notificationFn, {
         userId: args.winnerId,
         type: "game_won",
         message: `You won the ${session.gameType.replace("_", " ")} game! 🎉`,
         relatedUserId: loserId,
       });
 
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      await ctx.scheduler.runAfter(0, notificationFn, {
         userId: loserId,
         type: "game_lost",
         message: `You lost the ${session.gameType.replace("_", " ")} game. Better luck next time!`,

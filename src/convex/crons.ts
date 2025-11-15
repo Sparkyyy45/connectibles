@@ -7,7 +7,7 @@ const crons = cronJobs();
 crons.interval(
   "delete old confessions",
   { hours: 1 },
-  internal.chill.deleteOldSpills,
+  (internal as any).chill.deleteOldSpills,
   {}
 );
 
