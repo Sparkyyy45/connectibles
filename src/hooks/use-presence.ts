@@ -1,12 +1,9 @@
-// @ts-nocheck
 import { useEffect } from "react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-// Dynamic imports to bypass type inference
-const convexReact = require("convex/react");
-
 export function usePresence() {
-  const updatePresence: any = convexReact.useMutation(api.presence.updatePresence);
+  const updatePresence = useMutation(api.presence.updatePresence);
 
   useEffect(() => {
     // Update presence immediately

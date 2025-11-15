@@ -332,15 +332,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         </AnimatePresence>
       </div>
 
-      <Footer 
-        onNavigate={(path) => navigate(path)} 
-        onScrollToSection={(sectionId) => {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }} 
-      />
+      <Footer />
     </div>
   );
 }

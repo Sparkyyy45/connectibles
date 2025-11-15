@@ -137,22 +137,3 @@ export const deleteAllNotifications = mutation({
     return allNotifications.length;
   },
 });
-
-// Helper wrapper to avoid type inference issues with scheduler
-export const scheduleNotification = internalMutation({
-  args: {
-    userId: v.id("users"),
-    type: v.string(),
-    message: v.string(),
-    relatedUserId: v.optional(v.id("users")),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("notifications", {
-      userId: args.userId,
-      type: args.type,
-      message: args.message,
-      relatedUserId: args.relatedUserId,
-      read: false,
-    });
-  },
-});

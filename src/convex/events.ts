@@ -29,8 +29,7 @@ export const createEvent = mutation({
     const creator = await ctx.db.get(userId);
     if (creator?.connections && creator.connections.length > 0) {
       for (const connectionId of creator.connections) {
-        const notificationFn: any = (internal as any).notifications.createNotification;
-        await ctx.scheduler.runAfter(0, notificationFn, {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: connectionId,
           type: "new_event",
           message: `${creator.name || "Someone"} created a new event: ${args.title}`,
@@ -82,8 +81,7 @@ export const toggleInterest = mutation({
       
       // Notify event creator when someone shows interest
       const user = await ctx.db.get(userId);
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: event.creatorId,
         type: "event_interest",
         message: `${user?.name || "Someone"} is interested in your event: ${event.title}`,

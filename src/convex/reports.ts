@@ -46,24 +46,21 @@ export const reportUser = mutation({
     // Send notification to the reported user
     if (reportCount === 1) {
       // First report - gentle warning
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.reportedUserId,
         type: "report_warning",
         message: "⚠️ A community member has reported your behavior. Please ensure you're being respectful and following community guidelines. Continued violations may result in account restrictions.",
       });
     } else if (reportCount === 5) {
       // Halfway warning
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.reportedUserId,
         type: "report_warning",
         message: `⚠️ You have received ${reportCount} reports. This is a serious concern. Please review our community guidelines and adjust your behavior accordingly. Further reports will result in account suspension.`,
       });
     } else if (reportCount === 8) {
       // Final warning
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.reportedUserId,
         type: "report_warning",
         message: `🚨 Final Warning: You have received ${reportCount} reports. Your account is at risk of being banned. Please be respectful and follow community guidelines immediately.`,
@@ -77,8 +74,7 @@ export const reportUser = mutation({
       });
       
       // Send ban notification
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.reportedUserId,
         type: "account_banned",
         message: "🚫 Your account has been suspended due to multiple community guideline violations. If you believe this is an error, please contact support.",

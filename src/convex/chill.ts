@@ -35,10 +35,9 @@ export const createSpill = mutation({
 
     // Notify all connections about the new spill
     const author = await ctx.db.get(userId);
-    if (author && author.connections && author.connections.length > 0) {
+    if (author?.connections && author.connections.length > 0) {
       for (const connectionId of author.connections) {
-        const notificationFn: any = (internal as any).notifications.scheduleNotification;
-        await ctx.scheduler.runAfter(0, notificationFn, {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: connectionId,
           type: "new_spill",
           message: `${author.name || "Someone"} just posted a new spill! ✨`,

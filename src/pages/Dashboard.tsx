@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
@@ -142,7 +141,7 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Profile Enhancement Card */}
+        {/* Profile Completion Card */}
         {!needsProfile && profileCompletion !== undefined && profileCompletion < 100 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -155,19 +154,20 @@ export default function Dashboard() {
                   <div>
                     <CardTitle className="text-2xl flex items-center gap-3">
                       <TrendingUp className="h-6 w-6 text-primary" />
-                      Unlock Your Full Potential
+                      Profile Completion
                     </CardTitle>
                     <CardDescription className="text-base mt-2">
-                      Your profile is looking good! Add more details to stand out and discover even better matches ✨
+                      Complete your profile to unlock better matches
                     </CardDescription>
                   </div>
-                  <div className="text-5xl">🚀</div>
+                  <div className="text-4xl font-bold text-primary">{profileCompletion}%</div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <Progress value={profileCompletion} className="h-3" />
                 <Button onClick={() => navigate("/profile")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all">
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Enhance Profile
+                  Complete Profile
                 </Button>
               </CardContent>
             </Card>

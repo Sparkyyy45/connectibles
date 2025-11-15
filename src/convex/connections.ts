@@ -36,12 +36,10 @@ export const sendWave = mutation({
 
     // Create notification for the receiver
     const sender = await ctx.db.get(userId);
-    const senderName = sender?.name || "Someone";
-    const notificationFn: any = (internal as any).notifications.scheduleNotification;
-    await ctx.scheduler.runAfter(0, notificationFn, {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: args.receiverId,
       type: "wave",
-      message: `${senderName} waved at you! 👋`,
+      message: `${sender?.name || "Someone"} waved at you! 👋`,
       relatedUserId: userId,
     });
 
@@ -101,12 +99,10 @@ export const sendConnectionRequest = mutation({
         
         // Create notification for the receiver about the connection request
         const sender = await ctx.db.get(userId);
-        const senderName = sender?.name || "Someone";
-        const notificationFn: any = (internal as any).notifications.createNotification;
-        await ctx.scheduler.runAfter(0, notificationFn, {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: args.receiverId,
           type: "connection_request",
-          message: `${senderName} sent you a connection request!`,
+          message: `${sender?.name || "Someone"} sent you a connection request!`,
           relatedUserId: userId,
         });
         
@@ -143,21 +139,17 @@ export const sendConnectionRequest = mutation({
       });
 
       // Create notifications for both users about the connection
-      const receiverName = receiver?.name || "someone";
-      const senderName = sender?.name || "someone";
-      
-      const notificationFn: any = (internal as any).notifications.createNotification;
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: args.receiverId,
         type: "connection_accepted",
-        message: `You're now connected with ${receiverName}!`,
+        message: `You're now connected with ${receiver?.name || "someone"}!`,
         relatedUserId: userId,
       });
       
-      await ctx.scheduler.runAfter(0, notificationFn, {
+      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
         userId: userId,
         type: "connection_accepted",
-        message: `You're now connected with ${senderName}!`,
+        message: `You're now connected with ${sender?.name || "someone"}!`,
         relatedUserId: args.receiverId,
       });
 
@@ -172,12 +164,10 @@ export const sendConnectionRequest = mutation({
 
     // Create notification for the receiver
     const sender = await ctx.db.get(userId);
-    const senderName = sender?.name || "Someone";
-    const notificationFn: any = (internal as any).notifications.createNotification;
-    await ctx.scheduler.runAfter(0, notificationFn, {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: args.receiverId,
       type: "connection_request",
-      message: `${senderName} sent you a connection request!`,
+      message: `${sender?.name || "Someone"} sent you a connection request!`,
       relatedUserId: userId,
     });
 
@@ -225,12 +215,10 @@ export const acceptConnectionRequest = mutation({
     });
 
     // Create notification for the sender that their request was accepted
-    const receiverName = receiver?.name || "Someone";
-    const notificationFn: any = (internal as any).notifications.createNotification;
-    await ctx.scheduler.runAfter(0, notificationFn, {
+    await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
       userId: request.senderId,
       type: "connection_accepted",
-      message: `${receiverName} accepted your connection request!`,
+      message: `${receiver?.name || "Someone"} accepted your connection request!`,
       relatedUserId: userId,
     });
 

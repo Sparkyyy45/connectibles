@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";

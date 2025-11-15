@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/components/ui/button";
