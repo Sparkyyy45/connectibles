@@ -51,6 +51,39 @@ const schema = defineSchema(
       weekendActivity: v.optional(v.string()),
       superpower: v.optional(v.string()),
       
+      // NEW: Personality & Values
+      personalityType: v.optional(v.string()), // Myers-Briggs or Big Five
+      topValues: v.optional(v.array(v.string())), // Top 3-5 values
+      communicationStyle: v.optional(v.string()), // "Direct", "Diplomatic", "Balanced"
+      socialPreference: v.optional(v.string()), // "Introvert", "Extrovert", "Ambivert"
+      lifestyleHabits: v.optional(v.array(v.string())), // ["Morning Person", "Active", "Organized"]
+      
+      // NEW: Goals & Aspirations
+      careerGoals: v.optional(v.array(v.string())),
+      learningGoals: v.optional(v.array(v.string())),
+      projectInterests: v.optional(v.array(v.string())),
+      timeCommitment: v.optional(v.string()), // "High", "Medium", "Low"
+      
+      // NEW: Enhanced Academic
+      gpaRange: v.optional(v.string()), // "3.5-4.0", "3.0-3.5", etc. (optional)
+      favoriteCourses: v.optional(v.array(v.string())),
+      studyStyle: v.optional(v.string()), // "Visual", "Auditory", "Kinesthetic", "Mixed"
+      academicStrengths: v.optional(v.array(v.string())),
+      academicChallenges: v.optional(v.array(v.string())),
+      
+      // NEW: Preferences & Deal-breakers
+      mustHaves: v.optional(v.array(v.string())),
+      niceToHaves: v.optional(v.array(v.string())),
+      distancePreference: v.optional(v.string()), // "Campus Only", "City Wide", "Anywhere"
+      connectionTypePriority: v.optional(v.array(v.string())), // Ranked priorities
+      
+      // NEW: Behavioral tracking (auto-populated)
+      lastActiveTime: v.optional(v.number()),
+      responseRate: v.optional(v.number()), // 0-100
+      averageResponseTime: v.optional(v.number()), // in minutes
+      connectionSuccessRate: v.optional(v.number()), // 0-100
+      preferredGames: v.optional(v.array(v.string())),
+      
       // Online status tracking
       lastActive: v.optional(v.number()),
     }).index("email", ["email"]),
