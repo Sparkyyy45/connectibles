@@ -18,7 +18,6 @@ export default function Dashboard() {
   const matches = useQuery(api.matching.getMatches);
   const connections = useQuery(api.connections.getConnections);
   const events = useQuery(api.events.getAllEvents);
-  const profileCompletion = useQuery(api.profiles.getProfileCompletion);
   const recentPosts = useQuery(api.posts.getAllPosts);
   const connectionRequests = useQuery(api.connections.getConnectionRequests);
 
@@ -41,6 +40,7 @@ export default function Dashboard() {
   const topMatches = matches?.slice(0, 3) || [];
   const recentCollaborations = recentPosts?.slice(0, 3) || [];
   const pendingRequests = connectionRequests?.length || 0;
+  const hasLowActivity = (connections?.length || 0) < 3 && (matches?.length || 0) > 5;
 
   const navigationSections = [
     {
@@ -141,32 +141,33 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Profile Enhancement Card */}
-        {!needsProfile && profileCompletion !== undefined && profileCompletion < 100 && (
+        {/* Engagement Boost Card */}
+        {!needsProfile && hasLowActivity && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
           >
-            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm">
-              <CardHeader>
+            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 animate-pulse" />
+              <CardHeader className="relative">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-2xl flex items-center gap-3">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                      Unlock Your Full Potential
+                      <Zap className="h-6 w-6 text-primary animate-bounce" />
+                      Your Perfect Matches Are Waiting! 🎯
                     </CardTitle>
                     <CardDescription className="text-base mt-2">
-                      Your profile is looking good! Add more details to stand out and discover even better matches ✨
+                      You have {matches?.length || 0} amazing people ready to connect with you. Don't let them slip away—start building meaningful connections today!
                     </CardDescription>
                   </div>
-                  <div className="text-5xl">🚀</div>
+                  <div className="text-5xl">✨</div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <Button onClick={() => navigate("/profile")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="relative">
+                <Button onClick={() => navigate("/discover")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Enhance Profile
+                  Discover Your Matches
                 </Button>
               </CardContent>
             </Card>
