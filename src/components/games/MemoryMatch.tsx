@@ -20,8 +20,7 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
   const [cards, setCards] = useState<string[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
-  const [scores, setScores] = useState({ player1: 0, player2: 0 });
-  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [moves, setMoves] = useState(0);
 
   useEffect(() => {
     if (session.gameState) {
@@ -29,15 +28,14 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
         const state = JSON.parse(session.gameState);
         setCards(state.cards || []);
         setMatched(state.matched || []);
-        setScores(state.scores || { player1: 0, player2: 0 });
+        setMoves(state.moves || 0);
       } catch (e) {
         initializeGame();
       }
     } else {
       initializeGame();
     }
-    setIsMyTurn(session.currentTurn === currentUserId);
-  }, [session, currentUserId]);
+  }, [session]);
 
   const initializeGame = () => {
     const shuffled = [...EMOJIS, ...EMOJIS].sort(() => Math.random() - 0.5);
@@ -45,39 +43,46 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
   };
 
   const handleCardClick = async (index: number) => {
-    if (!isMyTurn || flipped.length >= 2 || matched.includes(index) || flipped.includes(index)) return;
+    if (flipped.length >= 2 || matched.includes(index) || flipped.includes(index)) return;
 
     const newFlipped = [...flipped, index];
     setFlipped(newFlipped);
 
     if (newFlipped.length === 2) {
       const [first, second] = newFlipped;
+      const newMoves = moves + 1;
+      setMoves(newMoves);
       
       if (cards[first] === cards[second]) {
         const newMatched = [...matched, first, second];
-        const newScores = { ...scores };
-        if (session.player1Id === currentUserId) {
-          newScores.player1++;
-        } else {
-          newScores.player2++;
-        }
-        
         setMatched(newMatched);
-        setScores(newScores);
         setFlipped([]);
 
-        const winnerId = newMatched.length === cards.length 
-          ? (newScores.player1 > newScores.player2 ? session.player1Id : session.player2Id)
-          : undefined;
-
-        try {
-          await updateGameState({
-            sessionId,
-            gameState: JSON.stringify({ cards, matched: newMatched, scores: newScores }),
-            winnerId,
-          });
-        } catch (error: any) {
-          toast.error(error.message || "Failed to update game");
+        if (newMatched.length === cards.length) {
+          const result = newMoves <= 12 ? "win" : "loss";
+          try {
+            await updateGameState({
+              sessionId,
+              gameState: JSON.stringify({ cards, matched: newMatched, moves: newMoves }),
+              result,
+            });
+            if (result === "win") {
+              toast.success(`You won in ${newMoves} moves! 🎉`);
+            } else {
+              toast.success(`Completed in ${newMoves} moves!`);
+            }
+          } catch (error: any) {
+            toast.error(error.message || "Failed to update game");
+          }
+        } else {
+          try {
+            await updateGameState({
+              sessionId,
+              gameState: JSON.stringify({ cards, matched: newMatched, moves: newMoves }),
+            });
+          } catch (error: any) {
+            toast.error(error.message || "Failed to update game");
+          }
         }
       } else {
         setTimeout(async () => {
@@ -85,7 +90,7 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
           try {
             await updateGameState({
               sessionId,
-              gameState: JSON.stringify({ cards, matched, scores }),
+              gameState: JSON.stringify({ cards, matched, moves: newMoves }),
             });
           } catch (error: any) {
             toast.error(error.message || "Failed to update game");
@@ -100,43 +105,28 @@ export default function MemoryMatch({ sessionId, currentUserId, session }: Memor
       <CardHeader className="bg-gradient-to-r from-primary/10 to-purple-500/10">
         <CardTitle className="text-center text-2xl">
           {session.status === "completed" 
-            ? session.winnerId === currentUserId ? "🎉 Victory!" : "😔 Defeat"
-            : isMyTurn ? "Your Turn" : "Opponent's Turn"}
+            ? session.result === "win" ? "🎉 Victory!" : "✅ Completed!"
+            : "Memory Match"}
         </CardTitle>
         <div className="flex justify-around text-lg font-semibold mt-3">
           <div className="text-center">
-            <div className="text-2xl text-green-500">{session.player1Id === currentUserId ? scores.player1 : scores.player2}</div>
-            <div className="text-xs text-muted-foreground">Your Matches</div>
+            <div className="text-2xl text-green-500">{matched.length / 2}</div>
+            <div className="text-xs text-muted-foreground">Matches</div>
           </div>
-          <div className="text-4xl">🆚</div>
+          <div className="text-4xl">🎯</div>
           <div className="text-center">
-            <div className="text-2xl text-red-500">{session.player1Id === currentUserId ? scores.player2 : scores.player1}</div>
-            <div className="text-xs text-muted-foreground">Opponent</div>
+            <div className="text-2xl text-blue-500">{moves}</div>
+            <div className="text-xs text-muted-foreground">Moves</div>
           </div>
         </div>
-        {session.status === "in_progress" && (
-          <div className="text-center mt-2">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="inline-block"
-            >
-              {isMyTurn ? (
-                <span className="text-green-500 font-semibold">● Your Move</span>
-              ) : (
-                <span className="text-yellow-500 font-semibold">● Waiting...</span>
-              )}
-            </motion.div>
-          </div>
-        )}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-4 gap-3">
           {cards.map((emoji, index) => (
             <motion.button
               key={index}
-              whileHover={{ scale: isMyTurn && !matched.includes(index) && !flipped.includes(index) ? 1.08 : 1 }}
-              whileTap={{ scale: isMyTurn && !matched.includes(index) && !flipped.includes(index) ? 0.92 : 1 }}
+              whileHover={{ scale: !matched.includes(index) && !flipped.includes(index) ? 1.08 : 1 }}
+              whileTap={{ scale: !matched.includes(index) && !flipped.includes(index) ? 0.92 : 1 }}
               initial={{ rotateY: 180, opacity: 0 }}
               animate={{ 
                 rotateY: flipped.includes(index) || matched.includes(index) ? 0 : 180,

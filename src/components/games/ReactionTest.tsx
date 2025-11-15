@@ -17,20 +17,18 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
   const updateGameState = useMutation(api.games.updateGameState);
   const [gameState, setGameState] = useState<"waiting" | "ready" | "go">("waiting");
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [results, setResults] = useState<Array<{player: string, time: number}>>([]);
-  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [reactionTime, setReactionTime] = useState<number | null>(null);
 
   useEffect(() => {
     if (session.gameState) {
       try {
         const state = JSON.parse(session.gameState);
-        setResults(state.results || []);
+        setReactionTime(state.reactionTime || null);
       } catch (e) {
-        setResults([]);
+        setReactionTime(null);
       }
     }
-    setIsMyTurn(session.currentTurn === currentUserId);
-  }, [session, currentUserId]);
+  }, [session]);
 
   const startTest = () => {
     setGameState("ready");
@@ -43,27 +41,23 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
 
   const handleClick = async () => {
     if (gameState === "go" && startTime) {
-      const reactionTime = Date.now() - startTime;
-      const playerName = session.player1Id === currentUserId ? "You" : "Opponent";
-      const newResults = [...results, { player: playerName, time: reactionTime }];
-      setResults(newResults);
+      const time = Date.now() - startTime;
+      setReactionTime(time);
       setGameState("waiting");
 
-      const winnerId = newResults.length === 2
-        ? newResults[0].time < newResults[1].time
-          ? (newResults[0].player === "You" ? currentUserId : (session.player1Id === currentUserId ? session.player2Id : session.player1Id))
-          : (newResults[1].player === "You" ? currentUserId : (session.player1Id === currentUserId ? session.player2Id : session.player1Id))
-        : undefined;
+      const result = time < 300 ? "win" : "loss";
 
       try {
         await updateGameState({
           sessionId,
-          gameState: JSON.stringify({ results: newResults }),
-          winnerId,
+          gameState: JSON.stringify({ reactionTime: time }),
+          result,
         });
 
-        if (winnerId) {
-          toast.success(winnerId === currentUserId ? "You won!" : "Opponent won!");
+        if (result === "win") {
+          toast.success(`Amazing! ${time}ms 🎉`);
+        } else {
+          toast.success(`${time}ms - Keep practicing!`);
         }
       } catch (error: any) {
         toast.error(error.message || "Failed to update game");
@@ -80,7 +74,7 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {session.status === "in_progress" && isMyTurn && results.length < 2 && (
+        {session.status === "in_progress" && !reactionTime && (
           <>
             {gameState === "waiting" && (
               <Button onClick={startTest} className="w-full" size="lg">
@@ -113,30 +107,12 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
           </>
         )}
 
-        <div className="space-y-2">
-          {results.map((result, index) => (
-            <motion.div 
-              key={index} 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`p-4 rounded-xl shadow-md ${
-                result.player === "You"
-                  ? "bg-gradient-to-r from-green-500/20 to-green-600/10 border-l-4 border-green-500"
-                  : "bg-gradient-to-r from-blue-500/20 to-blue-600/10 border-l-4 border-blue-500"
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-lg">{result.player}</span>
-                <span className="text-primary font-bold text-2xl">{result.time}ms</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {session.status === "completed" && (
-          <div className="text-center text-xl font-bold">
-            {session.winnerId === currentUserId ? "🎉 You Won!" : "😔 Opponent Won"}
+        {reactionTime && (
+          <div className="text-center space-y-2">
+            <p className="text-4xl font-bold text-primary">{reactionTime}ms</p>
+            <p className="text-lg text-muted-foreground">
+              {reactionTime < 300 ? "🎉 Excellent!" : "Keep practicing!"}
+            </p>
           </div>
         )}
       </CardContent>

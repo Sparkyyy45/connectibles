@@ -5,13 +5,12 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Gamepad2, Users, Trophy } from "lucide-react";
+import { Loader2, Gamepad2, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
-import OnlineAvatar from "@/components/OnlineAvatar";
 import TicTacToe from "@/components/games/TicTacToe";
 import MemoryMatch from "@/components/games/MemoryMatch";
 import ReactionTest from "@/components/games/ReactionTest";
@@ -26,14 +25,9 @@ type GameType = "tic_tac_toe" | "memory_match" | "reaction_test" | "word_chain" 
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const connections = useQuery(api.connections.getConnections);
-  const gameInvitations = useQuery(api.games.getGameInvitations);
   const activeSessions = useQuery(api.games.getActiveSessions);
-  const sendInvitation = useMutation(api.games.sendGameInvitation);
-  const acceptInvitation = useMutation(api.games.acceptGameInvitation);
+  const startGame = useMutation(api.games.startGame);
 
-  const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
-  const [showConnectionSelect, setShowConnectionSelect] = useState(false);
   const [viewingSession, setViewingSession] = useState<Id<"game_sessions"> | null>(null);
 
   useEffect(() => {
@@ -46,7 +40,7 @@ export default function Games() {
     {
       type: "tic_tac_toe" as GameType,
       name: "Tic Tac Toe",
-      description: "Classic 3x3 grid game",
+      description: "Classic 3x3 grid game vs AI",
       icon: "🎯",
     },
     {
@@ -70,13 +64,13 @@ export default function Games() {
     {
       type: "quick_draw" as GameType,
       name: "Quick Draw",
-      description: "Draw and guess together",
+      description: "Draw the prompt quickly",
       icon: "🎨",
     },
     {
       type: "trivia_duel" as GameType,
-      name: "Trivia Duel",
-      description: "Battle of knowledge",
+      name: "Trivia Challenge",
+      description: "Test your knowledge",
       icon: "🧩",
     },
     {
@@ -93,33 +87,13 @@ export default function Games() {
     },
   ];
 
-  const handleGameSelect = (gameType: GameType) => {
-    setSelectedGame(gameType);
-    setShowConnectionSelect(true);
-  };
-
-  const handleInvitePlayer = async (connectionId: Id<"users">) => {
-    if (!selectedGame) return;
-
+  const handleStartGame = async (gameType: GameType) => {
     try {
-      await sendInvitation({
-        receiverId: connectionId,
-        gameType: selectedGame,
-      });
-      toast.success("Game invitation sent!");
-      setShowConnectionSelect(false);
-      setSelectedGame(null);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send invitation");
-    }
-  };
-
-  const handleAcceptInvitation = async (invitationId: Id<"game_invitations">) => {
-    try {
-      await acceptInvitation({ invitationId });
+      const sessionId = await startGame({ gameType });
+      setViewingSession(sessionId);
       toast.success("Game started!");
     } catch (error: any) {
-      toast.error(error.message || "Failed to accept invitation");
+      toast.error(error.message || "Failed to start game");
     }
   };
 
@@ -137,15 +111,6 @@ export default function Games() {
       setViewingSession(null);
       return null;
     }
-
-    // Prevent leaving if game is still in progress
-    const handleBackClick = () => {
-      if (session.status === "in_progress") {
-        toast.error("You cannot leave an active game! Finish the game first.");
-        return;
-      }
-      setViewingSession(null);
-    };
 
     // Map game type to component
     const GameComponent = (() => {
@@ -171,9 +136,8 @@ export default function Games() {
       }
     })();
 
-    const opponent = session.player1Id === user._id ? session.player2 : session.player1;
-    const isWinner = session.winnerId === user._id;
     const isCompleted = session.status === "completed";
+    const result = session.result;
 
     return (
       <DashboardLayout>
@@ -182,7 +146,7 @@ export default function Games() {
             <div className="flex items-center gap-4">
               <Button 
                 variant="outline" 
-                onClick={handleBackClick}
+                onClick={() => setViewingSession(null)}
                 disabled={session.status === "in_progress"}
               >
                 ← {session.status === "in_progress" ? "Game in Progress" : "Back to Games"}
@@ -198,39 +162,27 @@ export default function Games() {
             )}
           </div>
 
-          {/* Winner Display */}
-          {isCompleted && (
+          {/* Result Display */}
+          {isCompleted && result && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="mb-6"
             >
-              <Card className={`border-4 ${isWinner ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"}`}>
+              <Card className={`border-4 ${
+                result === "win" ? "border-green-500 bg-green-50" : 
+                result === "loss" ? "border-red-500 bg-red-50" : 
+                "border-yellow-500 bg-yellow-50"
+              }`}>
                 <CardHeader className="text-center">
                   <CardTitle className="text-4xl mb-4">
-                    {isWinner ? "🎉 Victory!" : "😔 Defeat"}
+                    {result === "win" ? "🎉 Victory!" : result === "loss" ? "😔 Defeat" : "🤝 Draw"}
                   </CardTitle>
                   <CardDescription className="text-xl">
-                    {isWinner 
-                      ? `You defeated ${opponent?.name || "your opponent"}!` 
-                      : `${opponent?.name || "Your opponent"} won this round!`
-                    }
+                    {result === "win" ? "You beat the AI!" : 
+                     result === "loss" ? "The AI won this round!" : 
+                     "It's a tie!"}
                   </CardDescription>
-                  <div className="flex items-center justify-center gap-4 mt-6">
-                    <OnlineAvatar
-                      userId={user._id}
-                      image={user.image}
-                      name={user.name}
-                      className="h-16 w-16 border-4 border-white"
-                    />
-                    <span className="text-3xl">{isWinner ? ">" : "<"}</span>
-                    <OnlineAvatar
-                      userId={opponent?._id!}
-                      image={opponent?.image}
-                      name={opponent?.name}
-                      className="h-16 w-16 border-4 border-white"
-                    />
-                  </div>
                   <Button 
                     onClick={() => setViewingSession(null)} 
                     className="mt-6"
@@ -255,81 +207,6 @@ export default function Games() {
     );
   }
 
-  if (showConnectionSelect) {
-    return (
-      <DashboardLayout>
-        <div className="p-8 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight">Select Player</h1>
-                <p className="text-muted-foreground text-lg mt-2">
-                  Choose a connection to play {selectedGame?.replace("_", " ")} with
-                </p>
-              </div>
-              <Button variant="outline" onClick={() => setShowConnectionSelect(false)}>
-                Back
-              </Button>
-            </div>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {connections?.map((connection, index) => (
-              <motion.div
-                key={connection._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="hover:shadow-lg transition-all">
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <OnlineAvatar
-                        userId={connection._id}
-                        image={connection.image}
-                        name={connection.name}
-                        className="h-12 w-12"
-                      />
-                      <div>
-                        <CardTitle className="text-lg">{connection.name || "Anonymous"}</CardTitle>
-                        <CardDescription>{connection.email}</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      className="w-full"
-                      onClick={() => handleInvitePlayer(connection._id)}
-                    >
-                      Invite to Play
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          {connections?.length === 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>No Connections Yet</CardTitle>
-                <CardDescription>
-                  Connect with other users first to play games together!
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={() => navigate("/discover")}>Find Connections</Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
       <div className="p-8 space-y-8">
@@ -343,104 +220,52 @@ export default function Games() {
             </div>
             <div>
               <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-                Multiplayer Games
+                Singleplayer Games
               </h1>
               <p className="text-muted-foreground text-lg font-medium mt-2">
-                Challenge your connections to fun games!
+                Challenge yourself against AI opponents!
               </p>
             </div>
           </div>
         </motion.div>
-
-        {/* Game Invitations */}
-        {gameInvitations && gameInvitations.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="border-primary/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-primary" />
-                  Game Invitations
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {gameInvitations.map((invitation) => (
-                  <div
-                    key={invitation._id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <OnlineAvatar
-                        userId={invitation.senderId}
-                        image={invitation.sender?.image}
-                        name={invitation.sender?.name}
-                        className="h-10 w-10"
-                      />
-                      <div>
-                        <p className="font-medium">
-                          {invitation.sender?.name || "Someone"} invited you to play
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {invitation.gameType.replace("_", " ")}
-                        </p>
-                      </div>
-                    </div>
-                    <Button onClick={() => handleAcceptInvitation(invitation._id)}>
-                      Accept
-                    </Button>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
 
         {/* Active Sessions */}
         {activeSessions && activeSessions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
           >
             <Card>
               <CardHeader>
-                <CardTitle>Active Games</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  Active Games
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {activeSessions.map((session) => {
-                  const opponent =
-                    session.player1Id === user._id ? session.player2 : session.player1;
-                  return (
-                    <div
-                      key={session._id}
-                      className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => setViewingSession(session._id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <OnlineAvatar
-                          userId={opponent?._id!}
-                          image={opponent?.image}
-                          name={opponent?.name}
-                          className="h-10 w-10"
-                        />
-                        <div>
-                          <p className="font-medium">
-                            Playing with {opponent?.name || "Someone"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {session.gameType.replace("_", " ")}
-                          </p>
-                        </div>
+                {activeSessions.map((session) => (
+                  <div
+                    key={session._id}
+                    className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => setViewingSession(session._id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">
+                        {games.find(g => g.type === session.gameType)?.icon}
                       </div>
-                      <Badge>
-                        {session.currentTurn === user._id ? "Your Turn" : "Their Turn"}
-                      </Badge>
+                      <div>
+                        <p className="font-medium">
+                          {session.gameType.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Playing vs AI
+                        </p>
+                      </div>
                     </div>
-                  );
-                })}
+                    <Badge>In Progress</Badge>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </motion.div>
@@ -455,7 +280,7 @@ export default function Games() {
                 key={game.type}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
+                transition={{ delay: 0.2 + index * 0.1 }}
               >
                 <Card className="hover:shadow-xl transition-all cursor-pointer group">
                   <CardHeader>
@@ -468,10 +293,10 @@ export default function Games() {
                   <CardContent>
                     <Button
                       className="w-full"
-                      onClick={() => handleGameSelect(game.type)}
+                      onClick={() => handleStartGame(game.type)}
                     >
-                      <Users className="h-4 w-4 mr-2" />
-                      Play with Connection
+                      <Gamepad2 className="h-4 w-4 mr-2" />
+                      Play Now
                     </Button>
                   </CardContent>
                 </Card>

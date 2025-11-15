@@ -27,44 +27,33 @@ const EMOJI_PAIRS = [
 export default function EmojiMatch({ sessionId, currentUserId, session }: EmojiMatchProps) {
   const updateGameState = useMutation(api.games.updateGameState);
   const [currentEmoji, setCurrentEmoji] = useState(0);
-  const [scores, setScores] = useState({ player1: 0, player2: 0 });
-  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     if (session.gameState) {
       try {
         const state = JSON.parse(session.gameState);
         setCurrentEmoji(state.currentEmoji || 0);
-        setScores(state.scores || { player1: 0, player2: 0 });
+        setScore(state.score || 0);
       } catch (e) {
         setCurrentEmoji(0);
       }
     }
-    setIsMyTurn(session.currentTurn === currentUserId);
-  }, [session, currentUserId]);
+  }, [session]);
 
   const handleGuess = async (guessedName: string) => {
-    if (!isMyTurn || session.status !== "in_progress") return;
+    if (session.status !== "in_progress") return;
 
     const correctName = EMOJI_PAIRS[currentEmoji].name;
     const isCorrect = guessedName === correctName;
     
-    const newScores = { ...scores };
-    if (isCorrect) {
-      if (session.player1Id === currentUserId) {
-        newScores.player1++;
-      } else {
-        newScores.player2++;
-      }
-    }
-
+    const newScore = isCorrect ? score + 1 : score;
     const nextEmoji = currentEmoji + 1;
-    setScores(newScores);
+    setScore(newScore);
     setCurrentEmoji(nextEmoji);
 
-    const winnerId = nextEmoji >= EMOJI_PAIRS.length
-      ? (newScores.player1 > newScores.player2 ? session.player1Id : 
-         newScores.player2 > newScores.player1 ? session.player2Id : undefined)
+    const result = nextEmoji >= EMOJI_PAIRS.length
+      ? (newScore >= 6 ? "win" : "loss")
       : undefined;
 
     try {
@@ -72,9 +61,9 @@ export default function EmojiMatch({ sessionId, currentUserId, session }: EmojiM
         sessionId,
         gameState: JSON.stringify({ 
           currentEmoji: nextEmoji, 
-          scores: newScores 
+          score: newScore 
         }),
-        winnerId,
+        result,
       });
 
       if (isCorrect) {
@@ -98,57 +87,42 @@ export default function EmojiMatch({ sessionId, currentUserId, session }: EmojiM
       <CardHeader>
         <CardTitle className="text-center">
           {session.status === "completed" 
-            ? session.winnerId === currentUserId 
-              ? "🎉 You Won!" 
-              : session.winnerId 
-                ? "😔 You Lost" 
-                : "🤝 It's a Tie!"
+            ? session.result === "win" ? "🎉 You Won!" : "😔 Better luck next time!"
             : `Emoji ${currentEmoji + 1} of ${EMOJI_PAIRS.length}`}
         </CardTitle>
         <CardDescription className="text-center">
-          <div className="flex justify-around text-lg font-semibold mt-2">
-            <span>You: {session.player1Id === currentUserId ? scores.player1 : scores.player2}</span>
-            <span>Opponent: {session.player1Id === currentUserId ? scores.player2 : scores.player1}</span>
+          <div className="text-lg font-semibold mt-2">
+            Score: {score} / {EMOJI_PAIRS.length}
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {session.status === "in_progress" && currentEmoji < EMOJI_PAIRS.length && (
-          <>
-            {isMyTurn ? (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <div className="text-8xl mb-4">{EMOJI_PAIRS[currentEmoji].emoji}</div>
-                  <p className="text-lg font-medium">What emotion is this?</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {shuffledOptions.map((option, index) => (
-                    <motion.div key={index} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        onClick={() => handleGuess(option.name)}
-                        variant="outline"
-                        className="w-full h-16 text-lg"
-                      >
-                        {option.name}
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-lg text-muted-foreground py-8">
-                Waiting for opponent...
-              </div>
-            )}
-          </>
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="text-8xl mb-4">{EMOJI_PAIRS[currentEmoji].emoji}</div>
+              <p className="text-lg font-medium">What emotion is this?</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {shuffledOptions.map((option, index) => (
+                <motion.div key={index} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={() => handleGuess(option.name)}
+                    variant="outline"
+                    className="w-full h-16 text-lg"
+                  >
+                    {option.name}
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         )}
 
         {session.status === "completed" && (
           <div className="text-center space-y-2">
             <p className="text-lg">Final Score:</p>
-            <p className="text-2xl font-bold">
-              {session.player1Id === currentUserId ? scores.player1 : scores.player2} - {session.player1Id === currentUserId ? scores.player2 : scores.player1}
-            </p>
+            <p className="text-2xl font-bold">{score} / {EMOJI_PAIRS.length}</p>
           </div>
         )}
       </CardContent>

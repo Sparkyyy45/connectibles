@@ -132,7 +132,7 @@ const schema = defineSchema(
       }))),
     }).index("by_sender", ["senderId"]),
 
-    // Game sessions for multiplayer games
+    // Singleplayer game sessions (player vs AI)
     game_sessions: defineTable({
       gameType: v.union(
         v.literal("tic_tac_toe"),
@@ -144,46 +144,20 @@ const schema = defineSchema(
         v.literal("number_guess"),
         v.literal("emoji_match")
       ),
-      player1Id: v.id("users"),
-      player2Id: v.id("users"),
+      playerId: v.id("users"),
       status: v.union(
-        v.literal("waiting"),
         v.literal("in_progress"),
-        v.literal("completed"),
-        v.literal("cancelled")
+        v.literal("completed")
       ),
-      currentTurn: v.optional(v.id("users")),
       gameState: v.optional(v.string()), // JSON stringified game state
-      winnerId: v.optional(v.id("users")),
+      result: v.optional(v.union(
+        v.literal("win"),
+        v.literal("loss"),
+        v.literal("draw")
+      )),
     })
-      .index("by_player1", ["player1Id"])
-      .index("by_player2", ["player2Id"])
+      .index("by_player", ["playerId"])
       .index("by_status", ["status"]),
-
-    // Game invitations
-    game_invitations: defineTable({
-      senderId: v.id("users"),
-      receiverId: v.id("users"),
-      gameType: v.union(
-        v.literal("tic_tac_toe"),
-        v.literal("memory_match"),
-        v.literal("reaction_test"),
-        v.literal("word_chain"),
-        v.literal("quick_draw"),
-        v.literal("trivia_duel"),
-        v.literal("number_guess"),
-        v.literal("emoji_match")
-      ),
-      status: v.union(
-        v.literal("pending"),
-        v.literal("accepted"),
-        v.literal("rejected"),
-        v.literal("cancelled")
-      ),
-      sessionId: v.optional(v.id("game_sessions")),
-    })
-      .index("by_receiver", ["receiverId"])
-      .index("by_sender", ["senderId"]),
 
     // Game statistics for tracking player performance
     game_stats: defineTable({

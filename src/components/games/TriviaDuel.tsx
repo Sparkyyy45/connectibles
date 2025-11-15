@@ -44,50 +44,38 @@ const TRIVIA_QUESTIONS = [
 export default function TriviaDuel({ sessionId, currentUserId, session }: TriviaDuelProps) {
   const updateGameState = useMutation(api.games.updateGameState);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [scores, setScores] = useState({ player1: 0, player2: 0 });
-  const [answers, setAnswers] = useState<Array<{player: string, correct: boolean}>>([]);
-  const [isMyTurn, setIsMyTurn] = useState(false);
+  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<Array<{correct: boolean}>>([]);
 
   useEffect(() => {
     if (session.gameState) {
       try {
         const state = JSON.parse(session.gameState);
         setCurrentQuestion(state.currentQuestion || 0);
-        setScores(state.scores || { player1: 0, player2: 0 });
+        setScore(state.score || 0);
         setAnswers(state.answers || []);
       } catch (e) {
         setCurrentQuestion(0);
       }
     }
-    setIsMyTurn(session.currentTurn === currentUserId);
-  }, [session, currentUserId]);
+  }, [session]);
 
   const handleAnswer = async (selectedIndex: number) => {
-    if (!isMyTurn || session.status !== "in_progress") return;
+    if (session.status !== "in_progress") return;
 
     const question = TRIVIA_QUESTIONS[currentQuestion];
     const isCorrect = selectedIndex === question.correct;
-    const playerName = session.player1Id === currentUserId ? "You" : "Opponent";
     
-    const newScores = { ...scores };
-    if (isCorrect) {
-      if (session.player1Id === currentUserId) {
-        newScores.player1++;
-      } else {
-        newScores.player2++;
-      }
-    }
-
-    const newAnswers = [...answers, { player: playerName, correct: isCorrect }];
+    const newScore = isCorrect ? score + 1 : score;
+    const newAnswers = [...answers, { correct: isCorrect }];
     const nextQuestion = currentQuestion + 1;
     
-    setScores(newScores);
+    setScore(newScore);
     setAnswers(newAnswers);
     setCurrentQuestion(nextQuestion);
 
-    const winnerId = nextQuestion >= TRIVIA_QUESTIONS.length
-      ? (newScores.player1 > newScores.player2 ? session.player1Id : 
-         newScores.player2 > newScores.player1 ? session.player2Id : undefined)
+    const result = nextQuestion >= TRIVIA_QUESTIONS.length
+      ? (newScore >= 4 ? "win" : "loss")
       : undefined;
 
     try {
@@ -95,10 +83,10 @@ export default function TriviaDuel({ sessionId, currentUserId, session }: Trivia
         sessionId,
         gameState: JSON.stringify({ 
           currentQuestion: nextQuestion, 
-          scores: newScores, 
+          score: newScore, 
           answers: newAnswers 
         }),
-        winnerId,
+        result,
       });
 
       if (isCorrect) {
@@ -118,59 +106,39 @@ export default function TriviaDuel({ sessionId, currentUserId, session }: Trivia
       <CardHeader>
         <CardTitle className="text-center">
           {session.status === "completed" 
-            ? session.winnerId === currentUserId 
-              ? "🎉 You Won!" 
-              : session.winnerId 
-                ? "😔 You Lost" 
-                : "🤝 It's a Tie!"
+            ? session.result === "win" ? "🎉 You Won!" : "😔 Better luck next time!"
             : `Question ${currentQuestion + 1} of ${TRIVIA_QUESTIONS.length}`}
         </CardTitle>
         <CardDescription className="text-center">
-          <div className="flex justify-around text-lg font-semibold mt-2">
-            <span>Your Score: {session.player1Id === currentUserId ? scores.player1 : scores.player2}</span>
-            <span>Opponent: {session.player1Id === currentUserId ? scores.player2 : scores.player1}</span>
+          <div className="text-lg font-semibold mt-2">
+            Score: {score} / {TRIVIA_QUESTIONS.length}
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {session.status === "in_progress" && currentQuestion < TRIVIA_QUESTIONS.length && (
-          <>
-            {isMyTurn ? (
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-center">{question.question}</h3>
-                <div className="grid gap-3">
-                  {question.options.map((option, index) => (
-                    <motion.div key={index} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button
-                        onClick={() => handleAnswer(index)}
-                        variant="outline"
-                        className="w-full h-auto py-4 text-lg"
-                      >
-                        {option}
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-lg text-muted-foreground py-8">
-                Waiting for opponent to answer...
-              </div>
-            )}
-          </>
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-center">{question.question}</h3>
+            <div className="grid gap-3">
+              {question.options.map((option, index) => (
+                <motion.div key={index} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    onClick={() => handleAnswer(index)}
+                    variant="outline"
+                    className="w-full h-auto py-4 text-lg"
+                  >
+                    {option}
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         )}
 
         {session.status === "completed" && (
           <div className="space-y-2">
-            <h3 className="font-bold text-center">Game Summary</h3>
-            <div className="space-y-1">
-              {answers.map((answer, index) => (
-                <div key={index} className="flex justify-between p-2 rounded bg-muted">
-                  <span>{answer.player}</span>
-                  <span>{answer.correct ? "✅" : "❌"}</span>
-                </div>
-              ))}
-            </div>
+            <h3 className="font-bold text-center">Final Score</h3>
+            <p className="text-center text-2xl font-bold">{score} / {TRIVIA_QUESTIONS.length}</p>
           </div>
         )}
       </CardContent>

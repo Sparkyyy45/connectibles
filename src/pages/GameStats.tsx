@@ -58,7 +58,7 @@ export default function GameStats() {
                 Game Statistics
               </h1>
               <p className="text-muted-foreground text-lg font-medium mt-2">
-                Track your performance and compete with others!
+                Track your performance against AI opponents!
               </p>
             </div>
           </div>

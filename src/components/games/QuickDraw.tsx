@@ -23,17 +23,14 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const [drawings, setDrawings] = useState<Array<{player: string, dataUrl: string}>>([]);
-  const [isMyTurn, setIsMyTurn] = useState(false);
-
-  const playerName = session.player1Id === currentUserId ? "You" : "Opponent";
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (session.gameState) {
       try {
         const state = JSON.parse(session.gameState);
         setPrompt(state.prompt || DRAWING_PROMPTS[Math.floor(Math.random() * DRAWING_PROMPTS.length)]);
-        setDrawings(state.drawings || []);
+        setSubmitted(state.submitted || false);
       } catch (e) {
         const newPrompt = DRAWING_PROMPTS[Math.floor(Math.random() * DRAWING_PROMPTS.length)];
         setPrompt(newPrompt);
@@ -42,11 +39,9 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
       const newPrompt = DRAWING_PROMPTS[Math.floor(Math.random() * DRAWING_PROMPTS.length)];
       setPrompt(newPrompt);
     }
-    setIsMyTurn(session.currentTurn === currentUserId);
-  }, [session, currentUserId]);
+  }, [session]);
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isMyTurn) return;
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -58,7 +53,7 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !isMyTurn) return;
+    if (!isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -88,19 +83,15 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
     if (!canvas) return;
     
     const dataUrl = canvas.toDataURL();
-    const newDrawings = [...drawings, { player: playerName, dataUrl }];
-    setDrawings(newDrawings);
-
-    const winnerId = newDrawings.length === 2 ? undefined : undefined;
+    setSubmitted(true);
 
     try {
       await updateGameState({
         sessionId,
-        gameState: JSON.stringify({ prompt, drawings: newDrawings }),
-        winnerId: newDrawings.length === 2 ? session.player1Id : undefined,
+        gameState: JSON.stringify({ prompt, dataUrl, submitted: true }),
+        result: "win",
       });
-      toast.success("Drawing submitted!");
-      clearCanvas();
+      toast.success("Drawing submitted! 🎨");
     } catch (error: any) {
       toast.error(error.message || "Failed to submit drawing");
     }
@@ -115,7 +106,7 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {session.status === "in_progress" && isMyTurn && drawings.filter(d => d.player === "You").length === 0 && (
+        {session.status === "in_progress" && !submitted && (
           <div className="space-y-2">
             <canvas
               ref={canvasRef}
@@ -138,27 +129,9 @@ export default function QuickDraw({ sessionId, currentUserId, session }: QuickDr
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {drawings.map((drawing, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="space-y-2"
-            >
-              <p className="font-medium text-center">{drawing.player}'s Drawing</p>
-              <img 
-                src={drawing.dataUrl} 
-                alt={`${drawing.player}'s drawing`}
-                className="border-2 border-border rounded-lg w-full"
-              />
-            </motion.div>
-          ))}
-        </div>
-
         {session.status === "completed" && (
           <div className="text-center text-xl font-bold">
-            Both drawings submitted! 🎨
+            Drawing submitted! 🎨
           </div>
         )}
       </CardContent>

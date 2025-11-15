@@ -13,67 +13,51 @@ export const updateGameStats = internalMutation({
       throw new Error("Invalid or incomplete game session");
     }
 
-    const player1Id = session.player1Id;
-    const player2Id = session.player2Id;
-    const winnerId = session.winnerId;
+    const playerId = session.playerId;
+    const result = session.result;
     const gameType = session.gameType;
 
-    // Update stats for player 1
-    await updatePlayerStats(ctx, player1Id, gameType, winnerId, player1Id, player2Id);
-    
-    // Update stats for player 2
-    await updatePlayerStats(ctx, player2Id, gameType, winnerId, player1Id, player2Id);
+    // Find existing stats
+    const existingStats = await ctx.db
+      .query("game_stats")
+      .withIndex("by_user_and_game", (q) =>
+        q.eq("userId", playerId).eq("gameType", gameType)
+      )
+      .first();
+
+    let wins = 0;
+    let losses = 0;
+    let draws = 0;
+
+    if (result === "win") {
+      wins = 1;
+    } else if (result === "draw") {
+      draws = 1;
+    } else if (result === "loss") {
+      losses = 1;
+    }
+
+    if (existingStats) {
+      // Update existing stats
+      await ctx.db.patch(existingStats._id, {
+        wins: existingStats.wins + wins,
+        losses: existingStats.losses + losses,
+        draws: existingStats.draws + draws,
+        totalGames: existingStats.totalGames + 1,
+      });
+    } else {
+      // Create new stats entry
+      await ctx.db.insert("game_stats", {
+        userId: playerId,
+        gameType,
+        wins,
+        losses,
+        draws,
+        totalGames: 1,
+      });
+    }
   },
 });
-
-async function updatePlayerStats(
-  ctx: any,
-  playerId: any,
-  gameType: any,
-  winnerId: any,
-  player1Id: any,
-  player2Id: any
-) {
-  // Find existing stats
-  const existingStats = await ctx.db
-    .query("game_stats")
-    .withIndex("by_user_and_game", (q: any) =>
-      q.eq("userId", playerId).eq("gameType", gameType)
-    )
-    .first();
-
-  let wins = 0;
-  let losses = 0;
-  let draws = 0;
-
-  if (winnerId === playerId) {
-    wins = 1;
-  } else if (winnerId === undefined) {
-    draws = 1;
-  } else {
-    losses = 1;
-  }
-
-  if (existingStats) {
-    // Update existing stats
-    await ctx.db.patch(existingStats._id, {
-      wins: existingStats.wins + wins,
-      losses: existingStats.losses + losses,
-      draws: existingStats.draws + draws,
-      totalGames: existingStats.totalGames + 1,
-    });
-  } else {
-    // Create new stats entry
-    await ctx.db.insert("game_stats", {
-      userId: playerId,
-      gameType,
-      wins,
-      losses,
-      draws,
-      totalGames: 1,
-    });
-  }
-}
 
 // Get overall game statistics for a user
 export const getUserGameStats = query({
