@@ -15,12 +15,12 @@ import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 
 const CONFESSIONAL_COLORS = [
-  "bg-gradient-to-br from-slate-100 to-gray-200",
-  "bg-gradient-to-br from-purple-100 to-indigo-200",
-  "bg-gradient-to-br from-blue-100 to-cyan-200",
-  "bg-gradient-to-br from-violet-100 to-purple-200",
-  "bg-gradient-to-br from-indigo-100 to-blue-200",
-  "bg-gradient-to-br from-gray-100 to-slate-200",
+  "bg-gradient-to-br from-slate-50 to-gray-100",
+  "bg-gradient-to-br from-purple-50 to-indigo-100",
+  "bg-gradient-to-br from-blue-50 to-cyan-100",
+  "bg-gradient-to-br from-violet-50 to-purple-100",
+  "bg-gradient-to-br from-indigo-50 to-blue-100",
+  "bg-gradient-to-br from-pink-50 to-rose-100",
 ];
 
 export default function Chill() {
@@ -206,27 +206,24 @@ export default function Chill() {
                     transition={{ delay: index * 0.03 }}
                     className="break-inside-avoid mb-6"
                   >
-                    <Card className={`${colorClass} border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm group`}>
-                      {/* Enhanced gradient overlay */}
-                      <div className="absolute inset-0 pointer-events-none opacity-10">
+                    <Card className={`${colorClass} border-2 border-slate-200/60 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden rounded-3xl backdrop-blur-sm group`}>
+                      {/* Subtle gradient overlay */}
+                      <div className="absolute inset-0 pointer-events-none opacity-5">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400" />
                       </div>
                       
-                      {/* Side accent line - thicker and more prominent */}
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-purple-500 via-blue-500 to-purple-600 pointer-events-none shadow-sm" />
-                      
-                      {/* Top accent line */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent pointer-events-none" />
+                      {/* Side accent line */}
+                      <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-purple-500 via-blue-500 to-purple-600 pointer-events-none opacity-80" />
                       
                       <CardContent className="p-8 md:p-10 relative">
                         {/* Delete Button (only for owner) */}
                         {isOwner && (
-                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteSpill(spill._id)}
-                              className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-full transition-all shadow-sm"
+                              className="h-10 w-10 p-0 hover:bg-red-50 hover:text-red-600 rounded-full transition-all shadow-md hover:shadow-lg"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -234,37 +231,37 @@ export default function Chill() {
                         )}
 
                         {/* Content */}
-                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-medium pl-5 pr-2 tracking-wide">
+                        <p className="text-slate-800 leading-relaxed whitespace-pre-wrap break-words text-base md:text-lg font-medium tracking-wide">
                           {spill.content}
                         </p>
                       </CardContent>
                     </Card>
                     
                     {/* Vote controls extension below the card */}
-                    <div className="flex items-center justify-center gap-3 mt-4 bg-white/95 backdrop-blur-sm rounded-full px-5 py-2.5 shadow-md border border-purple-200/50 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center justify-center gap-4 mt-4 bg-white/98 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border-2 border-slate-200/60 hover:shadow-xl transition-all">
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => handleUpvote(spill._id)}
-                        className={`h-9 w-9 p-0 rounded-full transition-all ${
+                        className={`h-10 w-10 p-0 rounded-full transition-all shadow-sm hover:shadow-md ${
                           hasUpvoted 
-                            ? "bg-green-100 hover:bg-green-200 text-green-700" 
-                            : "hover:bg-slate-100 text-slate-600"
+                            ? "bg-gradient-to-br from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-700 border-2 border-green-300" 
+                            : "hover:bg-slate-100 text-slate-600 border-2 border-transparent hover:border-slate-200"
                         }`}
                       >
                         <ChevronUp className="h-5 w-5" />
                       </Button>
-                      <span className="text-sm font-bold text-slate-700 min-w-[2.5rem] text-center">
+                      <span className="text-base font-bold text-slate-800 min-w-[3rem] text-center">
                         {upvoteCount - downvoteCount}
                       </span>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => handleDownvote(spill._id)}
-                        className={`h-9 w-9 p-0 rounded-full transition-all ${
+                        className={`h-10 w-10 p-0 rounded-full transition-all shadow-sm hover:shadow-md ${
                           hasDownvoted 
-                            ? "bg-red-100 hover:bg-red-200 text-red-700" 
-                            : "hover:bg-slate-100 text-slate-600"
+                            ? "bg-gradient-to-br from-red-100 to-rose-100 hover:from-red-200 hover:to-rose-200 text-red-700 border-2 border-red-300" 
+                            : "hover:bg-slate-100 text-slate-600 border-2 border-transparent hover:border-slate-200"
                         }`}
                       >
                         <ChevronDown className="h-5 w-5" />
