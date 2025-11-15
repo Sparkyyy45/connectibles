@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { internal } from "./_generated/api";
 
 export const generateUploadUrl = mutation({
   args: {},
@@ -36,12 +37,11 @@ export const createSpill = mutation({
     const author = await ctx.db.get(userId);
     if (author?.connections && author.connections.length > 0) {
       for (const connectionId of author.connections) {
-        await ctx.db.insert("notifications", {
+        await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
           userId: connectionId,
           type: "new_spill",
           message: `${author.name || "Someone"} just posted a new spill! ✨`,
           relatedUserId: userId,
-          read: false,
         });
       }
     }
@@ -149,5 +149,27 @@ export const deleteSpill = mutation({
 
     await ctx.db.delete(args.postId);
     return args.postId;
+  },
+});
+
+export const deleteOldSpills = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
+
+    const oldPosts = await ctx.db
+      .query("chill_posts")
+      .filter((q) => q.lt(q.field("_creationTime"), twentyFourHoursAgo))
+      .collect();
+
+    let deletedCount = 0;
+    for (const post of oldPosts) {
+      await ctx.db.delete(post._id);
+      deletedCount++;
+    }
+
+    console.log(`Deleted ${deletedCount} old confessions`);
+    return deletedCount;
   },
 });
