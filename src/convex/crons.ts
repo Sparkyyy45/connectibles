@@ -1,14 +1,8 @@
 import { cronJobs } from "convex/server";
-import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
-// Run every hour to clean up old confessions (24+ hours old)
-crons.interval(
-  "delete old confessions",
-  { hours: 1 },
-  internal.chill.deleteOldSpills,
-  {}
-);
+// Cron jobs temporarily disabled due to type instantiation issues
+// TODO: Re-enable after Convex type system update
 
 export default crons;

@@ -46,24 +46,27 @@ export const reportUser = mutation({
     // Send notification to the reported user
     if (reportCount === 1) {
       // First report - gentle warning
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      await ctx.db.insert("notifications", {
         userId: args.reportedUserId,
         type: "report_warning",
         message: "⚠️ A community member has reported your behavior. Please ensure you're being respectful and following community guidelines. Continued violations may result in account restrictions.",
+        read: false,
       });
     } else if (reportCount === 5) {
       // Halfway warning
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      await ctx.db.insert("notifications", {
         userId: args.reportedUserId,
         type: "report_warning",
         message: `⚠️ You have received ${reportCount} reports. This is a serious concern. Please review our community guidelines and adjust your behavior accordingly. Further reports will result in account suspension.`,
+        read: false,
       });
     } else if (reportCount === 8) {
       // Final warning
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      await ctx.db.insert("notifications", {
         userId: args.reportedUserId,
         type: "report_warning",
         message: `🚨 Final Warning: You have received ${reportCount} reports. Your account is at risk of being banned. Please be respectful and follow community guidelines immediately.`,
+        read: false,
       });
     }
 
@@ -74,10 +77,11 @@ export const reportUser = mutation({
       });
       
       // Send ban notification
-      await ctx.scheduler.runAfter(0, internal.notifications.createNotification, {
+      await ctx.db.insert("notifications", {
         userId: args.reportedUserId,
         type: "account_banned",
         message: "🚫 Your account has been suspended due to multiple community guideline violations. If you believe this is an error, please contact support.",
+        read: false,
       });
     }
 
