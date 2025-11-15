@@ -176,11 +176,15 @@ export default function Games() {
     const isWinner = session.winnerId === user._id;
     const isCompleted = session.status === "completed";
 
-    // Safety check: if opponent data is missing, go back to games list
+    // Safety check: if opponent data is missing, show loading or skip
     if (!opponent) {
-      setViewingSession(null);
-      toast.error("Unable to load game session. Please try again.");
-      return null;
+      return (
+        <DashboardLayout>
+          <div className="p-8 flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        </DashboardLayout>
+      );
     }
 
     return (
