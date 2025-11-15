@@ -372,26 +372,26 @@ export default function Discover() {
             <TabsList className="grid w-full grid-cols-3 gap-2 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-2 rounded-2xl shadow-lg">
               <TabsTrigger 
                 value="matches" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
               >
                 <Sparkles className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden md:inline">Best Matches</span>
-                <span className="md:hidden">Matches</span>
+                <span className="hidden sm:inline">Best Matches</span>
+                <span className="sm:hidden">Matches</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="explore" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
               >
                 <Shuffle className="h-4 w-4 flex-shrink-0" />
                 <span>Explore</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="reverse" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl"
               >
                 <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden md:inline">Interested in You</span>
-                <span className="md:hidden">For You</span>
+                <span className="hidden sm:inline">Interested in You</span>
+                <span className="sm:hidden">For You</span>
               </TabsTrigger>
             </TabsList>
 
