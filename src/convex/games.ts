@@ -10,6 +10,11 @@ export const startGame = mutation({
       v.literal("tic_tac_toe"),
       v.literal("reaction_test")
     ),
+    difficulty: v.optional(v.union(
+      v.literal("easy"),
+      v.literal("medium"),
+      v.literal("hard")
+    )),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -20,6 +25,7 @@ export const startGame = mutation({
       playerId: userId,
       status: "in_progress",
       gameState: JSON.stringify({}),
+      difficulty: args.difficulty,
     });
 
     return sessionId;

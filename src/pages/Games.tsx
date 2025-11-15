@@ -5,7 +5,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Gamepad2, Trophy } from "lucide-react";
+import { Loader2, Gamepad2, Trophy, Zap, Target, Flame } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
@@ -45,13 +46,31 @@ export default function Games() {
     },
   ];
 
-  const handleStartGame = async (gameType: GameType) => {
+  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "hard">("medium");
+  const [showDifficultySelect, setShowDifficultySelect] = useState(false);
+  const [pendingGameType, setPendingGameType] = useState<GameType | null>(null);
+
+  const handleStartGame = async (gameType: GameType, difficulty?: "easy" | "medium" | "hard") => {
     try {
-      const sessionId = await startGame({ gameType });
+      const sessionId = await startGame({ 
+        gameType,
+        difficulty: gameType === "tic_tac_toe" ? (difficulty || selectedDifficulty) : undefined
+      });
       setViewingSession(sessionId);
+      setShowDifficultySelect(false);
+      setPendingGameType(null);
       toast.success("Game started!");
     } catch (error: any) {
       toast.error(error.message || "Failed to start game");
+    }
+  };
+
+  const handleGameClick = (gameType: GameType) => {
+    if (gameType === "tic_tac_toe") {
+      setPendingGameType(gameType);
+      setShowDifficultySelect(true);
+    } else {
+      handleStartGame(gameType);
     }
   };
 
@@ -239,7 +258,7 @@ export default function Games() {
                   <CardContent>
                     <Button
                       className="w-full"
-                      onClick={() => handleStartGame(game.type)}
+                      onClick={() => handleGameClick(game.type)}
                     >
                       <Gamepad2 className="h-4 w-4 mr-2" />
                       Play Now
@@ -250,6 +269,59 @@ export default function Games() {
             ))}
           </div>
         </div>
+
+        {/* Difficulty Selection Dialog */}
+        <Dialog open={showDifficultySelect} onOpenChange={setShowDifficultySelect}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Select AI Difficulty</DialogTitle>
+              <DialogDescription>
+                Choose how challenging you want the AI opponent to be
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 mt-4">
+              <Button
+                variant="outline"
+                className="w-full h-20 flex items-center justify-between"
+                onClick={() => handleStartGame(pendingGameType as GameType, "easy")}
+              >
+                <div className="flex items-center gap-3">
+                  <Zap className="h-6 w-6 text-green-500" />
+                  <div className="text-left">
+                    <div className="font-bold">Easy</div>
+                    <div className="text-sm text-muted-foreground">Random moves</div>
+                  </div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full h-20 flex items-center justify-between"
+                onClick={() => handleStartGame(pendingGameType as GameType, "medium")}
+              >
+                <div className="flex items-center gap-3">
+                  <Target className="h-6 w-6 text-yellow-500" />
+                  <div className="text-left">
+                    <div className="font-bold">Medium</div>
+                    <div className="text-sm text-muted-foreground">Smart moves with mistakes</div>
+                  </div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full h-20 flex items-center justify-between"
+                onClick={() => handleStartGame(pendingGameType as GameType, "hard")}
+              >
+                <div className="flex items-center gap-3">
+                  <Flame className="h-6 w-6 text-red-500" />
+                  <div className="text-left">
+                    <div className="font-bold">Hard</div>
+                    <div className="text-sm text-muted-foreground">Unbeatable AI</div>
+                  </div>
+                </div>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

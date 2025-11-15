@@ -149,6 +149,11 @@ const schema = defineSchema(
         v.literal("loss"),
         v.literal("draw")
       )),
+      difficulty: v.optional(v.union(
+        v.literal("easy"),
+        v.literal("medium"),
+        v.literal("hard")
+      )),
     })
       .index("by_player", ["playerId"])
       .index("by_status", ["status"]),

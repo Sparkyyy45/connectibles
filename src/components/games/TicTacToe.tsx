@@ -50,7 +50,59 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
   };
 
   const makeAIMove = (currentBoard: Board): number => {
+    const difficulty = session.difficulty || "medium";
     const emptyCells = currentBoard.map((cell, idx) => cell === null ? idx : -1).filter(idx => idx !== -1);
+    
+    if (difficulty === "easy") {
+      // Easy: Random moves
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+    
+    if (difficulty === "medium") {
+      // Medium: 60% chance of smart move, 40% random
+      if (Math.random() < 0.6) {
+        const smartMove = findBestMove(currentBoard);
+        return smartMove !== -1 ? smartMove : emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      }
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+    
+    // Hard: Always best move (minimax)
+    const bestMove = findBestMove(currentBoard);
+    return bestMove !== -1 ? bestMove : emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  };
+
+  const findBestMove = (board: Board): number => {
+    // Check for winning move
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        const testBoard = [...board];
+        testBoard[i] = aiSymbol;
+        if (checkWinner(testBoard) === aiSymbol) return i;
+      }
+    }
+    
+    // Block player's winning move
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        const testBoard = [...board];
+        testBoard[i] = playerSymbol;
+        if (checkWinner(testBoard) === playerSymbol) return i;
+      }
+    }
+    
+    // Take center if available
+    if (board[4] === null) return 4;
+    
+    // Take corners
+    const corners = [0, 2, 6, 8];
+    const availableCorners = corners.filter(i => board[i] === null);
+    if (availableCorners.length > 0) {
+      return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+    }
+    
+    // Take any available space
+    const emptyCells = board.map((cell, idx) => cell === null ? idx : -1).filter(idx => idx !== -1);
     return emptyCells[Math.floor(Math.random() * emptyCells.length)];
   };
 
@@ -109,8 +161,19 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
         <CardTitle className="text-center text-2xl">
           Your Turn ({playerSymbol})
         </CardTitle>
-        <div className="text-center mt-2">
+        <div className="text-center mt-2 space-y-1">
           <span className="text-green-500 font-semibold">● Playing vs AI</span>
+          {session.difficulty && (
+            <div className="text-sm">
+              <span className={`font-bold ${
+                session.difficulty === "easy" ? "text-green-500" :
+                session.difficulty === "medium" ? "text-yellow-500" :
+                "text-red-500"
+              }`}>
+                {session.difficulty.charAt(0).toUpperCase() + session.difficulty.slice(1)} Difficulty
+              </span>
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="pt-6">
