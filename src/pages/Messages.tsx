@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Send, UserCheck, MessageCircle, Ban, ShieldOff, MoreVertical } from "lucide-react";
+import { Loader2, Send, UserCheck, MessageCircle, Ban, ShieldOff, MoreVertical, CheckCheck, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -39,6 +39,7 @@ export default function Messages() {
   const sendMessage = useMutation(api.messages.sendMessage);
   const blockUser = useMutation(api.messages.blockUser);
   const unblockUser = useMutation(api.messages.unblockUser);
+  const markMessagesAsRead = useMutation(api.messages.markMessagesAsRead);
 
   const [selectedConnection, setSelectedConnection] = useState<Id<"users"> | null>(null);
   const [message, setMessage] = useState("");
@@ -61,6 +62,13 @@ export default function Messages() {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Mark messages as read when viewing conversation
+  useEffect(() => {
+    if (selectedConnection && conversation && conversation.length > 0) {
+      markMessagesAsRead({ otherUserId: selectedConnection });
+    }
+  }, [selectedConnection, conversation, markMessagesAsRead]);
 
   const handleAcceptRequest = async (requestId: Id<"connection_requests">) => {
     try {
@@ -382,9 +390,18 @@ export default function Messages() {
                                         }`}
                                       >
                                         <p className="text-sm leading-relaxed break-words">{msg.message}</p>
-                                        <p className={`text-xs mt-1.5 ${msg.senderId === user._id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                                          {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </p>
+                                        <div className={`flex items-center gap-1.5 mt-1.5 ${msg.senderId === user._id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                                          <p className="text-xs">
+                                            {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                          </p>
+                                          {msg.senderId === user._id && (
+                                            msg.read ? (
+                                              <CheckCheck className="h-3.5 w-3.5" />
+                                            ) : (
+                                              <Check className="h-3.5 w-3.5" />
+                                            )
+                                          )}
+                                        </div>
                                       </div>
                                     </motion.div>
                                   ))

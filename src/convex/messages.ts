@@ -67,6 +67,33 @@ export const getConversation = query({
   },
 });
 
+export const markMessagesAsRead = mutation({
+  args: { otherUserId: v.id("users") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Get all unread messages from the other user
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_receiver", (q) => q.eq("receiverId", userId))
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("senderId"), args.otherUserId),
+          q.eq(q.field("read"), false)
+        )
+      )
+      .collect();
+
+    // Mark all as read
+    await Promise.all(
+      messages.map((msg) => ctx.db.patch(msg._id, { read: true }))
+    );
+
+    return { markedCount: messages.length };
+  },
+});
+
 export const markAsRead = mutation({
   args: { messageId: v.id("messages") },
   handler: async (ctx, args) => {
