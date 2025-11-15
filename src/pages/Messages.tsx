@@ -238,20 +238,20 @@ export default function Messages() {
               </motion.div>
             )}
 
-            {/* Messages Interface */}
+                {/* Messages Interface */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="h-[calc(100vh-280px)] md:h-[calc(100vh-280px)] overflow-hidden"
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 h-full flex-col md:flex-row">
+              <div className="grid md:grid-cols-[340px_1fr] gap-4 md:gap-6 h-full flex-col md:flex-row">
                 {/* Connections List */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[200px] md:h-auto">
-                  <CardHeader className="pb-3 border-b border-border/50">
-                    <CardTitle className="text-lg">Your Connections</CardTitle>
-                    <CardDescription className="text-xs">
-                      {connections?.length || 0} connection{connections?.length !== 1 ? 's' : ''}
+                <Card className="shadow-xl border border-border/30 bg-white/98 backdrop-blur-md flex flex-col h-[200px] md:h-auto rounded-2xl">
+                  <CardHeader className="pb-4 border-b border-border/30 bg-gradient-to-br from-primary/5 to-purple-500/5">
+                    <CardTitle className="text-lg font-semibold">Connections</CardTitle>
+                    <CardDescription className="text-xs font-medium">
+                      {connections?.length || 0} active connection{connections?.length !== 1 ? 's' : ''}
                     </CardDescription>
                   </CardHeader>
                   <ScrollArea className="flex-1">
@@ -260,12 +260,12 @@ export default function Messages() {
                         {connections.map((connection) => (
                           <motion.div
                             key={connection?._id}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`p-3 mb-2 rounded-xl cursor-pointer transition-all ${
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className={`p-3 mb-1.5 rounded-xl cursor-pointer transition-all ${
                               selectedConnection === connection?._id
-                                ? "bg-gradient-to-r from-primary to-purple-600 text-primary-foreground shadow-md"
-                                : "hover:bg-muted/50"
+                                ? "bg-gradient-to-r from-primary via-primary to-purple-600 text-primary-foreground shadow-lg border border-primary/20"
+                                : "hover:bg-gradient-to-r hover:from-muted/50 hover:to-muted/30 border border-transparent"
                             }`}
                             onClick={() => setSelectedConnection(connection?._id || null)}
                           >
@@ -299,13 +299,13 @@ export default function Messages() {
                 </Card>
 
                 {/* Chat Area */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col min-h-0">
+                <Card className="shadow-xl border border-border/30 bg-white/98 backdrop-blur-md flex flex-col min-h-0 rounded-2xl">
                   {selectedConnection ? (
                     <>
-                      <CardHeader className="pb-4 border-b border-border/50">
+                      <CardHeader className="pb-4 border-b border-border/30 bg-gradient-to-br from-primary/5 to-purple-500/5">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-12 w-12 border-2 border-primary/20">
+                            <Avatar className="h-12 w-12 border-2 border-primary/30 shadow-sm">
                               <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
                               <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
                                 {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
@@ -318,15 +318,18 @@ export default function Messages() {
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-5 w-5" />
+                              <Button variant="ghost" size="icon" className="hover:bg-muted/50 rounded-lg">
+                                <MoreVertical className="h-5 w-5 text-muted-foreground" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent align="end" className="w-48 rounded-xl border border-border/50 shadow-lg">
                               {isBlocked ? (
-                                <DropdownMenuItem onClick={() => handleUnblockUser(selectedConnection)}>
-                                  <ShieldOff className="h-4 w-4 mr-2" />
-                                  Unblock User
+                                <DropdownMenuItem 
+                                  onClick={() => handleUnblockUser(selectedConnection)}
+                                  className="gap-2 py-2.5 cursor-pointer rounded-lg"
+                                >
+                                  <ShieldOff className="h-4 w-4" />
+                                  <span className="font-medium">Unblock User</span>
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem 
@@ -334,10 +337,10 @@ export default function Messages() {
                                     setUserToBlock(selectedConnection);
                                     setShowBlockDialog(true);
                                   }}
-                                  className="text-destructive"
+                                  className="gap-2 py-2.5 cursor-pointer text-destructive focus:text-destructive rounded-lg"
                                 >
-                                  <Ban className="h-4 w-4 mr-2" />
-                                  Block User
+                                  <Ban className="h-4 w-4" />
+                                  <span className="font-medium">Block User</span>
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
@@ -394,20 +397,20 @@ export default function Messages() {
                                 )}
                               </div>
                             </ScrollArea>
-                            <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0">
+                            <div className="p-4 md:p-5 border-t border-border/30 bg-gradient-to-br from-muted/20 to-muted/10 flex-shrink-0">
                               <div className="flex gap-2 md:gap-3">
                                 <Input
                                   value={message}
                                   onChange={(e) => setMessage(e.target.value)}
                                   placeholder="Type your message..."
                                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                                  className="flex-1 bg-background border-border/50 focus:border-primary transition-all"
+                                  className="flex-1 bg-background border-border/40 focus:border-primary transition-all rounded-xl h-11 px-4"
                                 />
                                 <Button 
                                   onClick={handleSendMessage} 
                                   disabled={sending || !message.trim()}
                                   size="icon"
-                                  className="h-10 w-10 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0"
+                                  className="h-11 w-11 shadow-lg hover:shadow-xl transition-all flex-shrink-0 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                                 >
                                   {sending ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
