@@ -101,7 +101,7 @@ export default function Chill() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-4 md:p-6 overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <motion.div

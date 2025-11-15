@@ -87,7 +87,7 @@ export default function Messages() {
 
   return (
     <DashboardLayout>
-      <div className="h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
+      <div className="h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5 overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
           <motion.div
@@ -166,9 +166,9 @@ export default function Messages() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="h-[calc(100vh-280px)] md:h-[calc(100vh-280px)]"
+              className="h-[calc(100vh-280px)] md:h-[calc(100vh-280px)] overflow-hidden"
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-6 h-full flex-col md:flex-row">
+              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 h-full flex-col md:flex-row">
                 {/* Connections List */}
                 <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[200px] md:h-auto">
                   <CardHeader className="pb-3 border-b border-border/50">

@@ -200,7 +200,7 @@ export default function TruthDare() {
         </DialogContent>
       </Dialog>
 
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-red-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-red-50 p-4 md:p-6 overflow-y-auto">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
           <motion.div

@@ -91,8 +91,8 @@ export default function Notifications() {
 
   return (
     <DashboardLayout>
-      <div className="bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="max-w-4xl mx-auto p-6 space-y-8 min-h-[calc(100vh-180px)]">
+      <div className="bg-gradient-to-br from-background via-background to-primary/5 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8 min-h-[calc(100vh-180px)]">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
