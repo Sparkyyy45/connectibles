@@ -416,12 +416,47 @@ export default function TruthDare() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-4"
                     >
-                      <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300">
-                        <CardContent className="p-8">
-                          <Badge className="mb-4" variant={lastRound.choice === "truth" ? "default" : "destructive"}>
-                            {lastRound.choice === "truth" ? "Truth" : "Dare"}
-                          </Badge>
-                          <p className="text-xl text-center font-semibold">{lastRound.question}</p>
+                      <Card className={`border-4 shadow-2xl ${
+                        lastRound.choice === "truth" 
+                          ? "bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100 border-blue-400" 
+                          : "bg-gradient-to-br from-red-50 via-pink-50 to-red-100 border-red-400"
+                      }`}>
+                        <CardContent className="p-8 space-y-4">
+                          <div className="flex items-center justify-center gap-3">
+                            {lastRound.choice === "truth" ? (
+                              <Heart className="h-8 w-8 text-blue-500 animate-pulse" />
+                            ) : (
+                              <Flame className="h-8 w-8 text-red-500 animate-pulse" />
+                            )}
+                            <Badge 
+                              className={`text-lg px-4 py-2 ${
+                                lastRound.choice === "truth" 
+                                  ? "bg-blue-500 hover:bg-blue-600" 
+                                  : "bg-red-500 hover:bg-red-600"
+                              }`}
+                            >
+                              {lastRound.choice === "truth" ? "💙 Truth Question" : "🔥 Dare Challenge"}
+                            </Badge>
+                            {lastRound.choice === "truth" ? (
+                              <Heart className="h-8 w-8 text-blue-500 animate-pulse" />
+                            ) : (
+                              <Flame className="h-8 w-8 text-red-500 animate-pulse" />
+                            )}
+                          </div>
+                          <motion.div
+                            initial={{ scale: 0.95 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className={`p-6 rounded-2xl ${
+                              lastRound.choice === "truth"
+                                ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-300"
+                                : "bg-gradient-to-r from-red-100 to-pink-100 border-2 border-red-300"
+                            }`}
+                          >
+                            <p className="text-2xl text-center font-bold leading-relaxed">
+                              "{lastRound.question}"
+                            </p>
+                          </motion.div>
                         </CardContent>
                       </Card>
                       {!isQuestionAsker && (
