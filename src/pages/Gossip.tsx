@@ -108,7 +108,7 @@ export default function Gossip() {
                           key={msg._id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
+                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"} items-start`}
                         >
                           <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
