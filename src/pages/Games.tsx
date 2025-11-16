@@ -20,10 +20,15 @@ type GameType = "tic_tac_toe" | "reaction_test";
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const activeSessions = useQuery(api.games.getActiveSessions);
   const startGame = useMutation(api.games.startGame);
 
   const [viewingSession, setViewingSession] = useState<Id<"game_sessions"> | null>(null);
+  
+  // Only fetch active sessions when viewing a specific session
+  const activeSessions = useQuery(
+    api.games.getActiveSessions,
+    viewingSession ? {} : "skip"
+  );
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -84,9 +89,17 @@ export default function Games() {
 
   if (viewingSession) {
     const session = activeSessions?.find(s => s._id === viewingSession);
-    if (!session) {
+    if (!session && activeSessions !== undefined) {
       setViewingSession(null);
       return null;
+    }
+    
+    if (!session) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
     }
 
     // Map game type to component

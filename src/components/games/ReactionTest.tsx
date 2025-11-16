@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useMutation } from "convex/react";
@@ -30,16 +30,16 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
     }
   }, [session]);
 
-  const startTest = () => {
+  const startTest = useCallback(() => {
     setGameState("ready");
     const delay = Math.random() * 3000 + 2000;
     setTimeout(() => {
       setGameState("go");
       setStartTime(Date.now());
     }, delay);
-  };
+  }, []);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     if (gameState === "go" && startTime) {
       if (session.status !== "in_progress") return;
 
