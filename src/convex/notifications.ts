@@ -116,3 +116,24 @@ export const deleteNotification = mutation({
     return args.notificationId;
   },
 });
+
+export const deleteAllNotifications = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const userNotifications = await ctx.db
+      .query("notifications")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    await Promise.all(
+      userNotifications.map((notification) =>
+        ctx.db.delete(notification._id)
+      )
+    );
+
+    return userNotifications.length;
+  },
+});

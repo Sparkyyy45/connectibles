@@ -20,6 +20,7 @@ export default function Notifications() {
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
   const deleteNotification = useMutation(api.notifications.deleteNotification);
+  const deleteAllNotifications = useMutation(api.notifications.deleteAllNotifications);
   const sendRequest = useMutation(api.connections.sendConnectionRequest);
 
   useEffect(() => {
@@ -66,6 +67,19 @@ export default function Notifications() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    try {
+      const count = await deleteAllNotifications();
+      if (count > 0) {
+        toast.success(`Deleted ${count} notification${count > 1 ? "s" : ""}`);
+      } else {
+        toast.info("No notifications to delete");
+      }
+    } catch (error) {
+      toast.error("Failed to delete notifications");
+    }
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
@@ -105,17 +119,30 @@ export default function Notifications() {
                 Stay updated with new connections and activity
               </p>
             </div>
-            {unreadNotifications.length > 0 && (
-              <Button 
-                onClick={handleMarkAllAsRead} 
-                variant="outline" 
-                size="lg"
-                className="shadow-sm hover:shadow-md transition-all hover:border-primary"
-              >
-                <Check className="h-4 w-4 mr-2" />
-                Mark All Read
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {unreadNotifications.length > 0 && (
+                <Button 
+                  onClick={handleMarkAllAsRead} 
+                  variant="outline" 
+                  size="lg"
+                  className="shadow-sm hover:shadow-md transition-all hover:border-primary"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Mark All Read
+                </Button>
+              )}
+              {notifications && notifications.length > 0 && (
+                <Button 
+                  onClick={handleDeleteAll} 
+                  variant="outline" 
+                  size="lg"
+                  className="shadow-sm hover:shadow-md transition-all hover:border-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete All
+                </Button>
+              )}
+            </div>
           </motion.div>
 
           {/* Unread Notifications Section */}
