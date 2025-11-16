@@ -1,15 +1,26 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Calendar, Sparkles, Bell, ArrowRight, Gamepad2, MessageSquare, Heart, Lock, Star, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import OnlineAvatar from "@/components/OnlineAvatar";
+
+const motivationalQuotes = [
+  { text: "Connect, collaborate, and create amazing things! 🚀", emoji: "🚀" },
+  { text: "Your next great connection is just a click away! ✨", emoji: "✨" },
+  { text: "Every connection is a new opportunity! 🌟", emoji: "🌟" },
+  { text: "Build your network, build your future! 💪", emoji: "💪" },
+  { text: "Great minds think together! 🧠", emoji: "🧠" },
+  { text: "Today's connections are tomorrow's collaborations! 🤝", emoji: "🤝" },
+  { text: "Your community is growing stronger every day! 🌱", emoji: "🌱" },
+  { text: "Make meaningful connections that matter! 💫", emoji: "💫" }
+];
 
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -19,11 +30,26 @@ export default function Dashboard() {
   const events = useQuery(api.events.getAllEvents);
   const connectionRequests = useQuery(api.connections.getConnectionRequests);
 
+  const [currentQuote, setCurrentQuote] = useState(0);
+  const [showQuote, setShowQuote] = useState(true);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowQuote(false);
+      setTimeout(() => {
+        setCurrentQuote((prev) => (prev + 1) % motivationalQuotes.length);
+        setShowQuote(true);
+      }, 500);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (isLoading || !user) {
     return (
@@ -120,6 +146,65 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
+          </motion.div>
+
+          {/* Fun Interactive Quote Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="border-2 border-primary/30 shadow-xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10 backdrop-blur-sm overflow-hidden relative group cursor-pointer"
+              onClick={() => {
+                setShowQuote(false);
+                setTimeout(() => {
+                  setCurrentQuote((prev) => (prev + 1) % motivationalQuotes.length);
+                  setShowQuote(true);
+                }, 300);
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/20 to-transparent rounded-bl-full opacity-50" />
+              <CardContent className="p-6 sm:p-8 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <Badge variant="secondary" className="text-xs font-semibold">
+                    💡 Daily Inspiration
+                  </Badge>
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    <Sparkles className="h-5 w-5 text-primary" />
+                  </motion.div>
+                </div>
+                <AnimatePresence mode="wait">
+                  {showQuote && (
+                    <motion.div
+                      key={currentQuote}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5 }}
+                      className="flex items-center gap-4"
+                    >
+                      <motion.span 
+                        className="text-4xl sm:text-5xl"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
+                      >
+                        {motivationalQuotes[currentQuote].emoji}
+                      </motion.span>
+                      <p className="text-lg sm:text-xl font-semibold text-foreground leading-relaxed">
+                        {motivationalQuotes[currentQuote].text}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <p className="text-xs text-muted-foreground mt-4 text-center sm:text-right">
+                  Click for another quote ✨
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Profile Setup Alert */}
