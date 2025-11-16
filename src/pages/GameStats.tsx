@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Trophy, Target, TrendingUp } from "lucide-react";
+import { Loader2, Trophy, Target, TrendingUp, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,7 +15,8 @@ export default function GameStats() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const userStats = useQuery(api.gameStats.getUserGameStats, {});
-  const overallLeaderboard = useQuery(api.gameStats.getOverallLeaderboard, { limit: 10 });
+  const ticTacToeLeaderboard = useQuery(api.gameStats.getGameLeaderboard, { gameType: "tic_tac_toe", limit: 10 });
+  const reactionTestLeaderboard = useQuery(api.gameStats.getGameLeaderboard, { gameType: "reaction_test", limit: 10 });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -31,10 +32,71 @@ export default function GameStats() {
     );
   }
 
-  const gameNames: Record<string, string> = {
-    tic_tac_toe: "Tic Tac Toe",
-    reaction_test: "Reaction Test",
-  };
+  const renderLeaderboard = (leaderboard: any[] | undefined, title: string, icon: React.ReactNode, emptyMessage: string) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {icon}
+          {title}
+        </CardTitle>
+        <CardDescription>Top 10 players</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {leaderboard?.map((entry, index) => (
+            <motion.div
+              key={entry.userId}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            >
+              <div className="flex items-center gap-3 flex-1">
+                <Badge
+                  variant={index === 0 ? "default" : "outline"}
+                  className={`w-8 h-8 flex items-center justify-center ${
+                    index === 0
+                      ? "bg-yellow-500 text-white"
+                      : index === 1
+                      ? "bg-gray-400 text-white"
+                      : index === 2
+                      ? "bg-orange-600 text-white"
+                      : ""
+                  }`}
+                >
+                  {index + 1}
+                </Badge>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={entry.user?.image} />
+                  <AvatarFallback>
+                    {entry.user?.name?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="font-medium">{entry.user?.name || "Anonymous"}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {entry.totalGames} games played
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-green-500">{entry.wins}</p>
+                <p className="text-xs text-muted-foreground">
+                  {Math.round(entry.winRate)}% win rate
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {(!leaderboard || leaderboard.length === 0) && (
+          <div className="text-center py-8 text-muted-foreground">
+            {emptyMessage}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 
   return (
     <DashboardLayout>
@@ -123,70 +185,20 @@ export default function GameStats() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              className="grid md:grid-cols-2 gap-6"
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    Top Players
-                  </CardTitle>
-                  <CardDescription>Overall leaderboard across all games</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {overallLeaderboard?.map((entry, index) => (
-                      <motion.div
-                        key={entry.userId}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                      >
-                        <div className="flex items-center gap-3 flex-1">
-                          <Badge
-                            variant={index === 0 ? "default" : "outline"}
-                            className={`w-8 h-8 flex items-center justify-center ${
-                              index === 0
-                                ? "bg-yellow-500 text-white"
-                                : index === 1
-                                ? "bg-gray-400 text-white"
-                                : index === 2
-                                ? "bg-orange-600 text-white"
-                                : ""
-                            }`}
-                          >
-                            {index + 1}
-                          </Badge>
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={entry.user?.image} />
-                            <AvatarFallback>
-                              {entry.user?.name?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <p className="font-medium">{entry.user?.name || "Anonymous"}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {entry.totalGames} games played
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-green-500">{entry.wins}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {Math.round(entry.winRate)}% win rate
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {(!overallLeaderboard || overallLeaderboard.length === 0) && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No leaderboard data yet. Be the first to play!
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {renderLeaderboard(
+                ticTacToeLeaderboard,
+                "Best Tic Tac Toers 🎯",
+                <TrendingUp className="h-5 w-5 text-primary" />,
+                "No Tic Tac Toe players yet. Be the first!"
+              )}
+              {renderLeaderboard(
+                reactionTestLeaderboard,
+                "Fastest Reactions ⚡",
+                <Zap className="h-5 w-5 text-yellow-500" />,
+                "No Reaction Test players yet. Be the first!"
+              )}
             </motion.div>
           </TabsContent>
         </Tabs>
