@@ -25,10 +25,12 @@ export default function TruthDare() {
   const completeRound = useMutation(api.truthDare.completeRound);
   const skipRound = useMutation(api.truthDare.skipRound);
   const endSession = useMutation(api.truthDare.endSession);
+  const answerTruth = useMutation(api.truthDare.answerTruth);
 
   const [selectedSession, setSelectedSession] = useState<Id<"truth_dare_sessions"> | null>(null);
   const [selectedChoice, setSelectedChoice] = useState<"truth" | "dare" | null>(null);
   const [questionText, setQuestionText] = useState("");
+  const [answerText, setAnswerText] = useState("");
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
 
   const sessionData = useQuery(
@@ -76,6 +78,24 @@ export default function TruthDare() {
       setQuestionText("");
     } catch (error: any) {
       toast.error(error.message || "Failed to send question");
+    }
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!selectedSession || !answerText.trim()) {
+      toast.error("Please enter your answer");
+      return;
+    }
+
+    try {
+      await answerTruth({ 
+        sessionId: selectedSession, 
+        answer: answerText.trim()
+      });
+      toast.success("Answer submitted!");
+      setAnswerText("");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to submit answer");
     }
   };
 
@@ -366,7 +386,6 @@ export default function TruthDare() {
                     {isMyTurn && !waitingForCompletion ? "🎯 Make Your Choice" : waitingForCompletion && !isQuestionAsker ? "💪 Time to Respond!" : "⏳ Opponent's Turn"}
                   </CardTitle>
                 </CardHeader>
-=======
                 <CardContent className="space-y-6">
                   {!waitingForCompletion && isMyTurn && (
                     <div className="flex gap-4 justify-center">
@@ -395,7 +414,7 @@ export default function TruthDare() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-4"
                     >
-                      <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300">
+                      <Card className={`border-2 ${lastRound.choice === "truth" ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-300" : "bg-gradient-to-br from-red-50 to-pink-50 border-red-300"}`}>
                         <CardContent className="p-8">
                           <Badge className="mb-4" variant={lastRound.choice === "truth" ? "default" : "destructive"}>
                             {lastRound.choice === "truth" ? "Truth" : "Dare"}
@@ -404,16 +423,45 @@ export default function TruthDare() {
                         </CardContent>
                       </Card>
                       {!isQuestionAsker && (
-                        <div className="flex gap-3">
-                          <Button onClick={handleComplete} size="lg" className="flex-1">
-                            <Sparkles className="h-5 w-5 mr-2" />
-                            I Did It!
-                          </Button>
-                          <Button onClick={handleSkip} size="lg" variant="outline" className="flex-1">
-                            <SkipForward className="h-5 w-5 mr-2" />
-                            Skip
-                          </Button>
-                        </div>
+                        <>
+                          {lastRound.choice === "truth" ? (
+                            <div className="space-y-3">
+                              <Textarea
+                                value={answerText}
+                                onChange={(e) => setAnswerText(e.target.value)}
+                                placeholder="Type your answer here..."
+                                className="min-h-[120px] text-base resize-none"
+                                maxLength={500}
+                              />
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">
+                                  {answerText.length} / 500
+                                </span>
+                              </div>
+                              <div className="flex gap-3">
+                                <Button onClick={handleSubmitAnswer} size="lg" className="flex-1" disabled={!answerText.trim()}>
+                                  <Sparkles className="h-5 w-5 mr-2" />
+                                  Submit Answer
+                                </Button>
+                                <Button onClick={handleSkip} size="lg" variant="outline" className="flex-1">
+                                  <SkipForward className="h-5 w-5 mr-2" />
+                                  Pass
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-3">
+                              <Button onClick={handleComplete} size="lg" className="flex-1">
+                                <Sparkles className="h-5 w-5 mr-2" />
+                                I Did It!
+                              </Button>
+                              <Button onClick={handleSkip} size="lg" variant="outline" className="flex-1">
+                                <SkipForward className="h-5 w-5 mr-2" />
+                                Skip
+                              </Button>
+                            </div>
+                          )}
+                        </>
                       )}
                       {isQuestionAsker && (
                         <div className="text-center py-4">
@@ -447,13 +495,22 @@ export default function TruthDare() {
                       {sessionData.rounds.map((round, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-3 p-3 rounded-lg bg-muted"
+                          className="flex flex-col gap-2 p-4 rounded-lg bg-muted"
                         >
-                          <Badge variant={round.choice === "truth" ? "default" : "destructive"}>
-                            {round.choice}
-                          </Badge>
-                          <p className="flex-1 text-sm">{round.question}</p>
-                          {round.completed && <Badge variant="outline">✓ Done</Badge>}
+                          <div className="flex items-center gap-3">
+                            <Badge variant={round.choice === "truth" ? "default" : "destructive"}>
+                              {round.choice}
+                            </Badge>
+                            <p className="flex-1 text-sm font-medium">{round.question}</p>
+                            {round.completed && <Badge variant="outline">✓ Done</Badge>}
+                          </div>
+                          {round.choice === "truth" && round.answer && (
+                            <div className="ml-8 pl-4 border-l-2 border-blue-300">
+                              <p className="text-sm text-muted-foreground italic">
+                                Answer: {round.answer}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

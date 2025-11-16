@@ -186,6 +186,7 @@ const schema = defineSchema(
         playerId: v.id("users"),
         choice: v.union(v.literal("truth"), v.literal("dare")),
         question: v.string(),
+        answer: v.optional(v.string()),
         completed: v.boolean(),
         timestamp: v.number(),
       })),
