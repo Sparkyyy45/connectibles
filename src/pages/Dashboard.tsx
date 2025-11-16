@@ -74,20 +74,20 @@ export default function Dashboard() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08
+        staggerChildren: 0.05
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: { 
       opacity: 1, 
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 100,
-        damping: 12
+        stiffness: 120,
+        damping: 15
       }
     }
   };
@@ -98,16 +98,16 @@ export default function Dashboard() {
         <div className="p-4 sm:p-6 lg:p-8 space-y-8 lg:space-y-12 max-w-7xl mx-auto">
           {/* Welcome Section */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
+            transition={{ duration: 0.4 }}
+            className="space-y-3 sm:space-y-4"
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <motion.div 
                 className="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-sm shadow-lg"
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                whileHover={{ scale: 1.03, rotate: 3 }}
+                transition={{ type: "spring", stiffness: 300, damping: 15 }}
               >
                 <Sparkles className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
               </motion.div>
@@ -258,10 +258,10 @@ export default function Dashboard() {
                   <motion.div
                     key={action.path}
                     variants={itemVariants}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.03, y: -3 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => navigate(action.path)}
-                    className="cursor-pointer"
+                    className="cursor-pointer touch-manipulation"
                   >
                     <Card className={`h-full border-2 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br ${action.gradient} text-white overflow-hidden relative group`}>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -314,18 +314,18 @@ export default function Dashboard() {
                         transition={{ delay: 0.3 + index * 0.05 }}
                         className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-muted/30 to-transparent hover:from-primary/10 hover:to-purple-500/5 border border-transparent hover:border-primary/20 transition-all cursor-pointer group"
                         onClick={() => navigate("/discover")}
-                        whileHover={{ x: 5 }}
+                        whileHover={{ x: 3 }}
                       >
                         <OnlineAvatar
                           userId={match.user._id}
                           image={match.user.image}
                           name={match.user.name}
-                          className="h-12 w-12 border-2 border-primary/30 group-hover:border-primary/60 transition-all shadow-sm group-hover:shadow-md"
+                          className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-primary/30 group-hover:border-primary/60 transition-all shadow-sm group-hover:shadow-md flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0 space-y-1">
-                          <p className="font-semibold text-base truncate group-hover:text-primary transition-colors">{match.user.name || "Anonymous"}</p>
+                          <p className="font-semibold text-sm sm:text-base truncate group-hover:text-primary transition-colors">{match.user.name || "Anonymous"}</p>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
+                            <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
                               {Array.isArray(match.sharedInterests) ? match.sharedInterests.length : 0} shared
                             </Badge>
                           </div>
@@ -363,10 +363,10 @@ export default function Dashboard() {
                         transition={{ delay: 0.3 + index * 0.05 }}
                         className="p-4 rounded-xl border border-border/50 hover:border-primary/50 transition-all cursor-pointer bg-gradient-to-br from-background to-muted/20 hover:shadow-md group"
                         onClick={() => navigate("/events")}
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.01 }}
                       >
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <h4 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors flex-1">{event.title}</h4>
+                        <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+                          <h4 className="font-semibold text-sm sm:text-base line-clamp-1 group-hover:text-primary transition-colors flex-1">{event.title}</h4>
                           <Badge variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200 whitespace-nowrap">
                             {event.interestedUsers?.length || 0} 👥
                           </Badge>
