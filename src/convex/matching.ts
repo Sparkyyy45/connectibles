@@ -66,23 +66,37 @@ export const getMatches = query({
         const matchIntentBonus = currentUser.matchIntent && user.matchIntent &&
           currentUser.matchIntent === user.matchIntent ? 1.5 : 0;
         
+        // Calculate preferred activities match
+        const sharedActivities = currentUser.preferredActivities && user.preferredActivities
+          ? currentUser.preferredActivities.filter(activity => user.preferredActivities!.includes(activity))
+          : [];
+        const activitiesBonus = sharedActivities.length * 0.5;
+        
+        // Calculate personality type compatibility (closer values = better match)
+        const personalityCompatibility = currentUser.personalityType && user.personalityType
+          ? Math.max(0, 2 - Math.abs(currentUser.personalityType - user.personalityType) * 0.5)
+          : 0;
+        
         // Calculate mutual connections
         const userConnections = user.connections || [];
         const mutualConnections = existingConnections.filter(connId => 
           userConnections.includes(connId)
         );
         
-        // Total score: interests (1 point each) + skills (0.5 points each) + location bonus + academic matches + matchIntent bonus
+        // Total score: interests (1 point each) + skills (0.5 points each) + location bonus + 
+        // academic matches + matchIntent bonus + activities bonus + personality compatibility
         const score = sharedInterests.length + (sharedSkills.length * 0.5) + locationBonus + 
-                     yearMatch + departmentMatch + matchIntentBonus;
+                     yearMatch + departmentMatch + matchIntentBonus + activitiesBonus + personalityCompatibility;
         
         return {
           user,
           score,
           sharedInterests,
           sharedSkills,
+          sharedActivities,
           sameLocation: locationBonus > 0,
           mutualConnectionsCount: mutualConnections.length,
+          personalityCompatibility,
         };
       })
       .sort((a, b) => b.score - a.score)
