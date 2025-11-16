@@ -11,17 +11,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import OnlineAvatar from "@/components/OnlineAvatar";
 
-const motivationalQuotes = [
-  { text: "Connect, collaborate, and create amazing things! 🚀", emoji: "🚀" },
-  { text: "Your next great connection is just a click away! ✨", emoji: "✨" },
-  { text: "Every connection is a new opportunity! 🌟", emoji: "🌟" },
-  { text: "Build your network, build your future! 💪", emoji: "💪" },
-  { text: "Great minds think together! 🧠", emoji: "🧠" },
-  { text: "Today's connections are tomorrow's collaborations! 🤝", emoji: "🤝" },
-  { text: "Your community is growing stronger every day! 🌱", emoji: "🌱" },
-  { text: "Make meaningful connections that matter! 💫", emoji: "💫" }
-];
-
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -30,26 +19,11 @@ export default function Dashboard() {
   const events = useQuery(api.events.getAllEvents);
   const connectionRequests = useQuery(api.connections.getConnectionRequests);
 
-  const [currentQuote, setCurrentQuote] = useState(0);
-  const [showQuote, setShowQuote] = useState(true);
-
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowQuote(false);
-      setTimeout(() => {
-        setCurrentQuote((prev) => (prev + 1) % motivationalQuotes.length);
-        setShowQuote(true);
-      }, 500);
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (isLoading || !user) {
     return (
@@ -148,61 +122,105 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Fun Interactive Quote Card */}
+          {/* Animated Connection Visualization */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="border-2 border-primary/30 shadow-xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10 backdrop-blur-sm overflow-hidden relative group cursor-pointer"
-              onClick={() => {
-                setShowQuote(false);
-                setTimeout(() => {
-                  setCurrentQuote((prev) => (prev + 1) % motivationalQuotes.length);
-                  setShowQuote(true);
-                }, 300);
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/20 to-transparent rounded-bl-full opacity-50" />
-              <CardContent className="p-6 sm:p-8 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <Badge variant="secondary" className="text-xs font-semibold">
-                    💡 Daily Inspiration
-                  </Badge>
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  >
-                    <Sparkles className="h-5 w-5 text-primary" />
-                  </motion.div>
-                </div>
-                <AnimatePresence mode="wait">
-                  {showQuote && (
+            <Card className="border-2 border-primary/30 shadow-xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10 backdrop-blur-sm overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-blue-500/5 pointer-events-none" />
+              <CardContent className="p-8 sm:p-12 relative">
+                <div className="flex flex-col items-center justify-center space-y-6">
+                  {/* Animated Connection Network */}
+                  <div className="relative w-full max-w-md h-48 sm:h-56">
+                    {/* Center User */}
                     <motion.div
-                      key={currentQuote}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.5 }}
-                      className="flex items-center gap-4"
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <motion.span 
-                        className="text-4xl sm:text-5xl"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-                      >
-                        {motivationalQuotes[currentQuote].emoji}
-                      </motion.span>
-                      <p className="text-lg sm:text-xl font-semibold text-foreground leading-relaxed">
-                        {motivationalQuotes[currentQuote].text}
-                      </p>
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-500 rounded-full blur-xl opacity-50 animate-pulse" />
+                        <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-2xl border-4 border-white">
+                          <Users className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                        </div>
+                      </div>
                     </motion.div>
-                  )}
-                </AnimatePresence>
-                <p className="text-xs text-muted-foreground mt-4 text-center sm:text-right">
-                  Click for another quote ✨
-                </p>
+
+                    {/* Orbiting Friend Circles */}
+                    {[0, 1, 2, 3, 4, 5].map((index) => {
+                      const angle = (index * 60) * (Math.PI / 180);
+                      const radius = 80;
+                      const x = Math.cos(angle) * radius;
+                      const y = Math.sin(angle) * radius;
+                      
+                      return (
+                        <motion.div
+                          key={index}
+                          className="absolute top-1/2 left-1/2"
+                          style={{
+                            x: x,
+                            y: y,
+                          }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ 
+                            scale: [0, 1, 1],
+                            opacity: [0, 1, 1],
+                            x: [0, x],
+                            y: [0, y]
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            delay: index * 0.2,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            repeatDelay: 3
+                          }}
+                        >
+                          <div className="relative -translate-x-1/2 -translate-y-1/2">
+                            {/* Connection Line */}
+                            <motion.div
+                              className="absolute top-1/2 left-1/2 h-0.5 bg-gradient-to-r from-primary/40 to-transparent origin-left"
+                              style={{
+                                width: `${radius}px`,
+                                rotate: `${180 + (index * 60)}deg`,
+                              }}
+                              initial={{ scaleX: 0 }}
+                              animate={{ scaleX: 1 }}
+                              transition={{
+                                duration: 1,
+                                delay: index * 0.2,
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                                repeatDelay: 3
+                              }}
+                            />
+                            
+                            {/* Friend Circle */}
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-lg border-2 border-white">
+                              <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="text-center space-y-2">
+                    <motion.h3
+                      className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent"
+                      animate={{ opacity: [0.8, 1, 0.8] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      Building Connections
+                    </motion.h3>
+                    <p className="text-muted-foreground text-sm sm:text-base max-w-md">
+                      Every connection is a new opportunity to learn, grow, and create amazing things together! 🌟
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
