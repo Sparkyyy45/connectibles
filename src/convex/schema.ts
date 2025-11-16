@@ -43,6 +43,7 @@ const schema = defineSchema(
       yearOfStudy: v.optional(v.string()),
       department: v.optional(v.string()),
       matchIntent: v.optional(v.string()), // e.g., "Casual Friend", "Study Partner", "Serious Relationship", "Networking/Mentor"
+      personalityType: v.optional(v.number()), // 1-5 scale: 1 = Strongly Introverted, 5 = Strongly Extroverted
       
       // Profile prompts for personality
       studySpot: v.optional(v.string()),

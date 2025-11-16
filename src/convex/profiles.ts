@@ -15,6 +15,7 @@ export const updateProfile = mutation({
     department: v.optional(v.string()),
     matchIntent: v.optional(v.string()),
     preferredActivities: v.optional(v.array(v.string())),
+    personalityType: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -31,6 +32,7 @@ export const updateProfile = mutation({
       department: args.department,
       matchIntent: args.matchIntent,
       preferredActivities: args.preferredActivities,
+      personalityType: args.personalityType,
     });
 
     return userId;

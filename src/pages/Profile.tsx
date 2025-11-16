@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -59,6 +60,7 @@ export default function Profile() {
   const [preferredActivities, setPreferredActivities] = useState<string[]>([]);
   const [interestInput, setInterestInput] = useState("");
   const [showInterestSuggestions, setShowInterestSuggestions] = useState(false);
+  const [personalityType, setPersonalityType] = useState<number>(3);
 
   const COMMON_INTERESTS = [
     "Hiking", "Reading", "Gaming", "Cooking", "Photography", "Music", "Sports",
@@ -97,6 +99,7 @@ export default function Profile() {
       setDepartment(user.department || "");
       setMatchIntent(user.matchIntent || "");
       setPreferredActivities(user.preferredActivities || []);
+      setPersonalityType(user.personalityType || 3);
     }
   }, [user]);
 
@@ -142,6 +145,7 @@ export default function Profile() {
         department,
         matchIntent,
         preferredActivities,
+        personalityType,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -475,6 +479,51 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
+              <CardTitle className="text-xl sm:text-2xl">Personality Type</CardTitle>
+              <CardDescription className="text-sm">Where do you fall on the introvert-extrovert spectrum?</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Strongly Introverted</span>
+                  <span>Strongly Extroverted</span>
+                </div>
+                <Slider
+                  value={[personalityType]}
+                  onValueChange={(value) => setPersonalityType(value[0])}
+                  min={1}
+                  max={5}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground px-1">
+                  <span>1</span>
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                </div>
+                <div className="text-center">
+                  <Badge variant="secondary" className="text-base px-4 py-2">
+                    {personalityType === 1 && "Strongly Introverted"}
+                    {personalityType === 2 && "Somewhat Introverted"}
+                    {personalityType === 3 && "Balanced"}
+                    {personalityType === 4 && "Somewhat Extroverted"}
+                    {personalityType === 5 && "Strongly Extroverted"}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Card>
+            <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Match Intent</CardTitle>
               <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
             </CardHeader>
@@ -506,7 +555,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.9 }}
           className="pb-6"
         >
           <Button onClick={handleSave} disabled={saving} size="lg" className="w-full text-base py-6">
