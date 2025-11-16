@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Calendar, Sparkles, MessageSquare, Lock, MessageCircle, Bell, ArrowRight, Gamepad2, Trophy, Heart, TrendingUp, Zap, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Progress } from "@/components/ui/progress";
 import OnlineAvatar from "@/components/OnlineAvatar";
 
 export default function Dashboard() {
@@ -18,8 +17,6 @@ export default function Dashboard() {
   const matches = useQuery(api.matching.getMatches);
   const connections = useQuery(api.connections.getConnections);
   const events = useQuery(api.events.getAllEvents);
-  const profileCompletion = useQuery(api.profiles.getProfileCompletion);
-  const recentPosts = useQuery(api.posts.getAllPosts);
   const connectionRequests = useQuery(api.connections.getConnectionRequests);
 
   useEffect(() => {
@@ -39,7 +36,6 @@ export default function Dashboard() {
   const needsProfile = !user.interests || user.interests.length === 0;
   const upcomingEvents = events?.slice(0, 3) || [];
   const topMatches = matches?.slice(0, 3) || [];
-  const recentCollaborations = recentPosts?.slice(0, 3) || [];
   const pendingRequests = connectionRequests?.length || 0;
 
   const navigationSections = [
@@ -117,6 +113,37 @@ export default function Dashboard() {
     }
   ];
 
+  const quickActions = [
+    {
+      title: "🎮 Play Games",
+      description: "Challenge yourself with fun games",
+      path: "/games",
+      gradient: "from-orange-400 to-pink-500",
+      icon: Gamepad2
+    },
+    {
+      title: "💬 Start Chatting",
+      description: "Join the community conversation",
+      path: "/gossip",
+      gradient: "from-blue-400 to-cyan-500",
+      icon: MessageSquare
+    },
+    {
+      title: "🎯 Truth or Dare",
+      description: "Play with your connections",
+      path: "/truth-dare",
+      gradient: "from-pink-400 to-rose-500",
+      icon: Heart
+    },
+    {
+      title: "🤫 Confess Anonymously",
+      description: "Share your secrets safely",
+      path: "/chill",
+      gradient: "from-purple-400 to-indigo-500",
+      icon: Lock
+    }
+  ];
+
   return (
     <DashboardLayout>
       <div className="p-8 space-y-12 max-w-7xl mx-auto">
@@ -140,39 +167,6 @@ export default function Dashboard() {
             </div>
           </div>
         </motion.div>
-
-        {/* Profile Completion Card */}
-        {!needsProfile && profileCompletion !== undefined && profileCompletion < 100 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-          >
-            <Card className="border-2 border-primary/50 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-2xl flex items-center gap-3">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                      Profile Completion
-                    </CardTitle>
-                    <CardDescription className="text-base mt-2">
-                      Complete your profile to unlock better matches
-                    </CardDescription>
-                  </div>
-                  <div className="text-4xl font-bold text-primary">{profileCompletion}%</div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Progress value={profileCompletion} className="h-3" />
-                <Button onClick={() => navigate("/profile")} size="lg" className="w-full shadow-lg hover:shadow-xl transition-all">
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Complete Profile
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
 
         {/* Profile Setup Alert */}
         {needsProfile && (
@@ -266,6 +260,52 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground">Pending connections 🔔</p>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Quick Actions - Fun Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="space-y-4"
+        >
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Quick Actions
+            </h2>
+            <p className="text-muted-foreground">Jump right into the fun!</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <motion.div
+                  key={action.path}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(action.path)}
+                  className="cursor-pointer"
+                >
+                  <Card className={`h-full border-2 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br ${action.gradient} text-white overflow-hidden relative group`}>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                    </div>
+                    <CardContent className="p-6 relative flex flex-col items-center text-center space-y-3">
+                      <div className="p-3 rounded-full bg-white/20 backdrop-blur-sm group-hover:scale-110 transition-transform">
+                        <Icon className="h-8 w-8" />
+                      </div>
+                      <h3 className="text-xl font-bold">{action.title}</h3>
+                      <p className="text-sm text-white/90">{action.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
         </motion.div>
 
         {/* Dynamic Content Sections */}
@@ -366,54 +406,6 @@ export default function Dashboard() {
                       )}
                     </motion.div>
                   ))}
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Recent Collaborations */}
-          {recentCollaborations.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="lg:col-span-2"
-            >
-              <Card className="shadow-xl border-2 border-border/50 bg-card/95 backdrop-blur-sm">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-2xl flex items-center gap-3">
-                      <TrendingUp className="h-6 w-6 text-green-500" />
-                      Recent Collaborations
-                    </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => navigate("/posts")}>
-                      View All <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                  <CardDescription>Latest project opportunities</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {recentCollaborations.map((post, index) => (
-                      <motion.div
-                        key={post._id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.25 + index * 0.05 }}
-                        className="p-4 rounded-xl border-2 border-border/50 hover:border-primary/50 transition-all cursor-pointer bg-gradient-to-br from-background to-muted/20"
-                      >
-                        <h4 className="font-semibold mb-2">{post.title}</h4>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{post.description}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {post.tags.slice(0, 2).map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
                 </CardContent>
               </Card>
             </motion.div>
