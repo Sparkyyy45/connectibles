@@ -110,14 +110,13 @@ export const getGameLeaderboard = query({
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
 
-    // Use index to filter by game type directly instead of collecting all
     const stats = await ctx.db
       .query("game_stats")
-      .withIndex("by_game_type", (q) => q.eq("gameType", args.gameType))
       .collect();
 
-    // Calculate win rate and sort
+    // Filter by game type and calculate win rate
     const gameStats = stats
+      .filter((stat) => stat.gameType === args.gameType)
       .map((stat) => ({
         ...stat,
         winRate: stat.totalGames > 0 ? (stat.wins / stat.totalGames) * 100 : 0,
