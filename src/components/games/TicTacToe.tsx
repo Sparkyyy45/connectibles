@@ -33,7 +33,7 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
     }
   }, [session]);
 
-  const checkWinner = useCallback((board: Board): string | null => {
+  const checkWinner = useMemo(() => (board: Board): string | null => {
     const lines = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8],
       [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -48,6 +48,10 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
 
     return board.every(cell => cell !== null) ? "draw" : null;
   }, []);
+
+  const makeAIMoveCallback = useCallback((currentBoard: Board): number => {
+    return makeAIMove(currentBoard);
+  }, [session.difficulty]);
 
   const makeAIMove = (currentBoard: Board): number => {
     const difficulty = session.difficulty || "medium";
@@ -116,7 +120,7 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
     
     if (!winner) {
       // AI makes a move
-      const aiMove = makeAIMove(newBoard);
+      const aiMove = makeAIMoveCallback(newBoard);
       if (aiMove !== undefined) {
         newBoard[aiMove] = aiSymbol;
         winner = checkWinner(newBoard);
@@ -149,7 +153,7 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
       toast.error(error.message || "Failed to update game");
       setBoard(session.gameState ? JSON.parse(session.gameState).board : Array(9).fill(null));
     }
-  }, [board, checkWinner, makeAIMove, playerSymbol, aiSymbol, session, sessionId, updateGameState]);
+  }, [board, checkWinner, makeAIMoveCallback, playerSymbol, aiSymbol, session, sessionId, updateGameState]);
 
   if (session.status === "completed") {
     return null;

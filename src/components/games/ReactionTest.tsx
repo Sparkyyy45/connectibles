@@ -65,7 +65,7 @@ export default function ReactionTest({ sessionId, currentUserId, session }: Reac
         toast.error(error.message || "Failed to update game");
       }
     }
-  };
+  }, [gameState, startTime, session, sessionId, updateGameState]);
 
   return (
     <Card className="max-w-md mx-auto shadow-xl">

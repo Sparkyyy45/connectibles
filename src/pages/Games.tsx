@@ -24,7 +24,7 @@ export default function Games() {
 
   const [viewingSession, setViewingSession] = useState<Id<"game_sessions"> | null>(null);
   
-  // Only fetch active sessions when viewing a specific session
+  // Only fetch the specific session when viewing it
   const activeSessions = useQuery(
     api.games.getActiveSessions,
     viewingSession ? {} : "skip"

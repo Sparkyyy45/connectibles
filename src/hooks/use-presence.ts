@@ -14,20 +14,23 @@ export function usePresence() {
       updatePresence();
     }, 2 * 60 * 1000);
 
-    // Update on user activity
+    // Throttle activity updates to once per 30 seconds
+    let lastUpdate = Date.now();
     const handleActivity = () => {
-      updatePresence();
+      const now = Date.now();
+      if (now - lastUpdate > 30000) {
+        updatePresence();
+        lastUpdate = now;
+      }
     };
 
-    window.addEventListener("mousemove", handleActivity);
-    window.addEventListener("keydown", handleActivity);
     window.addEventListener("click", handleActivity);
+    window.addEventListener("keydown", handleActivity);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener("mousemove", handleActivity);
-      window.removeEventListener("keydown", handleActivity);
       window.removeEventListener("click", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
     };
   }, [updatePresence]);
 }
