@@ -44,11 +44,8 @@ export default function GameStats() {
       <CardContent>
         <div className="space-y-3">
           {leaderboard?.map((entry, index) => (
-            <motion.div
+            <div
               key={entry.userId}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
               className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3 flex-1">
@@ -85,7 +82,7 @@ export default function GameStats() {
                   {Math.round(entry.winRate)}% win rate
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -182,11 +179,7 @@ export default function GameStats() {
           </TabsContent>
 
           <TabsContent value="leaderboard" className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="grid md:grid-cols-2 gap-6"
-            >
+            <div className="grid md:grid-cols-2 gap-6">
               {renderLeaderboard(
                 ticTacToeLeaderboard,
                 "Best Tic Tac Toers 🎯",
@@ -199,7 +192,7 @@ export default function GameStats() {
                 <Zap className="h-5 w-5 text-yellow-500" />,
                 "No Reaction Test players yet. Be the first!"
               )}
-            </motion.div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
