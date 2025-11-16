@@ -361,25 +361,25 @@ export default function Messages() {
                             )}
                           </div>
                         </ScrollArea>
-                        <div className="p-2.5 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0">
-                          <div className="flex gap-2">
+                        <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0 sticky bottom-0">
+                          <div className="flex gap-2 items-end">
                             <Input
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
                               placeholder="Type your message..."
                               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                              className="flex-1 bg-background border-border/50 focus:border-primary transition-all"
+                              className="flex-1 bg-background border-border/50 focus:border-primary transition-all text-base md:text-sm min-h-[44px] rounded-xl px-4 py-3"
                             />
                             <Button 
                               onClick={handleSendMessage} 
                               disabled={sending || !message.trim()}
                               size="icon"
-                              className="h-9 w-9 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0"
+                              className="h-11 w-11 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0 rounded-xl"
                             >
                               {sending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
                               ) : (
-                                <Send className="h-4 w-4" />
+                                <Send className="h-4 w-4 md:h-5 md:w-5" />
                               )}
                             </Button>
                           </div>
