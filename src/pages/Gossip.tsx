@@ -40,12 +40,15 @@ export default function Gossip() {
   const handleSendMessage = async () => {
     if (!message.trim()) return;
 
+    const messageToSend = message.trim();
+    setMessage(""); // Clear immediately for better UX
     setSending(true);
+    
     try {
-      await sendMessage({ message: message.trim() });
-      setMessage("");
+      await sendMessage({ message: messageToSend });
     } catch (error) {
       toast.error("Failed to send message");
+      setMessage(messageToSend); // Restore message on error
     } finally {
       setSending(false);
     }
@@ -70,23 +73,21 @@ export default function Gossip() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-6">
-        <div className="max-w-5xl mx-auto space-y-8">
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-4"
+            className="space-y-2"
           >
-            <div className="flex items-center justify-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200/50">
-                <MessageSquare className="h-8 w-8 text-purple-600" />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+            <div className="flex items-center gap-3">
+              <MessageSquare className="h-7 w-7 text-primary" />
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                 Community Chat
               </h1>
             </div>
-            <p className="text-slate-600 text-base md:text-lg font-medium">
-              Connect with everyone in real-time 💬
+            <p className="text-muted-foreground text-sm md:text-base">
+              Connect with everyone in real-time
             </p>
           </motion.div>
 
@@ -95,10 +96,10 @@ export default function Gossip() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="shadow-xl border-2 border-purple-200/50 bg-white/95 backdrop-blur-sm overflow-hidden rounded-3xl">
+            <Card className="shadow-lg border bg-card overflow-hidden">
               <CardContent className="p-0">
-                <ScrollArea className="h-[550px] px-6 md:px-8 pt-6 md:pt-8" ref={scrollRef}>
-                  <div className="space-y-5">
+                <ScrollArea className="h-[600px] px-4 md:px-6 pt-4 md:pt-6" ref={scrollRef}>
+                  <div className="space-y-4">
                     {messages?.map((msg, index) => {
                       const isOwner = msg.senderId === user._id;
                       
@@ -107,73 +108,71 @@ export default function Gossip() {
                           key={msg._id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.01 }}
-                          className={`flex gap-4 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
+                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
                         >
-                          <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-purple-300/60 shadow-md">
+                          <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-100 to-blue-100 text-slate-700 font-semibold text-base">
+                            <AvatarFallback className="bg-muted text-foreground font-medium">
                               {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>
                           </Avatar>
-                            <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[75%] group`}>
-                            <div className="flex items-center gap-2.5 mb-2.5">
-                              <p className={`text-sm font-bold text-slate-800 ${isOwner ? "order-2" : "order-1"}`}>
+                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[70%] group`}>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className={`text-xs font-medium text-muted-foreground ${isOwner ? "order-2" : "order-1"}`}>
                                 {isOwner ? "You" : msg.sender?.name || "Anonymous"}
                               </p>
                               {isOwner && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:border-red-200 rounded-full order-1 shadow-sm"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive order-1"
                                   onClick={() => handleDelete(msg._id)}
                                 >
-                                  <Trash2 className="h-4 w-4 text-slate-600 hover:text-red-600 transition-colors" />
+                                  <Trash2 className="h-3 w-3" />
                                 </Button>
                               )}
                             </div>
                             <div
-                              className={`rounded-2xl px-6 py-4 shadow-lg transition-all duration-200 ${
+                              className={`rounded-lg px-4 py-2.5 ${
                                 isOwner
-                                  ? "bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 text-white shadow-purple-500/30"
-                                  : "bg-white border-2 border-purple-200/50 text-slate-800 hover:border-purple-300/60 hover:shadow-xl"
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-foreground"
                               }`}
                             >
-                              <p className="text-base leading-relaxed break-words font-medium">{msg.message}</p>
+                              <p className="text-sm leading-relaxed break-words">{msg.message}</p>
                             </div>
                           </div>
                         </motion.div>
                       );
                     })}
                     {messages?.length === 0 && (
-                      <div className="text-center py-24 text-slate-600">
-                        <div className="p-6 rounded-full bg-purple-100/50 w-fit mx-auto mb-4">
-                          <MessageSquare className="h-16 w-16 text-purple-400" />
-                        </div>
-                        <p className="text-lg font-semibold mb-1 text-slate-900">No messages yet</p>
-                        <p className="text-sm">Be the first to start the conversation 🚀</p>
+                      <div className="text-center py-20">
+                        <MessageSquare className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                        <p className="text-base font-medium text-foreground mb-1">No messages yet</p>
+                        <p className="text-sm text-muted-foreground">Be the first to start the conversation</p>
                       </div>
                     )}
                   </div>
                 </ScrollArea>
-                <div className="flex gap-3 p-5 md:p-6 border-t-2 border-purple-200/50 bg-gradient-to-r from-white/90 to-purple-50/30 backdrop-blur-sm">
+                <div className="flex gap-2 p-4 border-t bg-muted/30">
                   <Input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Type your message..."
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                    className="flex-1 h-12 rounded-xl px-5 border-2 border-purple-200/60 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white text-[15px] shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
+                    className="flex-1 h-10 bg-background"
+                    disabled={sending}
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={sending || !message.trim()}
                     size="icon"
-                    className="h-12 w-12 rounded-xl shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50"
+                    className="h-10 w-10"
                   >
                     {sending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Send className="h-5 w-5" />
+                      <Send className="h-4 w-4" />
                     )}
                   </Button>
                 </div>
