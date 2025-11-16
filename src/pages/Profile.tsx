@@ -107,6 +107,7 @@ export default function Profile() {
     if (newInterest.trim() && !interests.includes(newInterest.trim()) && interests.length < 10) {
       setInterests([...interests, newInterest.trim()]);
       setNewInterest("");
+      setInterestInput("");
     }
   };
 
@@ -286,6 +287,7 @@ export default function Profile() {
                       value={newInterest}
                       onChange={(e) => {
                         setNewInterest(e.target.value);
+                        setInterestInput(e.target.value);
                         setShowInterestSuggestions(e.target.value.length > 0);
                       }}
                       onFocus={() => setShowInterestSuggestions(newInterest.length > 0)}
@@ -305,6 +307,7 @@ export default function Profile() {
                               if (interests.length < 10) {
                                 setInterests([...interests, suggestion]);
                                 setNewInterest("");
+                                setInterestInput("");
                                 setShowInterestSuggestions(false);
                               }
                             }}
