@@ -305,14 +305,14 @@ export default function Dashboard() {
                     </div>
                     <CardDescription>People you might connect with</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3 sm:space-y-4">
+                  <CardContent className="space-y-2">
                     {topMatches.map((match, index) => (
                       <motion.div
                         key={match.user._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 + index * 0.05 }}
-                        className="flex items-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-muted/50 transition-all cursor-pointer group"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-muted/30 to-transparent hover:from-primary/10 hover:to-purple-500/5 border border-transparent hover:border-primary/20 transition-all cursor-pointer group"
                         onClick={() => navigate("/discover")}
                         whileHover={{ x: 5 }}
                       >
@@ -320,16 +320,17 @@ export default function Dashboard() {
                           userId={match.user._id}
                           image={match.user.image}
                           name={match.user.name}
-                          className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-primary/30 group-hover:border-primary/50 transition-colors"
+                          className="h-12 w-12 border-2 border-primary/30 group-hover:border-primary/60 transition-all shadow-sm group-hover:shadow-md"
                         />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm sm:text-base truncate">{match.user.name || "Anonymous"}</p>
-                          <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
-                            <Sparkles className="h-3 w-3" />
-                            {match.score}% match
-                          </p>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="font-semibold text-base truncate group-hover:text-primary transition-colors">{match.user.name || "Anonymous"}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
+                              {match.sharedInterests?.length || 0} shared
+                            </Badge>
+                          </div>
                         </div>
-                        <Badge variant="secondary" className="text-xs">{match.sharedInterests?.length || 0} shared</Badge>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100" />
                       </motion.div>
                     ))}
                   </CardContent>
@@ -353,29 +354,29 @@ export default function Dashboard() {
                     </div>
                     <CardDescription>Don't miss out on these activities</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3 sm:space-y-4">
+                  <CardContent className="space-y-2">
                     {upcomingEvents.map((event, index) => (
                       <motion.div
                         key={event._id}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 + index * 0.05 }}
-                        className="p-3 sm:p-4 rounded-xl border-2 border-border/50 hover:border-primary/50 transition-all cursor-pointer bg-gradient-to-br from-background to-muted/20 group"
+                        className="p-4 rounded-xl border border-border/50 hover:border-primary/50 transition-all cursor-pointer bg-gradient-to-br from-background to-muted/20 hover:shadow-md group"
                         onClick={() => navigate("/events")}
                         whileHover={{ scale: 1.02 }}
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-semibold text-sm sm:text-lg line-clamp-1">{event.title}</h4>
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {event.interestedUsers?.length || 0} interested
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h4 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors flex-1">{event.title}</h4>
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200 whitespace-nowrap">
+                            {event.interestedUsers?.length || 0} 👥
                           </Badge>
                         </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{event.description}</p>
                         {event.eventDate && (
-                          <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {new Date(event.eventDate).toLocaleDateString()}
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/30 px-2 py-1 rounded-lg w-fit">
+                            <Calendar className="h-3.5 w-3.5 text-primary" />
+                            <span className="font-medium">{new Date(event.eventDate).toLocaleDateString()}</span>
+                          </div>
                         )}
                       </motion.div>
                     ))}
