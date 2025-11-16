@@ -41,9 +41,7 @@ const schema = defineSchema(
       // Enhanced profile fields for better matching
       yearOfStudy: v.optional(v.string()),
       department: v.optional(v.string()),
-      major: v.optional(v.string()),
-      lookingFor: v.optional(v.array(v.string())), // e.g., "Study Partner", "Project Collaborator", "Friend"
-      availability: v.optional(v.string()), // e.g., "Weekends", "Evenings", "Flexible"
+      matchIntent: v.optional(v.string()), // e.g., "Casual Friend", "Study Partner", "Serious Relationship", "Networking/Mentor"
       
       // Profile prompts for personality
       studySpot: v.optional(v.string()),

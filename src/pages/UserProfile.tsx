@@ -286,7 +286,7 @@ export default function UserProfile() {
           </motion.div>
         )}
 
-        {(profile.yearOfStudy || profile.department || profile.major) && (
+        {(profile.yearOfStudy || profile.department) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -309,18 +309,12 @@ export default function UserProfile() {
                     <span className="text-muted-foreground">{profile.department}</span>
                   </div>
                 )}
-                {profile.major && (
-                  <div>
-                    <span className="text-sm font-medium">Major: </span>
-                    <span className="text-muted-foreground">{profile.major}</span>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </motion.div>
         )}
 
-        {profile.lookingFor && profile.lookingFor.length > 0 && (
+        {profile.matchIntent && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -328,33 +322,10 @@ export default function UserProfile() {
           >
             <Card>
               <CardHeader>
-                <CardTitle>Looking For</CardTitle>
+                <CardTitle>Match Intent</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {profile.lookingFor.map((item) => (
-                    <Badge key={item} variant="secondary">
-                      {item}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {profile.availability && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Availability</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{profile.availability}</p>
+                <p className="text-muted-foreground">{profile.matchIntent}</p>
               </CardContent>
             </Card>
           </motion.div>

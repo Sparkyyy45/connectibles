@@ -9,6 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -52,14 +55,7 @@ export default function Profile() {
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [department, setDepartment] = useState("");
-  const [major, setMajor] = useState("");
-  const [lookingFor, setLookingFor] = useState<string[]>([]);
-  const [newLookingFor, setNewLookingFor] = useState("");
-  const [availability, setAvailability] = useState("");
-  const [studySpot, setStudySpot] = useState("");
-  const [favoriteSubject, setFavoriteSubject] = useState("");
-  const [weekendActivity, setWeekendActivity] = useState("");
-  const [superpower, setSuperpower] = useState("");
+  const [matchIntent, setMatchIntent] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -77,13 +73,7 @@ export default function Profile() {
       setSelectedAvatar(user.image || AVATAR_OPTIONS[0]);
       setYearOfStudy(user.yearOfStudy || "");
       setDepartment(user.department || "");
-      setMajor(user.major || "");
-      setLookingFor(user.lookingFor || []);
-      setAvailability(user.availability || "");
-      setStudySpot(user.studySpot || "");
-      setFavoriteSubject(user.favoriteSubject || "");
-      setWeekendActivity(user.weekendActivity || "");
-      setSuperpower(user.superpower || "");
+      setMatchIntent(user.matchIntent || "");
     }
   }, [user]);
 
@@ -101,13 +91,6 @@ export default function Profile() {
     }
   };
 
-  const handleAddLookingFor = () => {
-    if (newLookingFor.trim() && !lookingFor.includes(newLookingFor.trim())) {
-      setLookingFor([...lookingFor, newLookingFor.trim()]);
-      setNewLookingFor("");
-    }
-  };
-
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -120,9 +103,7 @@ export default function Profile() {
         image: selectedAvatar,
         yearOfStudy,
         department,
-        major,
-        lookingFor,
-        availability,
+        matchIntent,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -225,10 +206,12 @@ export default function Profile() {
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell us about yourself"
+                  placeholder="Tell us about yourself (max 200 characters)"
                   rows={4}
+                  maxLength={200}
                   className="text-base resize-none"
                 />
+                <p className="text-xs text-muted-foreground mt-1">{bio.length}/200 characters</p>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Location</label>
@@ -330,30 +313,43 @@ export default function Profile() {
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Year of Study</label>
-                <Input
-                  value={yearOfStudy}
-                  onChange={(e) => setYearOfStudy(e.target.value)}
-                  placeholder="e.g., Freshman, Sophomore, Junior, Senior"
-                  className="text-base"
-                />
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                  <SelectTrigger className="text-base">
+                    <SelectValue placeholder="Select your year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1st Year">1st Year</SelectItem>
+                    <SelectItem value="2nd Year">2nd Year</SelectItem>
+                    <SelectItem value="3rd Year">3rd Year</SelectItem>
+                    <SelectItem value="4th Year">4th Year</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Department</label>
-                <Input
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="e.g., Engineering, Arts, Sciences"
-                  className="text-base"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Major</label>
-                <Input
-                  value={major}
-                  onChange={(e) => setMajor(e.target.value)}
-                  placeholder="e.g., Computer Science, Psychology"
-                  className="text-base"
-                />
+                <Select value={department} onValueChange={setDepartment}>
+                  <SelectTrigger className="text-base">
+                    <SelectValue placeholder="Select your department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Computer Science & Engineering">Computer Science & Engineering</SelectItem>
+                    <SelectItem value="Electronics & Communication Engineering">Electronics & Communication Engineering</SelectItem>
+                    <SelectItem value="Electrical Engineering">Electrical Engineering</SelectItem>
+                    <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
+                    <SelectItem value="Mining Engineering">Mining Engineering</SelectItem>
+                    <SelectItem value="Civil Engineering">Civil Engineering</SelectItem>
+                    <SelectItem value="Biotechnology / Biotechnology Engineering">Biotechnology / Biotechnology Engineering</SelectItem>
+                    <SelectItem value="Applied Physics">Applied Physics</SelectItem>
+                    <SelectItem value="Applied Chemistry">Applied Chemistry</SelectItem>
+                    <SelectItem value="Applied Mathematics">Applied Mathematics</SelectItem>
+                    <SelectItem value="BBA">BBA</SelectItem>
+                    <SelectItem value="B.Com">B.Com</SelectItem>
+                    <SelectItem value="MBA">MBA</SelectItem>
+                    <SelectItem value="B.Des">B.Des</SelectItem>
+                    <SelectItem value="BCA">BCA</SelectItem>
+                    <SelectItem value="MCA">MCA</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -366,43 +362,30 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Connection Preferences</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl">Match Intent</CardTitle>
               <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Looking For</label>
-                <div className="flex flex-col sm:flex-row gap-2 mb-2">
-                  <Input
-                    value={newLookingFor}
-                    onChange={(e) => setNewLookingFor(e.target.value)}
-                    placeholder="e.g., Study Partner, Project Collaborator, Friend"
-                    onKeyDown={(e) => e.key === "Enter" && handleAddLookingFor()}
-                    className="flex-1 text-base"
-                  />
-                  <Button onClick={handleAddLookingFor} className="w-full sm:w-auto">Add</Button>
+            <CardContent>
+              <RadioGroup value={matchIntent} onValueChange={setMatchIntent}>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="Casual Friend" id="casual" />
+                    <Label htmlFor="casual" className="flex-1 cursor-pointer text-base">Casual Friend</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="Study Partner" id="study" />
+                    <Label htmlFor="study" className="flex-1 cursor-pointer text-base">Study Partner</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="Serious Relationship" id="serious" />
+                    <Label htmlFor="serious" className="flex-1 cursor-pointer text-base">Serious Relationship</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="Networking/Mentor" id="networking" />
+                    <Label htmlFor="networking" className="flex-1 cursor-pointer text-base">Networking/Mentor</Label>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {lookingFor.map((item) => (
-                    <Badge key={item} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
-                      {item}
-                      <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => setLookingFor(lookingFor.filter((i) => i !== item))}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Availability</label>
-                <Input
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
-                  placeholder="e.g., Weekends, Evenings, Flexible"
-                  className="text-base"
-                />
-              </div>
+              </RadioGroup>
             </CardContent>
           </Card>
         </motion.div>
