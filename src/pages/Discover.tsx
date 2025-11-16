@@ -156,7 +156,7 @@ export default function Discover() {
               {match.user.location}
             </p>
           )}
-          {match.sharedInterests && match.sharedInterests.length > 0 && (
+          {match.sharedInterests && Array.isArray(match.sharedInterests) && match.sharedInterests.length > 0 && (
             <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-200/40">
               <p className="text-sm font-bold mb-3 text-purple-900 flex items-center gap-2">
                 <Heart className="h-4 w-4 text-purple-600" />
@@ -171,7 +171,7 @@ export default function Discover() {
               </div>
             </div>
           )}
-          {match.sharedSkills && match.sharedSkills.length > 0 && (
+          {match.sharedSkills && Array.isArray(match.sharedSkills) && match.sharedSkills.length > 0 && (
             <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200/40">
               <p className="text-sm font-bold mb-3 text-blue-900 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-600" />
@@ -186,7 +186,7 @@ export default function Discover() {
               </div>
             </div>
           )}
-          {match.user.interests && match.user.interests.length > 0 && !match.sharedInterests && (
+          {match.user.interests && Array.isArray(match.user.interests) && match.user.interests.length > 0 && !match.sharedInterests && (
             <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200/40">
               <p className="text-sm font-bold mb-3 text-slate-900">Interests</p>
               <div className="flex flex-wrap gap-2">
