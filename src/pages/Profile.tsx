@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, X, Check } from "lucide-react";
+import { Loader2, X, Check, Edit, Save } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -45,6 +45,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const updateProfile = useMutation(api.profiles.updateProfile);
 
+  const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
@@ -104,6 +105,7 @@ export default function Profile() {
   }, [user]);
 
   const handleAddInterest = () => {
+    if (!isEditing) return;
     if (newInterest.trim() && !interests.includes(newInterest.trim()) && interests.length < 10) {
       setInterests([...interests, newInterest.trim()]);
       setNewInterest("");
@@ -118,6 +120,7 @@ export default function Profile() {
   ).slice(0, 5);
 
   const toggleActivity = (activity: string) => {
+    if (!isEditing) return;
     if (preferredActivities.includes(activity)) {
       setPreferredActivities(preferredActivities.filter(a => a !== activity));
     } else {
@@ -126,6 +129,7 @@ export default function Profile() {
   };
 
   const handleAddSkill = () => {
+    if (!isEditing) return;
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       setSkills([...skills, newSkill.trim()]);
       setNewSkill("");
@@ -149,11 +153,29 @@ export default function Profile() {
         personalityType,
       });
       toast.success("Profile updated successfully!");
+      setIsEditing(false);
     } catch (error) {
       toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setName(user.name || "");
+      setBio(user.bio || "");
+      setLocation(user.location || "");
+      setInterests(user.interests || []);
+      setSkills(user.skills || []);
+      setSelectedAvatar(user.image || AVATAR_OPTIONS[0]);
+      setYearOfStudy(user.yearOfStudy || "");
+      setDepartment(user.department || "");
+      setMatchIntent(user.matchIntent || "");
+      setPreferredActivities(user.preferredActivities || []);
+      setPersonalityType(user.personalityType || 3);
+    }
+    setIsEditing(false);
   };
 
   if (isLoading || !user) {
@@ -170,11 +192,39 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Manage your profile information and preferences
-          </p>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Manage your profile information and preferences
+            </p>
+          </div>
+          {!isEditing ? (
+            <Button onClick={() => setIsEditing(true)} size="lg" className="gap-2">
+              <Edit className="h-5 w-5" />
+              Edit Profile
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button onClick={handleCancel} variant="outline" size="lg">
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={saving} size="lg" className="gap-2">
+                {saving ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-5 w-5" />
+                    Save
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -200,14 +250,15 @@ export default function Profile() {
                 {AVATAR_OPTIONS.map((avatar, index) => (
                   <motion.button
                     key={index}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedAvatar(avatar)}
+                    whileHover={isEditing ? { scale: 1.1 } : {}}
+                    whileTap={isEditing ? { scale: 0.95 } : {}}
+                    onClick={() => isEditing && setSelectedAvatar(avatar)}
+                    disabled={!isEditing}
                     className={`relative rounded-full border-2 transition-all ${
                       selectedAvatar === avatar
                         ? "border-primary ring-2 ring-primary/20"
                         : "border-muted hover:border-primary/50"
-                    }`}
+                    } ${!isEditing ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                       <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
@@ -242,6 +293,7 @@ export default function Profile() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
                   className="text-base"
+                  disabled={!isEditing}
                 />
               </div>
               <div>
@@ -253,6 +305,7 @@ export default function Profile() {
                   rows={4}
                   maxLength={200}
                   className="text-base resize-none"
+                  disabled={!isEditing}
                 />
                 <p className="text-xs text-muted-foreground mt-1">{bio.length}/200 characters</p>
               </div>
@@ -263,6 +316,7 @@ export default function Profile() {
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="City or college name"
                   className="text-base"
+                  disabled={!isEditing}
                 />
               </div>
             </CardContent>
@@ -295,9 +349,9 @@ export default function Profile() {
                       placeholder="Type an interest (e.g., hiking, coding...)"
                       onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
                       className="flex-1 text-base"
-                      disabled={interests.length >= 10}
+                      disabled={interests.length >= 10 || !isEditing}
                     />
-                    {showInterestSuggestions && filteredInterestSuggestions.length > 0 && (
+                    {showInterestSuggestions && filteredInterestSuggestions.length > 0 && isEditing && (
                       <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg">
                         {filteredInterestSuggestions.map((suggestion) => (
                           <div
@@ -321,7 +375,7 @@ export default function Profile() {
                   <Button 
                     onClick={handleAddInterest} 
                     className="w-full sm:w-auto"
-                    disabled={interests.length >= 10}
+                    disabled={interests.length >= 10 || !isEditing}
                   >
                     Add
                   </Button>
@@ -332,12 +386,14 @@ export default function Profile() {
                 {interests.map((interest) => (
                   <Badge key={interest} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
                     {interest}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() =>
-                        setInterests(interests.filter((i) => i !== interest))
-                      }
-                    />
+                    {isEditing && (
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() =>
+                          setInterests(interests.filter((i) => i !== interest))
+                        }
+                      />
+                    )}
                   </Badge>
                 ))}
               </div>
@@ -363,17 +419,20 @@ export default function Profile() {
                   placeholder="Add a skill"
                   onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
                   className="flex-1 text-base"
+                  disabled={!isEditing}
                 />
-                <Button onClick={handleAddSkill} className="w-full sm:w-auto">Add</Button>
+                <Button onClick={handleAddSkill} className="w-full sm:w-auto" disabled={!isEditing}>Add</Button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
                   <Badge key={skill} variant="secondary" className="gap-1 text-sm py-1.5 px-3">
                     {skill}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                    />
+                    {isEditing && (
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                      />
+                    )}
                   </Badge>
                 ))}
               </div>
@@ -397,11 +456,11 @@ export default function Profile() {
                   <div
                     key={activity}
                     onClick={() => toggleActivity(activity)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all ${
                       preferredActivities.includes(activity)
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-primary/50 hover:bg-muted/50"
-                    }`}
+                    } ${isEditing ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
                   >
                     <div className={`h-5 w-5 rounded border-2 flex items-center justify-center ${
                       preferredActivities.includes(activity)
@@ -433,7 +492,7 @@ export default function Profile() {
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Year of Study</label>
-                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy} disabled={!isEditing}>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select your year" />
                   </SelectTrigger>
@@ -447,7 +506,7 @@ export default function Profile() {
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Department</label>
-                <Select value={department} onValueChange={setDepartment}>
+                <Select value={department} onValueChange={setDepartment} disabled={!isEditing}>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select your department" />
                   </SelectTrigger>
@@ -493,11 +552,12 @@ export default function Profile() {
                 </div>
                 <Slider
                   value={[personalityType]}
-                  onValueChange={(value) => setPersonalityType(value[0])}
+                  onValueChange={(value) => isEditing && setPersonalityType(value[0])}
                   min={1}
                   max={5}
                   step={1}
                   className="w-full"
+                  disabled={!isEditing}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground px-1">
                   <span>1</span>
@@ -531,46 +591,28 @@ export default function Profile() {
               <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={matchIntent} onValueChange={setMatchIntent}>
+              <RadioGroup value={matchIntent} onValueChange={setMatchIntent} disabled={!isEditing}>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="Casual Friend" id="casual" />
-                    <Label htmlFor="casual" className="flex-1 cursor-pointer text-base">Casual Friend</Label>
+                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                    <RadioGroupItem value="Casual Friend" id="casual" disabled={!isEditing} />
+                    <Label htmlFor="casual" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Casual Friend</Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="Study Partner" id="study" />
-                    <Label htmlFor="study" className="flex-1 cursor-pointer text-base">Study Partner</Label>
+                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                    <RadioGroupItem value="Study Partner" id="study" disabled={!isEditing} />
+                    <Label htmlFor="study" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Study Partner</Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="Serious Relationship" id="serious" />
-                    <Label htmlFor="serious" className="flex-1 cursor-pointer text-base">Serious Relationship</Label>
+                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                    <RadioGroupItem value="Serious Relationship" id="serious" disabled={!isEditing} />
+                    <Label htmlFor="serious" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Serious Relationship</Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="Networking/Mentor" id="networking" />
-                    <Label htmlFor="networking" className="flex-1 cursor-pointer text-base">Networking/Mentor</Label>
+                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                    <RadioGroupItem value="Networking/Mentor" id="networking" disabled={!isEditing} />
+                    <Label htmlFor="networking" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Networking/Mentor</Label>
                   </div>
                 </div>
               </RadioGroup>
             </CardContent>
           </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="pb-6"
-        >
-          <Button onClick={handleSave} disabled={saving} size="lg" className="w-full text-base py-6">
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Profile"
-            )}
-          </Button>
         </motion.div>
       </div>
     </DashboardLayout>
