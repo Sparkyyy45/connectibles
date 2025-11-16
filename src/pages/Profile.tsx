@@ -56,6 +56,28 @@ export default function Profile() {
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [department, setDepartment] = useState("");
   const [matchIntent, setMatchIntent] = useState("");
+  const [preferredActivities, setPreferredActivities] = useState<string[]>([]);
+  const [interestInput, setInterestInput] = useState("");
+  const [showInterestSuggestions, setShowInterestSuggestions] = useState(false);
+
+  const COMMON_INTERESTS = [
+    "Hiking", "Reading", "Gaming", "Cooking", "Photography", "Music", "Sports",
+    "Art", "Travel", "Fitness", "Movies", "Dancing", "Writing", "Coding",
+    "Yoga", "Meditation", "Cycling", "Swimming", "Running", "Painting"
+  ];
+
+  const ACTIVITY_OPTIONS = [
+    "Deep conversations",
+    "Going to parties",
+    "Quiet nights in",
+    "Exploring the city",
+    "Working out",
+    "Studying together",
+    "Coffee dates",
+    "Movie nights",
+    "Outdoor adventures",
+    "Gaming sessions"
+  ];
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -74,13 +96,28 @@ export default function Profile() {
       setYearOfStudy(user.yearOfStudy || "");
       setDepartment(user.department || "");
       setMatchIntent(user.matchIntent || "");
+      setPreferredActivities(user.preferredActivities || []);
     }
   }, [user]);
 
   const handleAddInterest = () => {
-    if (newInterest.trim() && !interests.includes(newInterest.trim())) {
+    if (newInterest.trim() && !interests.includes(newInterest.trim()) && interests.length < 10) {
       setInterests([...interests, newInterest.trim()]);
       setNewInterest("");
+    }
+  };
+
+  const filteredInterestSuggestions = COMMON_INTERESTS.filter(
+    interest => 
+      interest.toLowerCase().includes(interestInput.toLowerCase()) &&
+      !interests.includes(interest)
+  ).slice(0, 5);
+
+  const toggleActivity = (activity: string) => {
+    if (preferredActivities.includes(activity)) {
+      setPreferredActivities(preferredActivities.filter(a => a !== activity));
+    } else {
+      setPreferredActivities([...preferredActivities, activity]);
     }
   };
 
@@ -104,6 +141,7 @@ export default function Profile() {
         yearOfStudy,
         department,
         matchIntent,
+        preferredActivities,
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -233,19 +271,55 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Interests</CardTitle>
-              <CardDescription className="text-sm">Add your passions and hobbies</CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Interests & Hobbies</CardTitle>
+              <CardDescription className="text-sm">Add up to 10 interests (type to see suggestions)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  value={newInterest}
-                  onChange={(e) => setNewInterest(e.target.value)}
-                  placeholder="Add an interest"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
-                  className="flex-1 text-base"
-                />
-                <Button onClick={handleAddInterest} className="w-full sm:w-auto">Add</Button>
+              <div className="relative">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex-1 relative">
+                    <Input
+                      value={newInterest}
+                      onChange={(e) => {
+                        setNewInterest(e.target.value);
+                        setShowInterestSuggestions(e.target.value.length > 0);
+                      }}
+                      onFocus={() => setShowInterestSuggestions(newInterest.length > 0)}
+                      onBlur={() => setTimeout(() => setShowInterestSuggestions(false), 200)}
+                      placeholder="Type an interest (e.g., hiking, coding...)"
+                      onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
+                      className="flex-1 text-base"
+                      disabled={interests.length >= 10}
+                    />
+                    {showInterestSuggestions && filteredInterestSuggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg">
+                        {filteredInterestSuggestions.map((suggestion) => (
+                          <div
+                            key={suggestion}
+                            className="px-4 py-2 hover:bg-muted cursor-pointer text-sm"
+                            onMouseDown={() => {
+                              if (interests.length < 10) {
+                                setInterests([...interests, suggestion]);
+                                setNewInterest("");
+                                setShowInterestSuggestions(false);
+                              }
+                            }}
+                          >
+                            {suggestion}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <Button 
+                    onClick={handleAddInterest} 
+                    className="w-full sm:w-auto"
+                    disabled={interests.length >= 10}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{interests.length}/10 interests</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {interests.map((interest) => (
@@ -307,6 +381,45 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
+              <CardTitle className="text-xl sm:text-2xl">Preferred Activities</CardTitle>
+              <CardDescription className="text-sm">What do you enjoy doing with friends?</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {ACTIVITY_OPTIONS.map((activity) => (
+                  <div
+                    key={activity}
+                    onClick={() => toggleActivity(activity)}
+                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      preferredActivities.includes(activity)
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50 hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className={`h-5 w-5 rounded border-2 flex items-center justify-center ${
+                      preferredActivities.includes(activity)
+                        ? "border-primary bg-primary"
+                        : "border-muted-foreground"
+                    }`}>
+                      {preferredActivities.includes(activity) && (
+                        <Check className="h-3 w-3 text-primary-foreground" />
+                      )}
+                    </div>
+                    <span className="text-sm font-medium">{activity}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card>
+            <CardHeader>
               <CardTitle className="text-xl sm:text-2xl">Academic Information</CardTitle>
               <CardDescription className="text-sm">Help others find you based on your academic profile</CardDescription>
             </CardHeader>
@@ -358,7 +471,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7 }}
         >
           <Card>
             <CardHeader>
@@ -393,7 +506,7 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.8 }}
           className="pb-6"
         >
           <Button onClick={handleSave} disabled={saving} size="lg" className="w-full text-base py-6">
