@@ -273,27 +273,30 @@ export default function TruthDare() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {connections?.map((connection) => (
-                        <Card
-                          key={connection._id}
-                          className="cursor-pointer hover:shadow-md transition-all hover:border-pink-300"
-                          onClick={() => handleStartGame(connection._id)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                              <Avatar>
-                                <AvatarImage src={connection.image} />
-                                <AvatarFallback>
-                                  {connection.name?.charAt(0).toUpperCase() || "U"}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-semibold">{connection.name || "Anonymous"}</p>
+                      {connections?.map((connection) => {
+                        if (!connection) return null;
+                        return (
+                          <Card
+                            key={connection._id}
+                            className="cursor-pointer hover:shadow-md transition-all hover:border-pink-300"
+                            onClick={() => handleStartGame(connection._id)}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarImage src={connection.image} />
+                                  <AvatarFallback>
+                                    {connection.name?.charAt(0).toUpperCase() || "U"}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-semibold">{connection.name || "Anonymous"}</p>
+                                </div>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
                     </div>
                     {connections?.length === 0 && (
                       <p className="text-center text-muted-foreground py-8">

@@ -264,13 +264,22 @@ export const getConnections = query({
     const user = await ctx.db.get(userId);
     if (!user || !user.connections) return [];
 
+    // Get all blocked users
+    const blockedUsers = await ctx.db
+      .query("blocked_users")
+      .withIndex("by_blocker", (q) => q.eq("blockerId", userId))
+      .collect();
+    
+    const blockedUserIds = new Set(blockedUsers.map(b => b.blockedUserId));
+
     const connections = await Promise.all(
       user.connections.map(async (connectionId) => {
         return await ctx.db.get(connectionId);
       })
     );
 
-    return connections.filter(c => c !== null);
+    // Filter out blocked users from connections
+    return connections.filter(c => c !== null && !blockedUserIds.has(c._id));
   },
 });
 

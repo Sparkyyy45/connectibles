@@ -101,6 +101,14 @@ const schema = defineSchema(
       .index("by_sender", ["senderId"])
       .index("by_conversation", ["senderId", "receiverId"]),
 
+    // Blocked users
+    blocked_users: defineTable({
+      blockerId: v.id("users"),
+      blockedUserId: v.id("users"),
+    })
+      .index("by_blocker", ["blockerId"])
+      .index("by_blocker_and_blocked", ["blockerId", "blockedUserId"]),
+
     // Events/Meetups
     events: defineTable({
       creatorId: v.id("users"),

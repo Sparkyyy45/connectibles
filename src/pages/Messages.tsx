@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Send, UserCheck, MessageCircle } from "lucide-react";
+import { Loader2, Send, UserCheck, MessageCircle, MoreVertical, Ban, ShieldOff } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -25,6 +27,15 @@ export default function Messages() {
   const [selectedConnection, setSelectedConnection] = useState<Id<"users"> | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
+  const [userToBlock, setUserToBlock] = useState<Id<"users"> | null>(null);
+
+  const blockUser = useMutation(api.messages.blockUser);
+  const unblockUser = useMutation(api.messages.unblockUser);
+  const isBlocked = useQuery(
+    api.messages.isUserBlocked,
+    selectedConnection ? { userId: selectedConnection } : "skip"
+  );
 
   const conversation = useQuery(
     api.messages.getConversation,
@@ -68,10 +79,40 @@ export default function Messages() {
         message: message.trim(),
       });
       setMessage("");
-    } catch (error) {
-      toast.error("Failed to send message");
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      if (errorMessage.includes("BLOCKED")) {
+        toast.error("You cannot send messages to this user");
+      } else {
+        toast.error("Failed to send message");
+      }
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleBlockUser = async () => {
+    if (!userToBlock) return;
+
+    try {
+      await blockUser({ userId: userToBlock });
+      toast.success("User blocked successfully");
+      setSelectedConnection(null);
+      setShowBlockDialog(false);
+      setUserToBlock(null);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to block user");
+    }
+  };
+
+  const handleUnblockUser = async () => {
+    if (!selectedConnection) return;
+
+    try {
+      await unblockUser({ userId: selectedConnection });
+      toast.success("User unblocked successfully");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to unblock user");
     }
   };
 
@@ -87,6 +128,23 @@ export default function Messages() {
 
   return (
     <DashboardLayout>
+      <AlertDialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Block User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to block this user? They won't be able to message you, and you won't see their messages. You can unblock them later from the chat menu.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setUserToBlock(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlockUser} className="bg-red-600 hover:bg-red-700">
+              Block User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
         {/* Header */}
         <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
@@ -226,17 +284,45 @@ export default function Messages() {
                   {selectedConnection ? (
                     <>
                       <CardHeader className="pb-4 border-b border-border/50">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-12 w-12 border-2 border-primary/20">
-                            <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
-                            <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
-                              {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-xl">{selectedUser?.name || "Anonymous"}</CardTitle>
-                            <CardDescription className="text-xs">{selectedUser?.location || "Unknown location"}</CardDescription>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12 border-2 border-primary/20">
+                              <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
+                              <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
+                                {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <CardTitle className="text-xl">{selectedUser?.name || "Anonymous"}</CardTitle>
+                              <CardDescription className="text-xs">{selectedUser?.location || "Unknown location"}</CardDescription>
+                            </div>
                           </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-9 w-9">
+                                <MoreVertical className="h-5 w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {isBlocked ? (
+                                <DropdownMenuItem onClick={handleUnblockUser} className="gap-2">
+                                  <ShieldOff className="h-4 w-4" />
+                                  Unblock User
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem 
+                                  onClick={() => {
+                                    setUserToBlock(selectedConnection);
+                                    setShowBlockDialog(true);
+                                  }}
+                                  className="gap-2 text-red-600"
+                                >
+                                  <Ban className="h-4 w-4" />
+                                  Block User
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </CardHeader>
                       <CardContent className="flex-1 flex flex-col p-0 min-h-0 overflow-hidden">
