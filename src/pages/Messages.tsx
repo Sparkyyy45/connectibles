@@ -4,16 +4,15 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Send, UserCheck, MessageCircle, MoreVertical, Ban, ShieldOff } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Loader2, UserCheck, MessageCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
+import { ConnectionsList } from "@/components/messages/ConnectionsList";
+import { ChatArea } from "@/components/messages/ChatArea";
 import type { Id } from "@/convex/_generated/dataModel";
 
 export default function Messages() {
@@ -25,12 +24,9 @@ export default function Messages() {
   const sendMessage = useMutation(api.messages.sendMessage);
 
   const [selectedConnection, setSelectedConnection] = useState<Id<"users"> | null>(null);
-  const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const [userToBlock, setUserToBlock] = useState<Id<"users"> | null>(null);
-  
-  const MESSAGE_CHAR_LIMIT = 1000;
 
   const blockUser = useMutation(api.messages.blockUser);
   const unblockUser = useMutation(api.messages.unblockUser);
@@ -71,25 +67,21 @@ export default function Messages() {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || !selectedConnection) return;
-    
-    if (message.length > MESSAGE_CHAR_LIMIT) {
-      toast.error(`Message is too long! Maximum ${MESSAGE_CHAR_LIMIT} characters.`);
-      return;
-    }
+  const handleSendMessage = async (message: string) => {
+    if (!selectedConnection) return;
 
     setSending(true);
     try {
       await sendMessage({
         receiverId: selectedConnection,
-        message: message.trim(),
+        message,
       });
-      setMessage("");
     } catch (error: any) {
       const errorMessage = error?.message || String(error);
       if (errorMessage.includes("BLOCKED")) {
         toast.error("You cannot send messages to this user");
+      } else if (errorMessage.includes("too long")) {
+        toast.error(errorMessage);
       } else {
         toast.error("Failed to send message");
       }
@@ -131,7 +123,7 @@ export default function Messages() {
     );
   }
 
-  const selectedUser = connections?.find((c) => c?._id === selectedConnection);
+  const selectedUser = connections?.find((c) => c?._id === selectedConnection) || undefined;
 
   return (
     <DashboardLayout>
@@ -234,187 +226,24 @@ export default function Messages() {
               className="h-[calc(100vh-280px)]"
             >
               <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 h-full">
-                {/* Connections List */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[180px] md:h-full overflow-hidden">
-                  <CardHeader className="pb-3 border-b border-border/50 flex-shrink-0">
-                    <CardTitle className="text-base md:text-lg">Your Connections</CardTitle>
-                    <CardDescription className="text-xs">
-                      {connections?.length || 0} connection{connections?.length !== 1 ? 's' : ''}
-                    </CardDescription>
-                  </CardHeader>
-                  <ScrollArea className="flex-1 overflow-y-auto">
-                    {connections && connections.length > 0 ? (
-                      <div className="p-2">
-                        {connections.map((connection) => (
-                          <motion.div
-                            key={connection?._id}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`p-3 mb-2 rounded-xl cursor-pointer transition-all ${
-                              selectedConnection === connection?._id
-                                ? "bg-gradient-to-r from-primary to-purple-600 text-primary-foreground shadow-md"
-                                : "hover:bg-muted/50"
-                            }`}
-                            onClick={() => setSelectedConnection(connection?._id || null)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-11 w-11 border-2 border-white/20">
-                                <AvatarImage src={connection?.image} alt={connection?.name || "User"} />
-                                <AvatarFallback className={selectedConnection === connection?._id ? "bg-white/20" : ""}>
-                                  {connection?.name?.charAt(0).toUpperCase() || "U"}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold truncate">{connection?.name || "Anonymous"}</p>
-                                <p className={`text-xs truncate ${selectedConnection === connection?._id ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                                  {connection?.bio || "No bio"}
-                                </p>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                        <MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-3" />
-                        <p className="text-sm text-muted-foreground mb-4">No connections yet</p>
-                        <Button onClick={() => navigate("/discover")} size="sm">
-                          Discover People
-                        </Button>
-                      </div>
-                    )}
-                  </ScrollArea>
-                </Card>
-
-                {/* Chat Area */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-full overflow-hidden">
-                  {selectedConnection ? (
-                    <>
-                      <CardHeader className="pb-3 md:pb-4 border-b border-border/50 flex-shrink-0">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-12 w-12 border-2 border-primary/20">
-                              <AvatarImage src={selectedUser?.image} alt={selectedUser?.name || "User"} />
-                              <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white">
-                                {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-xl">{selectedUser?.name || "Anonymous"}</CardTitle>
-                              <CardDescription className="text-xs">{selectedUser?.location || "Unknown location"}</CardDescription>
-                            </div>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-9 w-9">
-                                <MoreVertical className="h-5 w-5" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {isBlocked ? (
-                                <DropdownMenuItem onClick={handleUnblockUser} className="gap-2">
-                                  <ShieldOff className="h-4 w-4" />
-                                  Unblock User
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem 
-                                  onClick={() => {
-                                    setUserToBlock(selectedConnection);
-                                    setShowBlockDialog(true);
-                                  }}
-                                  className="gap-2 text-red-600"
-                                >
-                                  <Ban className="h-4 w-4" />
-                                  Block User
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-                        <ScrollArea className="flex-1 p-3 md:p-6">
-                          <div className="space-y-4">
-                            {conversation && conversation.length > 0 ? (
-                              conversation.map((msg) => (
-                                <motion.div
-                                  key={msg._id}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className={`flex ${
-                                    msg.senderId === user._id ? "justify-end" : "justify-start"
-                                  }`}
-                                >
-                                  <div
-                                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
-                                      msg.senderId === user._id
-                                        ? "bg-gradient-to-br from-primary to-purple-600 text-primary-foreground"
-                                        : "bg-muted"
-                                    }`}
-                                  >
-                                    <p className="text-sm leading-relaxed break-words">{msg.message}</p>
-                                    <p className={`text-xs mt-1.5 ${msg.senderId === user._id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                                      {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </p>
-                                  </div>
-                                </motion.div>
-                              ))
-                            ) : (
-                              <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                                <MessageCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                                <p className="text-muted-foreground">No messages yet</p>
-                                <p className="text-sm text-muted-foreground/70">Start the conversation!</p>
-                              </div>
-                            )}
-                          </div>
-                        </ScrollArea>
-                        <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0 sticky bottom-0">
-                          <div className="flex gap-2 items-end">
-                            <div className="flex-1 relative">
-                              <Input
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Type your message..."
-                                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                                className="w-full bg-background border-border/50 focus:border-primary transition-all text-base md:text-sm min-h-[44px] rounded-xl px-4 py-3 pr-16"
-                                maxLength={MESSAGE_CHAR_LIMIT}
-                              />
-                              {message.length > 0 && (
-                                <div className={`absolute bottom-3 right-3 text-xs font-medium pointer-events-none ${
-                                  message.length > MESSAGE_CHAR_LIMIT * 0.9 
-                                    ? "text-destructive" 
-                                    : "text-muted-foreground"
-                                }`}>
-                                  {message.length}/{MESSAGE_CHAR_LIMIT}
-                                </div>
-                              )}
-                            </div>
-                            <Button 
-                              onClick={handleSendMessage} 
-                              disabled={sending || !message.trim()}
-                              size="icon"
-                              className="h-11 w-11 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0 rounded-xl"
-                            >
-                              {sending ? (
-                                <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
-                              ) : (
-                                <Send className="h-4 w-4 md:h-5 md:w-5" />
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </>
-                  ) : (
-                    <CardContent className="flex-1 flex items-center justify-center">
-                      <div className="text-center">
-                        <MessageCircle className="h-20 w-20 text-muted-foreground/30 mx-auto mb-4" />
-                        <p className="text-lg font-medium text-muted-foreground mb-2">Select a connection</p>
-                        <p className="text-sm text-muted-foreground/70">Choose someone from your connections to start chatting</p>
-                      </div>
-                    </CardContent>
-                  )}
-                </Card>
+                <ConnectionsList
+                  connections={connections}
+                  selectedConnection={selectedConnection}
+                  onSelectConnection={setSelectedConnection}
+                />
+                <ChatArea
+                  selectedUser={selectedUser}
+                  conversation={conversation}
+                  currentUserId={user._id}
+                  isBlocked={isBlocked}
+                  onSendMessage={handleSendMessage}
+                  onBlockUser={() => {
+                    setUserToBlock(selectedConnection);
+                    setShowBlockDialog(true);
+                  }}
+                  onUnblockUser={handleUnblockUser}
+                  sending={sending}
+                />
               </div>
             </motion.div>
           </div>
