@@ -194,48 +194,6 @@ export default function Games() {
           </div>
         </motion.div>
 
-        {/* Active Sessions */}
-        {activeSessions && activeSessions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-primary" />
-                  Active Games
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {activeSessions.map((session) => (
-                  <div
-                    key={session._id}
-                    className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => setViewingSession(session._id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl">
-                        {games.find(g => g.type === session.gameType)?.icon}
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {session.gameType.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Playing vs AI
-                        </p>
-                      </div>
-                    </div>
-                    <Badge>In Progress</Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
         {/* Game Selection */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Choose a Game</h2>
@@ -245,7 +203,7 @@ export default function Games() {
                 key={game.type}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <Card className="hover:shadow-xl transition-all cursor-pointer group">
                   <CardHeader>
