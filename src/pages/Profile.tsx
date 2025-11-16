@@ -192,34 +192,34 @@ export default function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2">Your Profile</h1>
             <p className="text-muted-foreground text-sm sm:text-base">
               Manage your profile information and preferences
             </p>
           </div>
           {!isEditing ? (
-            <Button onClick={() => setIsEditing(true)} size="lg" className="gap-2">
-              <Edit className="h-5 w-5" />
-              Edit Profile
+            <Button onClick={() => setIsEditing(true)} size="lg" className="gap-2 w-full sm:w-auto">
+              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="text-sm sm:text-base">Edit Profile</span>
             </Button>
           ) : (
-            <div className="flex gap-2">
-              <Button onClick={handleCancel} variant="outline" size="lg">
-                Cancel
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button onClick={handleCancel} variant="outline" size="lg" className="flex-1 sm:flex-none">
+                <span className="text-sm sm:text-base">Cancel</span>
               </Button>
-              <Button onClick={handleSave} disabled={saving} size="lg" className="gap-2">
+              <Button onClick={handleSave} disabled={saving} size="lg" className="gap-2 flex-1 sm:flex-none">
                 {saving ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Saving...
+                    <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                    <span className="text-sm sm:text-base">Saving...</span>
                   </>
                 ) : (
                   <>
-                    <Save className="h-5 w-5" />
-                    Save
+                    <Save className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">Save</span>
                   </>
                 )}
               </Button>
@@ -234,41 +234,39 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Profile Picture</CardTitle>
-              <CardDescription className="text-sm">Choose an avatar that represents you</CardDescription>
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">Profile Picture</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Choose an avatar that represents you</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center mb-4">
-                <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-primary/20">
+                <Avatar className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 border-4 border-primary/20">
                   <AvatarImage src={selectedAvatar} alt="Profile" />
                   <AvatarFallback>
                     {name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3 max-h-[250px] sm:max-h-[300px] md:max-h-[400px] overflow-y-auto">
                 {AVATAR_OPTIONS.map((avatar, index) => (
-                  <motion.button
+                  <button
                     key={index}
-                    whileHover={isEditing ? { scale: 1.1 } : {}}
-                    whileTap={isEditing ? { scale: 0.95 } : {}}
                     onClick={() => isEditing && setSelectedAvatar(avatar)}
                     disabled={!isEditing}
-                    className={`relative rounded-full border-2 transition-all ${
+                    className={`relative rounded-full border-2 transition-all touch-manipulation ${
                       selectedAvatar === avatar
                         ? "border-primary ring-2 ring-primary/20"
                         : "border-muted hover:border-primary/50"
-                    } ${!isEditing ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                    } ${!isEditing ? "opacity-60 cursor-not-allowed" : "cursor-pointer active:scale-95"}`}
                   >
-                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
+                    <Avatar className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16">
                       <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
                     </Avatar>
                     {selectedAvatar === avatar && (
-                      <div className="absolute -top-1 -right-1 bg-primary rounded-full p-1">
+                      <div className="absolute -top-1 -right-1 bg-primary rounded-full p-0.5 sm:p-1">
                         <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />
                       </div>
                     )}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </CardContent>
@@ -282,8 +280,8 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Basic Information</CardTitle>
-              <CardDescription className="text-sm">Update your personal details</CardDescription>
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">Basic Information</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Update your personal details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -447,31 +445,31 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Preferred Activities</CardTitle>
-              <CardDescription className="text-sm">What do you enjoy doing with friends?</CardDescription>
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">Preferred Activities</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">What do you enjoy doing with friends?</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {ACTIVITY_OPTIONS.map((activity) => (
                   <div
                     key={activity}
                     onClick={() => toggleActivity(activity)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all ${
+                    className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg border-2 transition-all touch-manipulation ${
                       preferredActivities.includes(activity)
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-primary/50 hover:bg-muted/50"
-                    } ${isEditing ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+                    } ${isEditing ? "cursor-pointer active:scale-98" : "cursor-not-allowed opacity-60"}`}
                   >
-                    <div className={`h-5 w-5 rounded border-2 flex items-center justify-center ${
+                    <div className={`h-4 w-4 sm:h-5 sm:w-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
                       preferredActivities.includes(activity)
                         ? "border-primary bg-primary"
                         : "border-muted-foreground"
                     }`}>
                       {preferredActivities.includes(activity) && (
-                        <Check className="h-3 w-3 text-primary-foreground" />
+                        <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />
                       )}
                     </div>
-                    <span className="text-sm font-medium">{activity}</span>
+                    <span className="text-xs sm:text-sm font-medium">{activity}</span>
                   </div>
                 ))}
               </div>
@@ -587,27 +585,27 @@ export default function Profile() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl">Match Intent</CardTitle>
-              <CardDescription className="text-sm">What are you looking for in connections?</CardDescription>
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">Match Intent</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">What are you looking for in connections?</CardDescription>
             </CardHeader>
             <CardContent>
               <RadioGroup value={matchIntent} onValueChange={setMatchIntent} disabled={!isEditing}>
-                <div className="space-y-3">
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors touch-manipulation ${!isEditing ? "opacity-60" : ""}`}>
                     <RadioGroupItem value="Casual Friend" id="casual" disabled={!isEditing} />
-                    <Label htmlFor="casual" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Casual Friend</Label>
+                    <Label htmlFor="casual" className={`flex-1 text-sm sm:text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Casual Friend</Label>
                   </div>
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                  <div className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors touch-manipulation ${!isEditing ? "opacity-60" : ""}`}>
                     <RadioGroupItem value="Study Partner" id="study" disabled={!isEditing} />
-                    <Label htmlFor="study" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Study Partner</Label>
+                    <Label htmlFor="study" className={`flex-1 text-sm sm:text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Study Partner</Label>
                   </div>
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                  <div className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors touch-manipulation ${!isEditing ? "opacity-60" : ""}`}>
                     <RadioGroupItem value="Serious Relationship" id="serious" disabled={!isEditing} />
-                    <Label htmlFor="serious" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Serious Relationship</Label>
+                    <Label htmlFor="serious" className={`flex-1 text-sm sm:text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Serious Relationship</Label>
                   </div>
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors ${!isEditing ? "opacity-60" : ""}`}>
+                  <div className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg hover:bg-muted/50 transition-colors touch-manipulation ${!isEditing ? "opacity-60" : ""}`}>
                     <RadioGroupItem value="Networking/Mentor" id="networking" disabled={!isEditing} />
-                    <Label htmlFor="networking" className={`flex-1 text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Networking/Mentor</Label>
+                    <Label htmlFor="networking" className={`flex-1 text-sm sm:text-base ${isEditing ? "cursor-pointer" : "cursor-not-allowed"}`}>Networking/Mentor</Label>
                   </div>
                 </div>
               </RadioGroup>
