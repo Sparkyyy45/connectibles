@@ -224,18 +224,18 @@ export default function Messages() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="h-[calc(100vh-280px)] md:h-[calc(100vh-280px)]"
+              className="h-[calc(100vh-280px)]"
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-6 h-full flex-col md:flex-row">
+              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 h-full">
                 {/* Connections List */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[200px] md:h-auto">
-                  <CardHeader className="pb-3 border-b border-border/50">
-                    <CardTitle className="text-lg">Your Connections</CardTitle>
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[180px] md:h-full overflow-hidden">
+                  <CardHeader className="pb-3 border-b border-border/50 flex-shrink-0">
+                    <CardTitle className="text-base md:text-lg">Your Connections</CardTitle>
                     <CardDescription className="text-xs">
                       {connections?.length || 0} connection{connections?.length !== 1 ? 's' : ''}
                     </CardDescription>
                   </CardHeader>
-                  <ScrollArea className="flex-1">
+                  <ScrollArea className="flex-1 overflow-y-auto">
                     {connections && connections.length > 0 ? (
                       <div className="p-2">
                         {connections.map((connection) => (
@@ -280,10 +280,10 @@ export default function Messages() {
                 </Card>
 
                 {/* Chat Area */}
-                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col min-h-0">
+                <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-full overflow-hidden">
                   {selectedConnection ? (
                     <>
-                      <CardHeader className="pb-4 border-b border-border/50">
+                      <CardHeader className="pb-3 md:pb-4 border-b border-border/50 flex-shrink-0">
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-12 w-12 border-2 border-primary/20">
@@ -325,8 +325,8 @@ export default function Messages() {
                           </DropdownMenu>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0 min-h-0 overflow-hidden">
-                        <ScrollArea className="flex-1 p-4 md:p-6 overflow-y-auto">
+                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+                        <ScrollArea className="flex-1 p-3 md:p-6">
                           <div className="space-y-4">
                             {conversation && conversation.length > 0 ? (
                               conversation.map((msg) => (
@@ -361,8 +361,8 @@ export default function Messages() {
                             )}
                           </div>
                         </ScrollArea>
-                        <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0">
-                          <div className="flex gap-2 md:gap-3">
+                        <div className="p-2.5 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0">
+                          <div className="flex gap-2">
                             <Input
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
@@ -374,7 +374,7 @@ export default function Messages() {
                               onClick={handleSendMessage} 
                               disabled={sending || !message.trim()}
                               size="icon"
-                              className="h-10 w-10 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0"
+                              className="h-9 w-9 md:h-10 md:w-10 shadow-md hover:shadow-lg transition-all flex-shrink-0"
                             >
                               {sending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
