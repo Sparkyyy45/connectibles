@@ -108,24 +108,24 @@ export default function Gossip() {
                           key={msg._id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"}`}
+                          className={`flex gap-3 ${isOwner ? "flex-row-reverse" : "flex-row"} items-start`}
                         >
-                          <Avatar className="h-9 w-9 flex-shrink-0 mt-0.5">
+                          <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarImage src={msg.sender?.image} alt={msg.sender?.name || "User"} />
-                            <AvatarFallback className="bg-muted text-foreground font-medium text-sm">
+                            <AvatarFallback className="bg-muted text-foreground font-medium">
                               {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>
                           </Avatar>
-                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} flex-1 min-w-0 max-w-[calc(100%-3.5rem)] group`}>
-                            <div className={`flex items-center gap-2 mb-1 ${isOwner ? "flex-row-reverse" : "flex-row"}`}>
-                              <p className="text-xs font-medium text-muted-foreground">
+                          <div className={`flex flex-col ${isOwner ? "items-end" : "items-start"} max-w-[70%] group`}>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className={`text-xs font-medium text-muted-foreground ${isOwner ? "order-2" : "order-1"}`}>
                                 {isOwner ? "You" : msg.sender?.name || "Anonymous"}
                               </p>
                               {isOwner && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive order-1"
                                   onClick={() => handleDelete(msg._id)}
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -133,7 +133,7 @@ export default function Gossip() {
                               )}
                             </div>
                             <div
-                              className={`rounded-2xl px-3 py-2 ${
+                              className={`rounded-lg px-4 py-2.5 ${
                                 isOwner
                                   ? "bg-primary text-primary-foreground"
                                   : "bg-muted text-foreground"
