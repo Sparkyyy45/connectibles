@@ -29,6 +29,8 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const [userToBlock, setUserToBlock] = useState<Id<"users"> | null>(null);
+  
+  const MESSAGE_CHAR_LIMIT = 1000;
 
   const blockUser = useMutation(api.messages.blockUser);
   const unblockUser = useMutation(api.messages.unblockUser);
@@ -71,6 +73,11 @@ export default function Messages() {
 
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedConnection) return;
+    
+    if (message.length > MESSAGE_CHAR_LIMIT) {
+      toast.error(`Message is too long! Maximum ${MESSAGE_CHAR_LIMIT} characters.`);
+      return;
+    }
 
     setSending(true);
     try {
@@ -363,13 +370,25 @@ export default function Messages() {
                         </ScrollArea>
                         <div className="p-3 md:p-4 border-t border-border/50 bg-muted/20 flex-shrink-0 sticky bottom-0">
                           <div className="flex gap-2 items-end">
-                            <Input
-                              value={message}
-                              onChange={(e) => setMessage(e.target.value)}
-                              placeholder="Type your message..."
-                              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                              className="flex-1 bg-background border-border/50 focus:border-primary transition-all text-base md:text-sm min-h-[44px] rounded-xl px-4 py-3"
-                            />
+                            <div className="flex-1 relative">
+                              <Input
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type your message..."
+                                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
+                                className="w-full bg-background border-border/50 focus:border-primary transition-all text-base md:text-sm min-h-[44px] rounded-xl px-4 py-3 pr-16"
+                                maxLength={MESSAGE_CHAR_LIMIT}
+                              />
+                              {message.length > 0 && (
+                                <div className={`absolute bottom-3 right-3 text-xs font-medium pointer-events-none ${
+                                  message.length > MESSAGE_CHAR_LIMIT * 0.9 
+                                    ? "text-destructive" 
+                                    : "text-muted-foreground"
+                                }`}>
+                                  {message.length}/{MESSAGE_CHAR_LIMIT}
+                                </div>
+                              )}
+                            </div>
                             <Button 
                               onClick={handleSendMessage} 
                               disabled={sending || !message.trim()}
