@@ -54,22 +54,9 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
   }, [session.difficulty]);
 
   const makeAIMove = (currentBoard: Board): number => {
-    const difficulty = session.difficulty || "medium";
+    // Fixed to hard difficulty (medium-high intelligence)
+    const difficulty = "hard";
     const emptyCells = currentBoard.map((cell, idx) => cell === null ? idx : -1).filter(idx => idx !== -1);
-    
-    if (difficulty === "easy") {
-      // Easy: Random moves
-      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    }
-    
-    if (difficulty === "medium") {
-      // Medium: 60% chance of smart move, 40% random
-      if (Math.random() < 0.6) {
-        const smartMove = findBestMove(currentBoard);
-        return smartMove !== -1 ? smartMove : emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      }
-      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    }
     
     // Hard: Always best move (minimax)
     const bestMove = findBestMove(currentBoard);
@@ -167,17 +154,11 @@ export default function TicTacToe({ sessionId, currentUserId, session }: TicTacT
         </CardTitle>
         <div className="text-center mt-2 space-y-1">
           <span className="text-green-500 font-semibold">● Playing vs AI</span>
-          {session.difficulty && (
-            <div className="text-sm">
-              <span className={`font-bold ${
-                session.difficulty === "easy" ? "text-green-500" :
-                session.difficulty === "medium" ? "text-yellow-500" :
-                "text-red-500"
-              }`}>
-                {session.difficulty.charAt(0).toUpperCase() + session.difficulty.slice(1)} Difficulty
-              </span>
-            </div>
-          )}
+          <div className="text-sm">
+            <span className="font-bold text-red-500">
+              Hard Difficulty
+            </span>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="pt-6">

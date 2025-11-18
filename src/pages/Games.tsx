@@ -51,31 +51,16 @@ export default function Games() {
     },
   ];
 
-  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "hard">("medium");
-  const [showDifficultySelect, setShowDifficultySelect] = useState(false);
-  const [pendingGameType, setPendingGameType] = useState<GameType | null>(null);
-
-  const handleStartGame = async (gameType: GameType, difficulty?: "easy" | "medium" | "hard") => {
+  const handleStartGame = async (gameType: GameType) => {
     try {
       const sessionId = await startGame({ 
         gameType,
-        difficulty: gameType === "tic_tac_toe" ? (difficulty || selectedDifficulty) : undefined
+        difficulty: gameType === "tic_tac_toe" ? "hard" : undefined
       });
       setViewingSession(sessionId);
-      setShowDifficultySelect(false);
-      setPendingGameType(null);
       toast.success("Game started!");
     } catch (error: any) {
       toast.error(error.message || "Failed to start game");
-    }
-  };
-
-  const handleGameClick = (gameType: GameType) => {
-    if (gameType === "tic_tac_toe") {
-      setPendingGameType(gameType);
-      setShowDifficultySelect(true);
-    } else {
-      handleStartGame(gameType);
     }
   };
 
@@ -229,7 +214,7 @@ export default function Games() {
                   <CardContent>
                     <Button
                       className="w-full"
-                      onClick={() => handleGameClick(game.type)}
+                      onClick={() => handleStartGame(game.type)}
                     >
                       <Gamepad2 className="h-4 w-4 mr-2" />
                       Play Now
@@ -241,58 +226,6 @@ export default function Games() {
           </div>
         </div>
 
-        {/* Difficulty Selection Dialog */}
-        <Dialog open={showDifficultySelect} onOpenChange={setShowDifficultySelect}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Select AI Difficulty</DialogTitle>
-              <DialogDescription>
-                Choose how challenging you want the AI opponent to be
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3 mt-4">
-              <Button
-                variant="outline"
-                className="w-full h-20 flex items-center justify-between"
-                onClick={() => handleStartGame(pendingGameType as GameType, "easy")}
-              >
-                <div className="flex items-center gap-3">
-                  <Zap className="h-6 w-6 text-green-500" />
-                  <div className="text-left">
-                    <div className="font-bold">Easy</div>
-                    <div className="text-sm text-muted-foreground">Random moves</div>
-                  </div>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full h-20 flex items-center justify-between"
-                onClick={() => handleStartGame(pendingGameType as GameType, "medium")}
-              >
-                <div className="flex items-center gap-3">
-                  <Target className="h-6 w-6 text-yellow-500" />
-                  <div className="text-left">
-                    <div className="font-bold">Medium</div>
-                    <div className="text-sm text-muted-foreground">Smart moves with mistakes</div>
-                  </div>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full h-20 flex items-center justify-between"
-                onClick={() => handleStartGame(pendingGameType as GameType, "hard")}
-              >
-                <div className="flex items-center gap-3">
-                  <Flame className="h-6 w-6 text-red-500" />
-                  <div className="text-left">
-                    <div className="font-bold">Hard</div>
-                    <div className="text-sm text-muted-foreground">Unbeatable AI</div>
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </DashboardLayout>
   );
