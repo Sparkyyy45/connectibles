@@ -476,60 +476,91 @@ export default function Landing() {
                 className="relative group cursor-default"
               >
                 <motion.div 
-                  className="relative p-10 rounded-3xl border-2 border-purple-200/50 bg-white/80 backdrop-blur-xl hover:border-purple-400/50 transition-all duration-500 h-full"
+                  className="relative p-10 rounded-3xl border border-slate-200/60 bg-white/90 backdrop-blur-2xl hover:border-purple-300 transition-all duration-500 h-full overflow-hidden"
                   whileHover={{ 
-                    boxShadow: "0 25px 50px -12px rgba(139, 92, 246, 0.25)",
-                    borderColor: "rgba(139, 92, 246, 0.5)"
+                    boxShadow: "0 30px 60px -15px rgba(139, 92, 246, 0.3), 0 0 0 1px rgba(139, 92, 246, 0.1)",
                   }}
                 >
+                  {/* Animated gradient background on hover */}
                   <motion.div 
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl`}
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 0.05 }}
-                    transition={{ duration: 0.3 }}
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0`}
+                    whileHover={{ opacity: 0.08 }}
+                    transition={{ duration: 0.4 }}
                   />
                   
-                  <div className="relative">
+                  {/* Decorative corner accents */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-100/50 to-transparent rounded-tr-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Glowing border effect */}
+                  <motion.div
+                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: `linear-gradient(135deg, transparent 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%)`,
+                    }}
+                  />
+                  
+                  <div className="relative z-10">
+                    {/* Icon with enhanced styling */}
                     <motion.div 
-                      className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-8 shadow-lg`}
+                      className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-8 shadow-lg relative overflow-hidden`}
                       whileHover={{ 
                         scale: 1.15,
                         rotate: [0, -5, 5, 0],
-                        boxShadow: "0 20px 25px -5px rgba(139, 92, 246, 0.3)"
+                        boxShadow: "0 20px 30px -5px rgba(139, 92, 246, 0.4)"
                       }}
                       transition={{ duration: 0.4 }}
                     >
+                      {/* Icon glow effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-white/20 rounded-2xl"
+                        initial={{ scale: 0, opacity: 0 }}
+                        whileHover={{ scale: 1.5, opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                      />
                       <motion.div
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
                       >
-                        <Icon className="h-10 w-10 text-white" aria-hidden="true" />
+                        <Icon className="h-10 w-10 text-white relative z-10" aria-hidden="true" />
                       </motion.div>
                     </motion.div>
                     
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-2xl font-bold tracking-tight text-slate-900">
+                    {/* Title and badge */}
+                    <div className="flex items-start justify-between mb-5 gap-3">
+                      <h3 className="text-2xl font-bold tracking-tight text-slate-900 flex-1">
                         {feature.title}
                       </h3>
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.8, y: -10 }}
                         animate={{ 
                           opacity: hoveredFeature === index ? 1 : 0,
-                          scale: hoveredFeature === index ? 1 : 0.8
+                          scale: hoveredFeature === index ? 1 : 0.8,
+                          y: hoveredFeature === index ? 0 : -10
                         }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
                       >
-                        <Badge className={`bg-gradient-to-r ${feature.gradient} text-white border-0 text-xs px-2 py-1`}>
+                        <Badge className={`bg-gradient-to-r ${feature.gradient} text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap`}>
                           {feature.stat}
                         </Badge>
                       </motion.div>
                     </div>
                     
+                    {/* Description */}
                     <p className="text-slate-600 leading-relaxed text-base">
                       {feature.description}
                     </p>
+                    
+                    {/* Animated underline */}
+                    <motion.div
+                      className={`h-1 rounded-full bg-gradient-to-r ${feature.gradient} mt-6`}
+                      initial={{ width: 0 }}
+                      whileHover={{ width: "100%" }}
+                      transition={{ duration: 0.4 }}
+                    />
                   </div>
 
+                  {/* Shimmer effect */}
                   <motion.div 
                     className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden"
                     initial={{ opacity: 0 }}
@@ -537,7 +568,7 @@ export default function Landing() {
                     transition={{ duration: 0.3 }}
                   >
                     <motion.div 
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12"
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12"
                       initial={{ x: "-200%" }}
                       whileHover={{ x: "200%" }}
                       transition={{ duration: 0.8 }}
