@@ -1,13 +1,19 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router";
-import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart, Instagram, Linkedin, Lock, Gamepad2 } from "lucide-react";
-import { useMemo } from "react";
+import { Users, MessageCircle, Calendar, Sparkles, ChevronDown, Zap, Heart, Instagram, Linkedin, Lock, Gamepad2, ArrowRight, Star } from "lucide-react";
+import { useMemo, useState } from "react";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { scrollYProgress } = useScroll();
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
   const features = useMemo(() => [
     {
@@ -15,30 +21,35 @@ export default function Landing() {
       title: "Discover Matches",
       description: "Connect with people who share your passions and interests through intelligent matching",
       gradient: "from-violet-500 via-purple-500 to-fuchsia-600",
+      stat: "10K+ Matches",
     },
     {
       icon: MessageCircle,
       title: "Real-Time Chat",
       description: "Engage in meaningful conversations with your connections and community",
       gradient: "from-emerald-500 via-teal-500 to-cyan-600",
+      stat: "Instant Messaging",
     },
     {
       icon: Lock,
       title: "Anonymous Confessions",
       description: "Share your thoughts freely in a judgment-free, anonymous space",
       gradient: "from-slate-700 via-purple-800 to-indigo-900",
+      stat: "100% Anonymous",
     },
     {
       icon: Gamepad2,
       title: "Interactive Games",
       description: "Challenge friends with multiplayer games and track your achievements",
       gradient: "from-orange-500 via-amber-500 to-yellow-600",
+      stat: "8+ Games",
     },
     {
       icon: Calendar,
       title: "Community Events",
       description: "Discover and create events to bring your community together",
       gradient: "from-indigo-500 via-blue-500 to-purple-600",
+      stat: "Live Events",
     },
   ], []);
 
@@ -59,7 +70,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/40 relative overflow-hidden">
-      {/* Subtle animated background elements */}
+      {/* Enhanced animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.08),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.06),transparent_50%)]" />
@@ -94,6 +105,27 @@ export default function Landing() {
           }}
         />
         
+        {/* Floating particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-purple-400/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+        
         <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
       </div>
 
@@ -114,6 +146,8 @@ export default function Landing() {
                 handleNavigation("/");
               }
             }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <div className="relative">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 group-hover:from-purple-200 group-hover:to-blue-200 transition-all duration-300 border border-purple-200/50">
@@ -157,6 +191,12 @@ export default function Landing() {
                 aria-label={isAuthenticated ? "Go to dashboard" : "Get started with Connectibles"}
               >
                 <span className="relative z-10">{isAuthenticated ? "Dashboard" : "Get Started"}</span>
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.5 }}
+                />
               </Button>
             )}
           </motion.div>
@@ -166,6 +206,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section id="hero" className="max-w-7xl mx-auto px-6 py-32 md:py-48 relative" aria-labelledby="hero-heading">
         <motion.div
+          style={{ opacity, scale }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -175,7 +216,7 @@ export default function Landing() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 border border-purple-300/50 mb-10 shadow-md"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 border border-purple-300/50 mb-10 shadow-md hover:shadow-lg transition-shadow cursor-default"
           >
             <Zap className="h-5 w-5 text-purple-600" />
             <span className="text-sm font-semibold bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent">Connect. Collaborate. Create.</span>
@@ -186,9 +227,16 @@ export default function Landing() {
               Connect with Your
             </span>
             <br />
-            <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent inline-block mt-2">
+            <motion.span 
+              className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent inline-block mt-2"
+              animate={{ 
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+              }}
+              transition={{ duration: 5, repeat: Infinity }}
+              style={{ backgroundSize: "200% 200%" }}
+            >
               Tribe
-            </span>
+            </motion.span>
           </h1>
 
           <p className="text-xl md:text-2xl text-slate-600 mb-14 max-w-3xl mx-auto leading-relaxed font-medium">
@@ -204,7 +252,7 @@ export default function Landing() {
             >
               <span className="relative z-10 flex items-center gap-2">
                 {isAuthenticated ? "Go to Dashboard" : "Join Connectibles"}
-                <Sparkles className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </span>
             </Button>
 
@@ -212,10 +260,10 @@ export default function Landing() {
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("features")}
-              className="text-lg px-10 py-7 h-auto border-2 border-purple-300 bg-white hover:bg-purple-50 hover:border-purple-400 text-slate-700 transition-all font-semibold"
+              className="text-lg px-10 py-7 h-auto border-2 border-purple-300 bg-white hover:bg-purple-50 hover:border-purple-400 text-slate-700 transition-all font-semibold group"
             >
               Learn More
-              <ChevronDown className="h-5 w-5 ml-2" />
+              <ChevronDown className="h-5 w-5 ml-2 group-hover:translate-y-1 transition-transform" />
             </Button>
           </div>
 
@@ -225,18 +273,33 @@ export default function Landing() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
-            <div className="flex items-center gap-2 group cursor-default">
+            <motion.div 
+              className="flex items-center gap-2 group cursor-default"
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="p-2 rounded-full bg-red-100 group-hover:bg-red-200 transition-colors">
                 <Heart className="h-4 w-4 text-red-600 fill-red-600" />
               </div>
               <span className="font-medium text-slate-700">Trusted by students</span>
-            </div>
-            <div className="flex items-center gap-2 group cursor-default">
+            </motion.div>
+            <motion.div 
+              className="flex items-center gap-2 group cursor-default"
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="p-2 rounded-full bg-yellow-100 group-hover:bg-yellow-200 transition-colors">
                 <Zap className="h-4 w-4 text-yellow-600" />
               </div>
               <span className="font-medium text-slate-700">Instant matching</span>
-            </div>
+            </motion.div>
+            <motion.div 
+              className="flex items-center gap-2 group cursor-default"
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="p-2 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
+                <Star className="h-4 w-4 text-purple-600 fill-purple-600" />
+              </div>
+              <span className="font-medium text-slate-700">5-star rated</span>
+            </motion.div>
           </motion.div>
         </motion.div>
       </section>
@@ -270,6 +333,8 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -12, transition: { duration: 0.3 } }}
+                onHoverStart={() => setHoveredFeature(index)}
+                onHoverEnd={() => setHoveredFeature(null)}
                 className="relative group cursor-default"
               >
                 <div className="relative p-10 rounded-3xl border-2 border-purple-200/50 bg-white/80 backdrop-blur-xl hover:border-purple-400/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 h-full">
@@ -280,9 +345,23 @@ export default function Landing() {
                       <Icon className="h-10 w-10 text-white" aria-hidden="true" />
                     </div>
                     
-                    <h3 className="text-2xl font-bold tracking-tight mb-5 text-slate-900">
-                      {feature.title}
-                    </h3>
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-2xl font-bold tracking-tight text-slate-900">
+                        {feature.title}
+                      </h3>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ 
+                          opacity: hoveredFeature === index ? 1 : 0,
+                          scale: hoveredFeature === index ? 1 : 0.8
+                        }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Badge className={`bg-gradient-to-r ${feature.gradient} text-white border-0 text-xs px-2 py-1`}>
+                          {feature.stat}
+                        </Badge>
+                      </motion.div>
+                    </div>
                     
                     <p className="text-slate-600 leading-relaxed text-base">
                       {feature.description}
@@ -333,11 +412,11 @@ export default function Landing() {
             <Button
               size="lg"
               onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-10 py-7 h-auto bg-white text-purple-600 hover:bg-white/95 shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all hover:scale-105 font-bold border-0"
+              className="text-lg px-10 py-7 h-auto bg-white text-purple-600 hover:bg-white/95 shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all hover:scale-105 font-bold border-0 group"
               aria-label="Get started with Connectibles"
             >
               Get Started Now
-              <Sparkles className="h-5 w-5 ml-2" />
+              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </motion.div>
@@ -391,24 +470,28 @@ export default function Landing() {
             </div>
             
             <div className="flex items-center justify-center gap-4">
-              <a
+              <motion.a
                 href="https://www.instagram.com/suyash.yadv/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-xl bg-purple-100 hover:bg-purple-200 hover:text-purple-700 text-purple-600 border border-purple-200/50 transition-all hover:scale-110"
+                className="p-3 rounded-xl bg-purple-100 hover:bg-purple-200 hover:text-purple-700 text-purple-600 border border-purple-200/50 transition-all"
                 aria-label="Instagram profile"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Instagram className="h-5 w-5" />
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="https://www.linkedin.com/in/suyash-yadav-b63251378?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-xl bg-purple-100 hover:bg-purple-200 hover:text-purple-700 text-purple-600 border border-purple-200/50 transition-all hover:scale-110"
+                className="p-3 rounded-xl bg-purple-100 hover:bg-purple-200 hover:text-purple-700 text-purple-600 border border-purple-200/50 transition-all"
                 aria-label="LinkedIn profile"
+                whileHover={{ scale: 1.1, rotate: -5 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Linkedin className="h-5 w-5" />
-              </a>
+              </motion.a>
             </div>
           </div>
 
