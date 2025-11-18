@@ -144,7 +144,7 @@ export default function Messages() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
         {/* Header */}
         <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
           <motion.div
@@ -167,8 +167,8 @@ export default function Messages() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden">
-          <div className="max-w-7xl mx-auto h-full p-6 space-y-6">
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-7xl mx-auto p-6 space-y-6">
             {/* Connection Requests */}
             {connectionRequests && connectionRequests.length > 0 && (
               <motion.div
@@ -223,9 +223,8 @@ export default function Messages() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="h-[calc(100vh-280px)]"
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 h-full">
+              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 min-h-[600px] md:min-h-[700px]">
                 <ConnectionsList
                   connections={connections}
                   selectedConnection={selectedConnection}

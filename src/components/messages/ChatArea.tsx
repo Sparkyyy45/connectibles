@@ -56,7 +56,7 @@ export function ChatArea({
 
   if (!selectedUser) {
     return (
-      <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-full overflow-hidden">
+      <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[600px] md:h-[700px] overflow-hidden">
         <CardContent className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <MessageCircle className="h-20 w-20 text-muted-foreground/30 mx-auto mb-4" />
