@@ -146,13 +146,22 @@ export default function Landing() {
                 handleNavigation("/");
               }
             }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             <div className="relative">
-              <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 group-hover:from-purple-200 group-hover:to-blue-200 transition-all duration-300 border border-purple-200/50">
-                <Sparkles className="h-6 w-6 text-purple-600 group-hover:rotate-12 transition-transform duration-300" aria-hidden="true" />
-              </div>
+              <motion.div 
+                className="p-2.5 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 group-hover:from-purple-200 group-hover:to-blue-200 transition-all duration-300 border border-purple-200/50"
+                whileHover={{ boxShadow: "0 0 20px rgba(139, 92, 246, 0.4)" }}
+              >
+                <motion.div
+                  whileHover={{ rotate: 360, scale: 1.2 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                >
+                  <Sparkles className="h-6 w-6 text-purple-600" aria-hidden="true" />
+                </motion.div>
+              </motion.div>
             </div>
             <div>
               <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
@@ -163,20 +172,34 @@ export default function Landing() {
           </motion.div>
 
           <div className="hidden md:flex items-center gap-8 h-full">
-            <button
+            <motion.button
               onClick={() => scrollToSection("features")}
               className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group flex items-center h-full"
+              whileHover={{ y: -2 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               Features
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
-            </button>
-            <button
+              <motion.span 
+                className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600"
+                initial={{ width: 0 }}
+                whileHover={{ width: "100%" }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
+            <motion.button
               onClick={() => scrollToSection("cta")}
               className="text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors relative group flex items-center h-full"
+              whileHover={{ y: -2 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               Get Started
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
-            </button>
+              <motion.span 
+                className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600"
+                initial={{ width: 0 }}
+                whileHover={{ width: "100%" }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
           </div>
 
           <motion.div
@@ -184,20 +207,22 @@ export default function Landing() {
             animate={{ opacity: 1, x: 0 }}
           >
             {!isLoading && (
-              <Button
-                onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-                size="lg"
-                className="relative overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-lg hover:shadow-xl transition-all px-6 py-5 text-base font-semibold"
-                aria-label={isAuthenticated ? "Go to dashboard" : "Get started with Connectibles"}
-              >
-                <span className="relative z-10">{isAuthenticated ? "Dashboard" : "Get Started"}</span>
-                <motion.div
-                  className="absolute inset-0 bg-white/20"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.5 }}
-                />
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
+                  size="lg"
+                  className="relative overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-lg hover:shadow-2xl transition-all px-6 py-5 text-base font-semibold"
+                  aria-label={isAuthenticated ? "Go to dashboard" : "Get started with Connectibles"}
+                >
+                  <span className="relative z-10">{isAuthenticated ? "Dashboard" : "Get Started"}</span>
+                  <motion.div
+                    className="absolute inset-0 bg-white/20"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </Button>
+              </motion.div>
             )}
           </motion.div>
         </div>
@@ -244,27 +269,53 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-            <Button
-              size="lg"
-              onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-10 py-7 h-auto relative overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-xl hover:shadow-2xl transition-all font-bold"
-              aria-label={isAuthenticated ? "Go to your dashboard" : "Join Connectibles now"}
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <span className="relative z-10 flex items-center gap-2">
-                {isAuthenticated ? "Go to Dashboard" : "Join Connectibles"}
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Button>
+              <Button
+                size="lg"
+                onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
+                className="text-lg px-10 py-7 h-auto relative overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-xl hover:shadow-2xl transition-all font-bold"
+                aria-label={isAuthenticated ? "Go to your dashboard" : "Join Connectibles now"}
+              >
+                <motion.span 
+                  className="relative z-10 flex items-center gap-2"
+                  whileHover={{ x: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  {isAuthenticated ? "Go to Dashboard" : "Join Connectibles"}
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.div>
+                </motion.span>
+              </Button>
+            </motion.div>
 
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => scrollToSection("features")}
-              className="text-lg px-10 py-7 h-auto border-2 border-purple-300 bg-white hover:bg-purple-50 hover:border-purple-400 text-slate-700 transition-all font-semibold group"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              Learn More
-              <ChevronDown className="h-5 w-5 ml-2 group-hover:translate-y-1 transition-transform" />
-            </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => scrollToSection("features")}
+                className="text-lg px-10 py-7 h-auto border-2 border-purple-300 bg-white hover:bg-purple-50 hover:border-purple-400 text-slate-700 transition-all font-semibold group"
+              >
+                Learn More
+                <motion.div
+                  animate={{ y: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ChevronDown className="h-5 w-5 ml-2" />
+                </motion.div>
+              </Button>
+            </motion.div>
           </div>
 
           <motion.div
@@ -337,13 +388,37 @@ export default function Landing() {
                 onHoverEnd={() => setHoveredFeature(null)}
                 className="relative group cursor-default"
               >
-                <div className="relative p-10 rounded-3xl border-2 border-purple-200/50 bg-white/80 backdrop-blur-xl hover:border-purple-400/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 h-full">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-[0.05] rounded-3xl transition-opacity duration-500`} />
+                <motion.div 
+                  className="relative p-10 rounded-3xl border-2 border-purple-200/50 bg-white/80 backdrop-blur-xl hover:border-purple-400/50 transition-all duration-500 h-full"
+                  whileHover={{ 
+                    boxShadow: "0 25px 50px -12px rgba(139, 92, 246, 0.25)",
+                    borderColor: "rgba(139, 92, 246, 0.5)"
+                  }}
+                >
+                  <motion.div 
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl`}
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 0.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
                   
                   <div className="relative">
-                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-8 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="h-10 w-10 text-white" aria-hidden="true" />
-                    </div>
+                    <motion.div 
+                      className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} mb-8 shadow-lg`}
+                      whileHover={{ 
+                        scale: 1.15,
+                        rotate: [0, -5, 5, 0],
+                        boxShadow: "0 20px 25px -5px rgba(139, 92, 246, 0.3)"
+                      }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        <Icon className="h-10 w-10 text-white" aria-hidden="true" />
+                      </motion.div>
+                    </motion.div>
                     
                     <div className="flex items-center justify-between mb-5">
                       <h3 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -368,10 +443,20 @@ export default function Landing() {
                     </p>
                   </div>
 
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-3xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                  </div>
-                </div>
+                  <motion.div 
+                    className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12"
+                      initial={{ x: "-200%" }}
+                      whileHover={{ x: "200%" }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  </motion.div>
+                </motion.div>
               </motion.div>
             );
           })}
@@ -409,15 +494,28 @@ export default function Landing() {
               Join thousands of students building meaningful connections and collaborating on amazing projects
             </p>
             
-            <Button
-              size="lg"
-              onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-10 py-7 h-auto bg-white text-purple-600 hover:bg-white/95 shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all hover:scale-105 font-bold border-0 group"
-              aria-label="Get started with Connectibles"
+            <motion.div
+              whileHover={{ scale: 1.1, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              Get Started Now
-              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+              <Button
+                size="lg"
+                onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/auth")}
+                className="text-lg px-10 py-7 h-auto bg-white text-purple-600 hover:bg-white/95 shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all font-bold border-0 group"
+                aria-label="Get started with Connectibles"
+              >
+                <span className="flex items-center gap-2">
+                  Get Started Now
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.div>
+                </span>
+              </Button>
+            </motion.div>
           </div>
         </motion.div>
       </section>
