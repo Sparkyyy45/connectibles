@@ -1,0 +1,5 @@
+{isOwner && (
+  <Button onClick={() => handleDeleteSpill(spill._id)}>
+    <Trash2 />
+  </Button>
+)}
