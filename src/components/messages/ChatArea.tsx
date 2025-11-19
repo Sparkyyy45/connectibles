@@ -107,7 +107,7 @@ export function ChatArea({
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-        <ScrollArea className="flex-1 p-3 md:p-6">
+        <ScrollArea className="flex-1 p-3 md:p-6 scroll-smooth">
           <div className="space-y-4">
             {conversation && conversation.length > 0 ? (
               conversation.map((msg) => (

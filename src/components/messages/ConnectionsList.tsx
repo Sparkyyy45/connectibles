@@ -24,7 +24,7 @@ export function ConnectionsList({ connections, selectedConnection, onSelectConne
           {connections?.length || 0} connection{connections?.length !== 1 ? 's' : ''}
         </CardDescription>
       </CardHeader>
-      <ScrollArea className="flex-1 overflow-y-auto">
+      <ScrollArea className="flex-1 overflow-y-auto scroll-smooth">
         {connections && connections.length > 0 ? (
           <div className="p-2">
             {connections.map((connection) => (
