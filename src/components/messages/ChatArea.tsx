@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,6 +47,15 @@ export function ChatArea({
   sending 
 }: ChatAreaProps) {
   const [message, setMessage] = useState("");
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [conversation]);
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -107,30 +116,33 @@ export function ChatArea({
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-        <ScrollArea className="flex-1 p-3 md:p-6 scroll-smooth">
+        <ScrollArea className="flex-1 p-3 md:p-6 scroll-smooth" ref={scrollAreaRef}>
           <div className="space-y-4">
             {conversation && conversation.length > 0 ? (
-              conversation.map((msg) => (
-                <motion.div
-                  key={msg._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${msg.senderId === currentUserId ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
-                      msg.senderId === currentUserId
-                        ? "bg-gradient-to-br from-primary to-purple-600 text-primary-foreground"
-                        : "bg-muted"
-                    }`}
+              <>
+                {conversation.map((msg) => (
+                  <motion.div
+                    key={msg._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${msg.senderId === currentUserId ? "justify-end" : "justify-start"}`}
                   >
-                    <p className="text-sm leading-relaxed break-words">{msg.message}</p>
-                    <p className={`text-xs mt-1.5 ${msg.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                      {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                </motion.div>
-              ))
+                    <div
+                      className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
+                        msg.senderId === currentUserId
+                          ? "bg-gradient-to-br from-primary to-purple-600 text-primary-foreground"
+                          : "bg-muted"
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed break-words">{msg.message}</p>
+                      <p className={`text-xs mt-1.5 ${msg.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                        {new Date(msg._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+                <div ref={messagesEndRef} />
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center py-12">
                 <MessageCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
