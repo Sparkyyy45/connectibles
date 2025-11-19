@@ -294,18 +294,18 @@ export default function Notifications() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
                   >
-                    <Card className="hover:shadow-md transition-all opacity-60 hover:opacity-80 border-dashed">
+                    <Card className="hover:shadow-md transition-all opacity-60 hover:opacity-80 border-dashed group">
                       <CardContent className="p-5">
                         <div className="flex items-start gap-4">
                           {notification.relatedUser && (
-                            <Avatar className="h-10 w-10 opacity-75">
+                            <Avatar className="h-10 w-10 opacity-75 flex-shrink-0">
                               <AvatarFallback className="bg-muted text-muted-foreground">
                                 {notification.relatedUser.name?.charAt(0).toUpperCase() || "U"}
                               </AvatarFallback>
                             </Avatar>
                           )}
-                          <div className="flex-1 space-y-2">
-                            <p className="text-muted-foreground text-sm leading-relaxed">
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <p className="text-muted-foreground text-sm leading-relaxed break-words">
                               {notification.message}
                             </p>
                             <p className="text-xs text-muted-foreground/70">
@@ -316,7 +316,7 @@ export default function Notifications() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleDelete(notification._id)}
-                            className="hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+                            className="hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0 cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
