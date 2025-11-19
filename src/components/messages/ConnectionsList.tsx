@@ -17,7 +17,7 @@ export function ConnectionsList({ connections, selectedConnection, onSelectConne
   const navigate = useNavigate();
 
   return (
-    <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[180px] md:h-[700px] overflow-hidden">
+    <Card className="shadow-lg border-2 border-border/50 bg-card/95 backdrop-blur-sm flex flex-col h-[420px] md:h-[700px] overflow-hidden">
       <CardHeader className="pb-3 border-b border-border/50 flex-shrink-0">
         <CardTitle className="text-base md:text-lg">Your Connections</CardTitle>
         <CardDescription className="text-xs">
