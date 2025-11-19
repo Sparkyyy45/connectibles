@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useEffect, useRef, useCallback } from "react";
+import { usePaginatedQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,18 +16,42 @@ import type { Id } from "@/convex/_generated/dataModel";
 export default function Notifications() {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const notifications = useQuery(api.notifications.getNotifications);
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.notifications.getNotifications,
+    {},
+    { initialNumItems: 20 }
+  );
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
   const deleteNotification = useMutation(api.notifications.deleteNotification);
   const deleteAllNotifications = useMutation(api.notifications.deleteAllNotifications);
   const sendRequest = useMutation(api.connections.sendConnectionRequest);
 
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && status === "CanLoadMore") {
+          loadMore(10);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [status, loadMore]);
 
   const handleMarkAsRead = async (notificationId: Id<"notifications">) => {
     try {
@@ -88,8 +112,9 @@ export default function Notifications() {
     );
   }
 
-  const unreadNotifications = notifications?.filter((n) => !n.read) || [];
-  const readNotifications = notifications?.filter((n) => n.read) || [];
+  const notifications = results || [];
+  const unreadNotifications = notifications.filter((n) => !n.read);
+  const readNotifications = notifications.filter((n) => n.read);
 
   return (
     <DashboardLayout>
@@ -131,7 +156,7 @@ export default function Notifications() {
                   Mark All Read
                 </Button>
               )}
-              {notifications && notifications.length > 0 && (
+              {notifications.length > 0 && (
                 <Button 
                   onClick={handleDeleteAll} 
                   variant="destructive" 
@@ -304,8 +329,15 @@ export default function Notifications() {
             </motion.div>
           )}
 
+          {/* Infinite Scroll Trigger */}
+          {status === "CanLoadMore" && (
+            <div ref={observerTarget} className="flex justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          )}
+
           {/* Empty State */}
-          {notifications?.length === 0 && (
+          {notifications.length === 0 && status !== "LoadingFirstPage" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

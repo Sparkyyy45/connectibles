@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 
 export const createNotification = internalMutation({
   args: {
@@ -22,19 +23,19 @@ export const createNotification = internalMutation({
 });
 
 export const getNotifications = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
+    if (!userId) return { page: [], isDone: true, continueCursor: "" };
 
-    const notifications = await ctx.db
+    const result = await ctx.db
       .query("notifications")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
-      .take(50);
+      .paginate(args.paginationOpts);
 
     const notificationsWithUsers = await Promise.all(
-      notifications.map(async (notification) => {
+      result.page.map(async (notification) => {
         if (notification.relatedUserId) {
           const relatedUser = await ctx.db.get(notification.relatedUserId);
           return { ...notification, relatedUser };
@@ -43,7 +44,10 @@ export const getNotifications = query({
       })
     );
 
-    return notificationsWithUsers;
+    return {
+      ...result,
+      page: notificationsWithUsers,
+    };
   },
 });
 
