@@ -119,7 +119,7 @@ export default function Notifications() {
                 Stay updated with new connections and activity
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {unreadNotifications.length > 0 && (
                 <Button 
                   onClick={handleMarkAllAsRead} 
@@ -134,9 +134,9 @@ export default function Notifications() {
               {notifications && notifications.length > 0 && (
                 <Button 
                   onClick={handleDeleteAll} 
-                  variant="outline" 
+                  variant="destructive" 
                   size="lg"
-                  className="shadow-sm hover:shadow-md transition-all hover:border-destructive hover:text-destructive"
+                  className="shadow-sm hover:shadow-md transition-all"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete All
