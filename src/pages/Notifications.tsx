@@ -177,7 +177,7 @@ export default function Notifications() {
                           ? "border-destructive bg-gradient-to-br from-destructive/10 to-destructive/5"
                           : "bg-gradient-to-br from-primary/5 to-transparent"
                       } hover:shadow-xl transition-all duration-300 hover:border-primary`}>
-                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${
                           notification.type === "report_warning" || notification.type === "account_banned"
                             ? "bg-gradient-to-r from-destructive/10 via-orange-500/10 to-transparent"
                             : "bg-gradient-to-r from-primary/10 via-purple-500/10 to-transparent"
