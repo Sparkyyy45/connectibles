@@ -124,7 +124,7 @@ export default function Notifications() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10"
           >
             <div className="space-y-2">
               <div className="flex items-center gap-3">
@@ -144,13 +144,13 @@ export default function Notifications() {
                 Stay updated with new connections and activity
               </p>
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap relative z-10">
               {unreadNotifications.length > 0 && (
                 <Button 
                   onClick={handleMarkAllAsRead} 
                   variant="outline" 
                   size="lg"
-                  className="shadow-sm hover:shadow-md transition-all hover:border-primary"
+                  className="shadow-sm hover:shadow-md transition-all hover:border-primary cursor-pointer"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   Mark All Read
@@ -161,7 +161,7 @@ export default function Notifications() {
                   onClick={handleDeleteAll} 
                   variant="destructive" 
                   size="lg"
-                  className="shadow-sm hover:shadow-md transition-all"
+                  className="shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete All
