@@ -3,10 +3,11 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
-// Run every hour to clean up old confessions (24+ hours old)
+// Run every 6 hours to clean up old confessions (24+ hours old)
+// Reduced frequency to minimize function calls and stay within free tier
 crons.interval(
   "delete old confessions",
-  { hours: 1 },
+  { hours: 6 },
   // @ts-expect-error - Convex type instantiation depth issue, runtime works correctly
   internal.chill.deleteOldSpills,
   {}
