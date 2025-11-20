@@ -6,13 +6,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="text-center space-y-4">
           <div>
-            <p className="font-bold text-base mb-1 text-foreground">Suyash Yadav</p>
-            <a
-              href="mailto:suyashyadav1709@gmail.com"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
-            >
-              suyashyadav1709@gmail.com
-            </a>
+            <p className="text-sm text-muted-foreground mb-1 font-medium">
+              Contact:{" "}
+              <a
+                href="mailto:suyashyadav1709@gmail.com"
+                className="text-muted-foreground hover:text-primary transition-colors font-medium"
+              >
+                suyashyadav1709@gmail.com
+              </a>
+            </p>
           </div>
           
           <div className="flex items-center justify-center gap-3">
