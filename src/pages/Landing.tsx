@@ -558,13 +558,15 @@ export default function Landing() {
 
           <div className="text-center space-y-6">
             <div>
-              <p className="font-bold text-lg mb-2 text-slate-900">Suyash Yadav</p>
-              <a
-                href="mailto:suyashyadav1709@gmail.com"
-                className="text-sm text-slate-600 hover:text-purple-600 transition-colors font-medium"
-              >
-                suyashyadav1709@gmail.com
-              </a>
+              <p className="text-sm text-slate-600 mb-1 font-medium">
+                Contact:{" "}
+                <a
+                  href="mailto:suyashyadav1709@gmail.com"
+                  className="text-slate-600 hover:text-purple-600 transition-colors font-medium"
+                >
+                  suyashyadav1709@gmail.com
+                </a>
+              </p>
             </div>
             
             <div className="flex items-center justify-center gap-4">
