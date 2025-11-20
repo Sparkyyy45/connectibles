@@ -144,8 +144,7 @@ const schema = defineSchema(
     game_sessions: defineTable({
       gameType: v.union(
         v.literal("tic_tac_toe"),
-        v.literal("reaction_test"),
-        v.literal("glow_hockey")
+        v.literal("reaction_test")
       ),
       playerId: v.id("users"),
       status: v.union(
@@ -172,8 +171,7 @@ const schema = defineSchema(
       userId: v.id("users"),
       gameType: v.union(
         v.literal("tic_tac_toe"),
-        v.literal("reaction_test"),
-        v.literal("glow_hockey")
+        v.literal("reaction_test")
       ),
       wins: v.number(),
       losses: v.number(),
