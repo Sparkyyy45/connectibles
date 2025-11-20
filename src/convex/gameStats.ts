@@ -103,7 +103,8 @@ export const getGameLeaderboard = query({
   args: {
     gameType: v.union(
       v.literal("tic_tac_toe"),
-      v.literal("reaction_test")
+      v.literal("reaction_test"),
+      v.literal("glow_hockey")
     ),
     limit: v.optional(v.number()),
   },

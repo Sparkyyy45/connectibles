@@ -14,8 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import type { Id } from "@/convex/_generated/dataModel";
 import TicTacToe from "@/components/games/TicTacToe";
 import ReactionTest from "@/components/games/ReactionTest";
+import GlowHockey from "@/components/games/GlowHockeyGame";
 
-type GameType = "tic_tac_toe" | "reaction_test";
+type GameType = "tic_tac_toe" | "reaction_test" | "glow_hockey";
 
 export default function Games() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -48,6 +49,12 @@ export default function Games() {
       name: "Reaction Test",
       description: "Test your reflexes",
       icon: "⚡",
+    },
+    {
+      type: "glow_hockey" as GameType,
+      name: "Glow Hockey",
+      description: "Neon air hockey vs AI",
+      icon: "🏒",
     },
   ];
 
@@ -94,6 +101,8 @@ export default function Games() {
           return TicTacToe;
         case "reaction_test":
           return ReactionTest;
+        case "glow_hockey":
+          return GlowHockey;
         default:
           return null;
       }
