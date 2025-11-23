@@ -89,7 +89,7 @@ export default function Profile() {
   }, [isLoading, isAuthenticated, navigate]);
 
   useEffect(() => {
-    if (user) {
+    if (user && !isEditing) {
       setName(user.name || "");
       setBio(user.bio || "");
       setLocation(user.location || "");
@@ -102,7 +102,7 @@ export default function Profile() {
       setPreferredActivities(user.preferredActivities || []);
       setPersonalityType(user.personalityType || 3);
     }
-  }, [user]);
+  }, [user, isEditing]);
 
   const handleAddInterest = () => {
     if (!isEditing) return;
