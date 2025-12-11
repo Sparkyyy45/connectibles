@@ -3,18 +3,18 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, UserPlus, Sparkles, Shuffle, TrendingUp, Hand, Flag, Heart, Users } from "lucide-react";
+import { Loader2, Sparkles, Shuffle, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import DashboardLayout from "@/components/DashboardLayout";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { MatchCard } from "@/components/discover/MatchCard";
+import { UserActionDialog } from "@/components/discover/UserActionDialog";
+import { ProfileSetupCard } from "@/components/discover/ProfileSetupCard";
+import { EmptyStateCard } from "@/components/discover/EmptyStateCard";
 
 export default function Discover() {
   const { isLoading, isAuthenticated, user } = useAuth();
@@ -108,166 +108,14 @@ export default function Discover() {
 
   const needsProfile = !user.interests || user.interests.length === 0;
 
-  const renderMatchCard = (match: any, index: number) => (
-    <motion.div
-      key={match.user._id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-    >
-      <Card className="border-2 border-purple-200/50 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden h-full">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-blue-50/30 pointer-events-none" />
-        <CardHeader className="relative">
-          <div className="flex items-start gap-4">
-            <Avatar 
-              className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-              onClick={() => setSelectedUser({ 
-                id: match.user._id, 
-                name: match.user.name || "Anonymous",
-                image: match.user.image 
-              })}
-            >
-              <AvatarImage src={match.user.image} alt={match.user.name || "User"} />
-              <AvatarFallback>
-                {match.user.name?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <CardTitle className="text-xl font-bold text-slate-900">{match.user.name || "Anonymous"}</CardTitle>
-              {match.mutualConnectionsCount > 0 && (
-                <CardDescription className="text-sm text-slate-600 font-medium mt-1">
-                  <span className="inline-flex items-center gap-1 text-purple-600">
-                    <Users className="h-3.5 w-3.5" />
-                    {match.mutualConnectionsCount} mutual connection{match.mutualConnectionsCount > 1 ? 's' : ''}
-                  </span>
-                </CardDescription>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4 relative">
-          {match.user.bio && (
-            <p className="text-sm text-slate-700 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-200/50">{match.user.bio}</p>
-          )}
-          {match.user.location && (
-            <p className="text-sm text-slate-600 font-medium flex items-center gap-2">
-              <span className="text-lg">📍</span>
-              {match.user.location}
-            </p>
-          )}
-          {match.sharedInterests && Array.isArray(match.sharedInterests) && match.sharedInterests.length > 0 && (
-            <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-200/40">
-              <p className="text-sm font-bold mb-3 text-purple-900 flex items-center gap-2">
-                <Heart className="h-4 w-4 text-purple-600" />
-                Shared Interests
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {match.sharedInterests.map((interest: string) => (
-                  <Badge key={interest} className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200/50 hover:from-purple-200 hover:to-blue-200 transition-all">
-                    {interest}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          {match.sharedSkills && Array.isArray(match.sharedSkills) && match.sharedSkills.length > 0 && (
-            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200/40">
-              <p className="text-sm font-bold mb-3 text-blue-900 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-blue-600" />
-                Shared Skills
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {match.sharedSkills.map((skill: string) => (
-                  <Badge key={skill} className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200/50 hover:from-blue-200 hover:to-cyan-200 transition-all">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          {match.user.interests && Array.isArray(match.user.interests) && match.user.interests.length > 0 && !match.sharedInterests && (
-            <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200/40">
-              <p className="text-sm font-bold mb-3 text-slate-900">Interests</p>
-              <div className="flex flex-wrap gap-2">
-                {match.user.interests.slice(0, 5).map((interest: string) => (
-                  <Badge key={interest} variant="secondary" className="bg-slate-100 text-slate-700 border border-slate-200/50">
-                    {interest}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          <Button
-            className="w-full gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all h-12 text-base font-semibold rounded-xl"
-            onClick={() => handleConnect(match.user._id)}
-          >
-            <UserPlus className="h-5 w-5" />
-            Connect
-          </Button>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-
   return (
     <DashboardLayout>
-      <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="sm:max-w-md overflow-hidden border-2 border-primary/20 mx-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/5 to-transparent pointer-events-none" />
-          <DialogHeader className="relative">
-            <div className="flex flex-col items-center gap-4 py-4">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Avatar className="h-24 w-24 border-4 border-primary/30 shadow-2xl ring-4 ring-primary/10">
-                  <AvatarImage src={selectedUser?.image} alt={selectedUser?.name} />
-                  <AvatarFallback className="text-3xl bg-gradient-to-br from-primary to-purple-600 text-white font-bold">
-                    {selectedUser?.name?.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </motion.div>
-              <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                {selectedUser?.name}
-              </DialogTitle>
-              <DialogDescription className="text-center text-base">
-                Connect with <span className="font-semibold text-primary">{selectedUser?.name}</span>
-              </DialogDescription>
-            </div>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 mt-2 mb-4 relative">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                onClick={() => selectedUser && handleWave(selectedUser.id)}
-                className="w-full gap-3 h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
-                size="lg"
-              >
-                <Hand className="h-6 w-6" />
-                Send a Wave
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                onClick={() => setShowReportDialog(true)}
-                variant="outline"
-                className="w-full gap-3 h-12 text-base font-medium border-2 hover:bg-destructive/10 hover:border-destructive hover:text-destructive transition-all"
-                size="lg"
-              >
-                <Flag className="h-5 w-5" />
-                Report User
-              </Button>
-            </motion.div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <UserActionDialog
+        selectedUser={selectedUser}
+        onClose={() => setSelectedUser(null)}
+        onWave={handleWave}
+        onReport={() => setShowReportDialog(true)}
+      />
 
       <AlertDialog open={showReportDialog} onOpenChange={setShowReportDialog}>
         <AlertDialogContent>
@@ -326,149 +174,109 @@ export default function Discover() {
           </motion.div>
 
           {needsProfile ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card className="border-2 border-purple-200/60 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden mx-2 md:mx-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-blue-50/50 pointer-events-none" />
-                <CardHeader className="text-center space-y-4 pb-6 px-4 md:px-6 relative">
-                  <motion.div 
-                    className="flex justify-center"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2, type: "spring" }}
-                  >
-                    <div className="p-4 md:p-5 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-200/50 shadow-lg">
-                      <UserPlus className="h-12 w-12 md:h-14 md:w-14 text-purple-600" />
-                    </div>
-                  </motion.div>
-                  <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900">Complete Your Profile First</CardTitle>
-                  <CardDescription className="text-base md:text-lg text-slate-600 max-w-md mx-auto">
-                    Add your interests to start discovering amazing matches
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex justify-center pb-8 md:pb-10 px-4 md:px-6 relative">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-full sm:w-auto"
-                  >
-                    <Button 
-                      onClick={() => navigate("/profile")}
-                      size="lg"
-                      className="gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-xl hover:shadow-2xl transition-all px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold w-full sm:w-auto rounded-2xl"
-                    >
-                      <Sparkles className="h-5 w-5 md:h-6 md:w-6" />
-                      Set Up Profile
-                    </Button>
-                  </motion.div>
-                </CardContent>
-              </Card>
-            </motion.div>
-        ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full px-2 md:px-0">
-            <TabsList className="grid w-full grid-cols-3 gap-1.5 md:gap-2 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-1.5 md:p-2 rounded-xl md:rounded-2xl shadow-lg h-auto">
-              <TabsTrigger 
-                value="matches" 
-                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
-              >
-                <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline leading-tight">Best Matches</span>
-                <span className="sm:hidden leading-tight">Matches</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="explore" 
-                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
-              >
-                <Shuffle className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                <span className="leading-tight">Explore</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reverse" 
-                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
-              >
-                <TrendingUp className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                <span className="hidden sm:inline leading-tight">Interested in You</span>
-                <span className="sm:hidden leading-tight">For You</span>
-              </TabsTrigger>
-            </TabsList>
+            <ProfileSetupCard onSetupProfile={() => navigate("/profile")} />
+          ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full px-2 md:px-0">
+              <TabsList className="grid w-full grid-cols-3 gap-1.5 md:gap-2 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-1.5 md:p-2 rounded-xl md:rounded-2xl shadow-lg h-auto">
+                <TabsTrigger 
+                  value="matches" 
+                  className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
+                >
+                  <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline leading-tight">Best Matches</span>
+                  <span className="sm:hidden leading-tight">Matches</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="explore" 
+                  className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
+                >
+                  <Shuffle className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="leading-tight">Explore</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="reverse" 
+                  className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
+                >
+                  <TrendingUp className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline leading-tight">Interested in You</span>
+                  <span className="sm:hidden leading-tight">For You</span>
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="matches" className="mt-3 md:mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-                {matches?.map((match, index) => renderMatchCard(match, index))}
-              </div>
-              {matches?.length === 0 && (
-                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
-                  <CardHeader className="text-center py-16">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-6 rounded-full bg-purple-100/50">
-                        <Sparkles className="h-16 w-16 text-purple-400" />
-                      </div>
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Matches Yet</CardTitle>
-                    <CardDescription className="text-base text-slate-600">
-                      We couldn't find anyone with shared interests yet. Try the Explore tab!
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              )}
-            </TabsContent>
+              <TabsContent value="matches" className="mt-3 md:mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                  {matches?.map((match, index) => (
+                    <MatchCard
+                      key={match.user._id}
+                      match={match}
+                      index={index}
+                      onConnect={handleConnect}
+                      onAvatarClick={setSelectedUser}
+                    />
+                  ))}
+                </div>
+                {matches?.length === 0 && (
+                  <EmptyStateCard
+                    icon={Sparkles}
+                    title="No Matches Yet"
+                    description="We couldn't find anyone with shared interests yet. Try the Explore tab!"
+                  />
+                )}
+              </TabsContent>
 
-            <TabsContent value="explore" className="mt-3 md:mt-6">
-              <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-blue-50/50 rounded-xl md:rounded-2xl border border-blue-200/40">
-                <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
-                  🎲 Discover random users outside your typical matches. Refresh the page for new suggestions!
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-                {exploreMatches?.map((match, index) => renderMatchCard(match, index))}
-              </div>
-              {exploreMatches?.length === 0 && (
-                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
-                  <CardHeader className="text-center py-16">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-6 rounded-full bg-blue-100/50">
-                        <Shuffle className="h-16 w-16 text-blue-400" />
-                      </div>
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Users to Explore</CardTitle>
-                    <CardDescription className="text-base text-slate-600">
-                      Check back later for more users to discover!
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              )}
-            </TabsContent>
+              <TabsContent value="explore" className="mt-3 md:mt-6">
+                <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-blue-50/50 rounded-xl md:rounded-2xl border border-blue-200/40">
+                  <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
+                    🎲 Discover random users outside your typical matches. Refresh the page for new suggestions!
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                  {exploreMatches?.map((match, index) => (
+                    <MatchCard
+                      key={match.user._id}
+                      match={match}
+                      index={index}
+                      onConnect={handleConnect}
+                      onAvatarClick={setSelectedUser}
+                    />
+                  ))}
+                </div>
+                {exploreMatches?.length === 0 && (
+                  <EmptyStateCard
+                    icon={Shuffle}
+                    title="No Users to Explore"
+                    description="Check back later for more users to discover!"
+                  />
+                )}
+              </TabsContent>
 
-            <TabsContent value="reverse" className="mt-3 md:mt-6">
-              <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-purple-50/50 rounded-xl md:rounded-2xl border border-purple-200/40">
-                <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
-                  💫 These users share interests with you and might be interested in connecting!
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-                {reverseMatches?.map((match, index) => renderMatchCard(match, index))}
-              </div>
-              {reverseMatches?.length === 0 && (
-                <Card className="border-2 border-purple-200/50 shadow-xl bg-white/95 backdrop-blur-sm rounded-3xl">
-                  <CardHeader className="text-center py-16">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-6 rounded-full bg-purple-100/50">
-                        <TrendingUp className="h-16 w-16 text-purple-400" />
-                      </div>
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-slate-900 mb-2">No Reverse Matches Yet</CardTitle>
-                    <CardDescription className="text-base text-slate-600">
-                      No one seems to match with your profile yet. Keep your profile updated!
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        )}
+              <TabsContent value="reverse" className="mt-3 md:mt-6">
+                <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-purple-50/50 rounded-xl md:rounded-2xl border border-purple-200/40">
+                  <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
+                    💫 These users share interests with you and might be interested in connecting!
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                  {reverseMatches?.map((match, index) => (
+                    <MatchCard
+                      key={match.user._id}
+                      match={match}
+                      index={index}
+                      onConnect={handleConnect}
+                      onAvatarClick={setSelectedUser}
+                    />
+                  ))}
+                </div>
+                {reverseMatches?.length === 0 && (
+                  <EmptyStateCard
+                    icon={TrendingUp}
+                    title="No Reverse Matches Yet"
+                    description="No one seems to match with your profile yet. Keep your profile updated!"
+                  />
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </div>
     </DashboardLayout>
