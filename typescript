@@ -1,5 +1,8 @@
-{isOwner && (
-  <Button onClick={() => handleDeleteSpill(spill._id)}>
-    <Trash2 />
-  </Button>
+{isEditing && (
+  <X
+    className="h-3 w-3 cursor-pointer"
+    onClick={() =>
+      setInterests(interests.filter((i) => i !== interest))
+    }
+  />
 )}

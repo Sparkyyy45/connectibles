@@ -386,10 +386,11 @@ export default function Profile() {
                     {interest}
                     {isEditing && (
                       <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() =>
-                          setInterests(interests.filter((i) => i !== interest))
-                        }
+                        className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors ml-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setInterests(interests.filter((i) => i !== interest));
+                        }}
                       />
                     )}
                   </Badge>
@@ -427,8 +428,11 @@ export default function Profile() {
                     {skill}
                     {isEditing && (
                       <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                        className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors ml-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSkills(skills.filter((s) => s !== skill));
+                        }}
                       />
                     )}
                   </Badge>
