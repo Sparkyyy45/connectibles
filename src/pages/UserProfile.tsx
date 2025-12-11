@@ -136,7 +136,7 @@ export default function UserProfile() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="max-w-3xl mx-auto p-6 space-y-8">
+      <div className="max-w-3xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

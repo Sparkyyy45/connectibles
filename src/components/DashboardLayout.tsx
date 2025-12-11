@@ -82,11 +82,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/95 to-purple-600/95 backdrop-blur-xl border-2 border-white/30 shadow-2xl hover:scale-110 active:scale-90 transition-all duration-200"
+        className="fixed top-3 left-3 z-50 lg:hidden h-12 w-12 rounded-xl bg-gradient-to-br from-primary/95 to-purple-600/95 backdrop-blur-xl border-2 border-white/30 shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 touch-manipulation"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
       >
-        {isMobileMenuOpen ? <X className="h-7 w-7 text-white" /> : <Menu className="h-7 w-7 text-white" />}
+        {isMobileMenuOpen ? <X className="h-6 w-6 text-white" /> : <Menu className="h-6 w-6 text-white" />}
       </Button>
 
       {/* Overlay for mobile */}
@@ -239,8 +239,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main Content Area - Enhanced mobile spacing */}
-      <main className="flex-1 min-h-screen overflow-auto pt-16 lg:pt-0 flex flex-col">
-        <div className="flex-1">
+      <main className="flex-1 min-h-screen overflow-auto pt-14 lg:pt-0 flex flex-col">
+        <div className="flex-1 pb-4">
           {children}
         </div>
         <Footer />

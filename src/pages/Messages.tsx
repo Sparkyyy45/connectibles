@@ -146,21 +146,21 @@ export default function Messages() {
 
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-muted/10 to-primary/5">
         {/* Header */}
-        <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
+        <div className="p-3 sm:p-4 md:p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-7xl mx-auto"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
-                <MessageCircle className="h-6 w-6 text-primary" />
+            <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
+              <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20">
+                <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-primary" />
               </div>
-              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 Messages
               </h1>
             </div>
-            <p className="text-muted-foreground ml-14">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground ml-8 md:ml-14">
               Chat with your connections in real-time
             </p>
           </motion.div>
@@ -168,7 +168,7 @@ export default function Messages() {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto">
-          <div className="max-w-7xl mx-auto p-6 space-y-6">
+          <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 space-y-3 md:space-y-6">
             {/* Connection Requests */}
             {connectionRequests && connectionRequests.length > 0 && (
               <motion.div
@@ -224,7 +224,7 @@ export default function Messages() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="grid md:grid-cols-[320px_1fr] gap-4 md:gap-6 min-h-[600px] md:min-h-[700px]">
+              <div className="grid md:grid-cols-[320px_1fr] gap-3 md:gap-6 min-h-[500px] md:min-h-[700px]">
                 <ConnectionsList
                   connections={connections}
                   selectedConnection={selectedConnection}

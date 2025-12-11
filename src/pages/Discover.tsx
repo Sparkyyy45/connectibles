@@ -287,22 +287,22 @@ export default function Discover() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-6">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 p-3 sm:p-4 md:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-4 md:space-y-5 px-2"
+            className="text-center space-y-3 md:space-y-5 px-3"
           >
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
               <motion.div 
-                className="p-3 md:p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-200/50 shadow-lg"
+                className="p-2.5 md:p-4 rounded-xl md:rounded-2xl bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-200/50 shadow-lg"
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <Sparkles className="h-7 w-7 md:h-9 md:w-9 text-purple-600" />
+                <Sparkles className="h-6 w-6 md:h-9 md:w-9 text-purple-600" />
               </motion.div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
                 Discover Matches
               </h1>
             </div>
@@ -369,34 +369,34 @@ export default function Discover() {
             </motion.div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full px-2 md:px-0">
-            <TabsList className="grid w-full grid-cols-3 gap-2 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-2 rounded-2xl shadow-lg h-auto">
+            <TabsList className="grid w-full grid-cols-3 gap-1.5 md:gap-2 bg-white/90 backdrop-blur-md border-2 border-purple-200/60 p-1.5 md:p-2 rounded-xl md:rounded-2xl shadow-lg h-auto">
               <TabsTrigger 
                 value="matches" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl min-h-[44px]"
+                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
               >
-                <Sparkles className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden md:inline leading-tight">Best Matches</span>
-                <span className="md:hidden leading-tight">Matches</span>
+                <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                <span className="hidden sm:inline leading-tight">Best Matches</span>
+                <span className="sm:hidden leading-tight">Matches</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="explore" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl min-h-[44px]"
+                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
               >
-                <Shuffle className="h-4 w-4 flex-shrink-0" />
+                <Shuffle className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
                 <span className="leading-tight">Explore</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="reverse" 
-                className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-xl min-h-[44px]"
+                className="flex items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-2 md:py-2.5 text-xs md:text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg md:rounded-xl min-h-[40px] md:min-h-[44px] touch-manipulation"
               >
-                <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden md:inline leading-tight">Interested in You</span>
-                <span className="md:hidden leading-tight">For You</span>
+                <TrendingUp className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                <span className="hidden sm:inline leading-tight">Interested in You</span>
+                <span className="sm:hidden leading-tight">For You</span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="matches" className="mt-4 md:mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
+            <TabsContent value="matches" className="mt-3 md:mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                 {matches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {matches?.length === 0 && (
@@ -416,13 +416,13 @@ export default function Discover() {
               )}
             </TabsContent>
 
-            <TabsContent value="explore" className="mt-4 md:mt-6">
-              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-blue-50/50 rounded-2xl border border-blue-200/40 mx-2 md:mx-0">
+            <TabsContent value="explore" className="mt-3 md:mt-6">
+              <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-blue-50/50 rounded-xl md:rounded-2xl border border-blue-200/40">
                 <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
                   🎲 Discover random users outside your typical matches. Refresh the page for new suggestions!
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                 {exploreMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {exploreMatches?.length === 0 && (
@@ -442,13 +442,13 @@ export default function Discover() {
               )}
             </TabsContent>
 
-            <TabsContent value="reverse" className="mt-4 md:mt-6">
-              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-purple-50/50 rounded-2xl border border-purple-200/40 mx-2 md:mx-0">
+            <TabsContent value="reverse" className="mt-3 md:mt-6">
+              <div className="mb-3 md:mb-6 p-2.5 md:p-4 bg-purple-50/50 rounded-xl md:rounded-2xl border border-purple-200/40">
                 <p className="text-xs sm:text-sm text-slate-700 font-medium text-center">
                   💫 These users share interests with you and might be interested in connecting!
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                 {reverseMatches?.map((match, index) => renderMatchCard(match, index))}
               </div>
               {reverseMatches?.length === 0 && (
