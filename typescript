@@ -1,14 +1,8 @@
-export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
-  providers: [emailOtp, Anonymous],
-});
-
-async sendVerificationRequest({ identifier: email, provider, token }) {
-  try {
-    await axios.post(
-      "https://email.vly.ai/send_otp",
-      // ...
-    );
-  } catch (error) {
-    throw new Error(JSON.stringify(error));
-  }
-}
+{isEditing && (
+  <X
+    className="h-3 w-3 cursor-pointer"
+    onClick={() =>
+      setInterests(interests.filter((i) => i !== interest))
+    }
+  />
+)}
