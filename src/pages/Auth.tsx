@@ -59,7 +59,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     } catch (error: any) {
       console.error("Email sign-in error:", error);
       const errorMessage = error?.message || "Failed to send verification code. Please try again.";
-      setError(errorMessage.includes("spsu") ? "Only @spsu.ac.in email addresses are allowed" : errorMessage);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

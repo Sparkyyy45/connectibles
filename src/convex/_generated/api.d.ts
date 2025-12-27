@@ -25,6 +25,7 @@ import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
 import type * as presence from "../presence.js";
 import type * as profiles from "../profiles.js";
+import type * as repair from "../repair.js";
 import type * as reports from "../reports.js";
 import type * as truthDare from "../truthDare.js";
 import type * as users from "../users.js";
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   posts: typeof posts;
   presence: typeof presence;
   profiles: typeof profiles;
+  repair: typeof repair;
   reports: typeof reports;
   truthDare: typeof truthDare;
   users: typeof users;
