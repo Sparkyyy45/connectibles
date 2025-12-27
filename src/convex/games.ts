@@ -20,6 +20,25 @@ export const startGame = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // Check for existing active session
+    const existingSession = await ctx.db
+      .query("game_sessions")
+      .withIndex("by_player", (q) => q.eq("playerId", userId))
+      .filter((q) => q.eq(q.field("status"), "in_progress"))
+      .first();
+
+    if (existingSession) {
+      // If same game type, return existing session
+      if (existingSession.gameType === args.gameType) {
+        return existingSession._id;
+      }
+      // If different game type, mark old one as completed (abandoned)
+      await ctx.db.patch(existingSession._id, { 
+        status: "completed",
+        result: "loss" // Abandoning counts as loss
+      });
+    }
+
     const sessionId = await ctx.db.insert("game_sessions", {
       gameType: args.gameType,
       playerId: userId,
