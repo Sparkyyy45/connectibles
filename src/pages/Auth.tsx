@@ -54,23 +54,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         return;
       }
 
-      // Validate email domain on frontend
-      if (!email.toLowerCase().endsWith("@spsu.ac.in")) {
-        setError("Only @spsu.ac.in email addresses are allowed");
-        setIsLoading(false);
-        return;
-      }
-
       await signIn("email-otp", formData);
       setStep({ email });
     } catch (error: any) {
       console.error("Email sign-in error:", error);
-      const errorMessage = error?.message || String(error);
-      if (errorMessage.includes("@spsu.ac.in")) {
-        setError("Only @spsu.ac.in email addresses are allowed");
-      } else {
-        setError("Failed to send verification code. Please try again.");
-      }
+      setError("Failed to send verification code. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -185,7 +173,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     <div>
                       <CardTitle className="text-2xl">Get Started</CardTitle>
                       <CardDescription className="text-base mt-2">
-                        Enter your SPSU email to log in or sign up
+                        Enter your email to log in or sign up
                       </CardDescription>
                     </div>
                   </CardHeader>
@@ -196,7 +184,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             name="email"
-                            placeholder="yourname@spsu.ac.in"
+                            placeholder="name@example.com"
                             type="email"
                             className="pl-9 h-11"
                             disabled={isLoading}
@@ -231,11 +219,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         )}
                       </AnimatePresence>
 
-                      <div className="pt-2 text-center">
-                        <p className="text-xs text-muted-foreground">
-                          Only <span className="font-semibold text-primary">@spsu.ac.in</span> email addresses are allowed
-                        </p>
-                      </div>
                     </CardContent>
                   </form>
                 </>
