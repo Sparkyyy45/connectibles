@@ -24,9 +24,13 @@ export const emailOtp = Email({
           },
         },
       );
-    } catch (error) {
-      console.error("Failed to send OTP:", error);
-      throw new Error("Failed to send verification code");
+    } catch (error: any) {
+      console.error("Failed to send OTP:", error?.response?.data || error.message);
+      // Check for specific error cases if possible, otherwise throw generic
+      if (error?.response?.status === 429) {
+        throw new Error("Too many attempts. Please try again later.");
+      }
+      throw new Error("Failed to send verification code. Please check your email address.");
     }
   },
 });
